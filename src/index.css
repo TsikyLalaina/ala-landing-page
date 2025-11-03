@@ -1,0 +1,126 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: #EAE7E2;
+  background-color: #0B3D2E;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #C9A66B;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #E0C38A;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #2E5E4E;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #2E5E4E;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Marquee carousel (inspired by provided snippet), namespaced */
+.ala-carousel {
+  --items: 6;
+  --carousel-duration: 40s;
+}
+@media (width > 600px) {
+  .ala-carousel { --carousel-duration: 30s; }
+}
+.ala-carousel {
+  --carousel-width: min(80vw, 1200px);
+  --carousel-item-width: 280px;
+  --carousel-item-height: 450px;
+  --carousel-item-gap: 2rem;
+
+  position: relative;
+  width: var(--carousel-width);
+  height: var(--carousel-item-height);
+  overflow: clip;
+  margin: 0 auto;
+}
+.ala-carousel[mask] {
+  mask-image: linear-gradient(to right, transparent, black 10% 90%, transparent);
+}
+.ala-carousel[reverse] > article { animation-direction: reverse; }
+.ala-carousel:hover > article { animation-play-state: paused; }
+
+.ala-carousel > article {
+  position: absolute;
+  top: 0;
+  left: calc(100% + var(--carousel-item-gap));
+  width: var(--carousel-item-width);
+  height: var(--carousel-item-height);
+  display: grid;
+  grid-template-rows: 200px auto 1fr auto;
+  gap: 0.25rem;
+  border: 1px solid #1E5A49;
+  padding-block-end: 1rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  color: #EAE7E2;
+
+  will-change: transform;
+  animation-name: ala-marquee;
+  animation-duration: var(--carousel-duration);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: calc(var(--carousel-duration) / var(--items) * 1 * var(--i) * -1);
+}
+.ala-carousel img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px 10px 0 0; }
+.ala-carousel > article > *:not(img) { padding: 0 1rem; }
+.ala-carousel > article > div { grid-row: span 2; display: grid; grid-template-rows: subgrid; font-size: 0.9rem; }
+.ala-carousel > article h3 { font-size: 1.1rem; font-weight: 700; padding-block: 0.75rem 0.25rem; margin: 0; color: #F2F1EE; }
+.ala-carousel > article p { margin: 0; color: #CFCBC3; }
+.ala-carousel > article a { text-decoration: none; border: 1px solid #2E5E4E; color: #F2F1EE; border-radius: 6px; padding: 0.35rem 0.6rem; place-self: start; transition: 150ms ease-in-out; }
+.ala-carousel > article a:hover, .ala-carousel > article a:focus-visible { background-color: #2E5E4E; color: white; outline: none; }
+
+@keyframes ala-marquee {
+  100% { transform: translateX(calc((var(--items) * (var(--carousel-item-width) + var(--carousel-item-gap))) * -1)); }
+}
