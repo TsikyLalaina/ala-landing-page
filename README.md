@@ -1,8 +1,8 @@
-# Ala — Regenerate Madagascar's Future
+# 🌳 Ala — Regenerate Madagascar's Future
 
 Investor-focused landing page for Ala, a tech-enabled ecosystem uniting Madagascar’s mining and agricultural sectors for regenerative impact.
 
-## Stack
+## 🧰 Stack
 
 - React 19 + Vite
 - Framer Motion (cinematic fades, reduced-motion aware)
@@ -12,7 +12,7 @@ Investor-focused landing page for Ala, a tech-enabled ecosystem uniting Madagasc
 - Progressive Web App (manifest, service worker with offline fallback)
 - Plain CSS marquee carousels (no slider lib)
 
-## Features
+## ✨ Features
 
 - Cinematic hero: 11s foreground video fading to parallax background image with gradient tint
 - Investor-focused benefits section
@@ -24,7 +24,7 @@ Investor-focused landing page for Ala, a tech-enabled ecosystem uniting Madagasc
 - Install App prompt + offline support
 - Voice narration via Web Speech API
 
-## Quick Start
+## 🚀 Quick Start
 
 - Install
   - `npm install`
@@ -35,7 +35,7 @@ Investor-focused landing page for Ala, a tech-enabled ecosystem uniting Madagasc
   - `npm run preview`
   - For PWA updates, hard-refresh twice to activate the new service worker
 
-## Project Structure
+## 📁 Project Structure
 
 - `src/components/`
   - `Hero.jsx` — video → image fade with parallax
@@ -45,22 +45,22 @@ Investor-focused landing page for Ala, a tech-enabled ecosystem uniting Madagasc
 - `src/index.css` — theme + marquee carousel styles
 - `public/` — `manifest.webmanifest`, `sw.js`, icons, media
 
-## Media
+## 🖼️ Media
 
 Hero assets live in `public/images`:
 
-- Foreground video: `Before.mp4`
-- Background image: `After.png`
+- 🎬 Foreground video: `Before.mp4`
+- 🌿 Background image: `After.png`
 
 Recommended formats: WebP/AVIF for images, H.264 MP4 for video. Use widescreen (16:9 or 21:9) and keep sizes optimized.
 
-## Carousels
+## 🎠 Carousels
 
 - CSS marquee carousel (`.ala-carousel`) replaces slider libraries for performance.
 - Configure via CSS variables in `src/index.css`:
   - `--carousel-item-width`, `--carousel-item-height`, `--carousel-item-gap`, `--carousel-duration`
 
-## Map (OpenStreetMap via Leaflet)
+## 🗺️ Map (OpenStreetMap via Leaflet)
 
 - No API key required; attribution included.
 - Random pins are generated for preview. Replace with real coords in `MapPreview.jsx`:
@@ -71,7 +71,7 @@ Recommended formats: WebP/AVIF for images, H.264 MP4 for video. Use widescreen (
   ]
   ```
 
-## PWA
+## 📱 PWA
 
 - Manifest at `public/manifest.webmanifest`
 - Service worker at `public/sw.js` with:
@@ -79,19 +79,19 @@ Recommended formats: WebP/AVIF for images, H.264 MP4 for video. Use widescreen (
   - Navigation fallback to offline page
   - Cache-first for images, stale-while-revalidate for CSS/JS
 
-## Accessibility & Performance
+## ♿️⚡ Accessibility & Performance
 
 - Mobile-first, high contrast
 - Respects prefers-reduced-motion
 - Preload LCP media in `index.html`
 - Avoids heavy third-party UI libs (CSS marquee, Leaflet only)
 
-## Troubleshooting
+## 🧰 Troubleshooting
 
 - React 19 + react-leaflet: react-leaflet currently peers React 18. This project uses plain Leaflet to avoid conflicts.
 - Video won’t autoplay: ensure `muted` and `playsInline` are set (they are), and the file path matches case-sensitive filename.
 - SW caching stale assets: run production preview, then refresh twice (or do a hard reload) to activate the new SW.
 
-## Deployment
+## 🚀 Deployment
 
 Static hosting supported (Vercel, Netlify, Cloudflare Pages, S3/CloudFront). Serve `dist/` at the site root; ensure `sw.js` is available at `/<sw>`. Configure a SPA fallback to `index.html` if needed.
