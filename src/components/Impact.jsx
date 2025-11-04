@@ -46,13 +46,46 @@ export default function Impact() {
     { key: 'co2Sequestered', value: 120000, note: t('impact.co2Sequestered') },
     { key: 'communitiesEmpowered', value: 15000, note: t('impact.communitiesEmpowered') },
   ]
+  const media = {
+    hectaresRestored: {
+      video: '/images/hectaresrestored.mp4',
+      poster: '/images/hectaresrestored.jpeg',
+      alt: 'Restored hectares aerial',
+    },
+    farmYieldIncrease: {
+      video: '/images/farmyieldincrease.mp4',
+      poster: '/images/farmyieldincrease.jpeg',
+      alt: 'Higher farm yields',
+    },
+    co2Sequestered: {
+      video: '/images/co2esequestered%20carbon.mp4',
+      poster: '/images/co2esequestered%20carbon.jpeg',
+      alt: 'Carbon sequestration visuals',
+    },
+    communitiesEmpowered: {
+      video: '/images/communitiesempowered.mp4',
+      poster: '/images/communitiesempowered.jpeg',
+      alt: 'Communities empowered at hubs',
+    },
+  }
   return (
     <section style={{padding:'48px 20px',maxWidth:1100,margin:'0 auto'}}>
       <h2 style={{color:'#F2F1EE',fontSize:'clamp(22px,3.2vw,36px)',margin:'0 0 18px'}}>{t('impact.title')}</h2>
       <div className="ala-carousel" mask="true" style={{['--items'] : slides.length}}>
         {slides.map((s, idx) => (
           <article key={idx} style={{['--i']: idx}}>
-            <img src="/images/hero-after.svg" alt="Restored landscape"/>
+            <video
+              key={s.key}
+              poster={media[s.key]?.poster}
+              playsInline
+              muted
+              autoPlay
+              loop
+              preload="metadata"
+              aria-label={media[s.key]?.alt}
+            >
+              <source src={media[s.key]?.video} type="video/mp4" />
+            </video>
             <h3>{s.note}</h3>
             <div>
               <p style={{fontSize:'clamp(28px,8vw,56px)',fontWeight:800,color:'#C9A66B',margin:'4px 0 8px'}}>

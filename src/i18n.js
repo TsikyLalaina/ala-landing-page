@@ -9,9 +9,10 @@ const resources = {
         invest: 'Invest Now',
         lang_en: 'EN',
         lang_mg: 'MG',
+        lang_fr: 'FR',
       },
       hero: {
-        title: "Ala: Regenerate Madagascar's Future — Unite Mining & Farming",
+        title: "Ala: Regenerate Madagascar's Future   Unite Mining & Farming",
         subtitle: 'Empower communities, restore land, drive profits sustainably',
         cta_install: 'Install App',
         cta_invest: 'Invest Now',
@@ -115,7 +116,7 @@ const resources = {
         banner: 'You are offline. Content is available with limited interactivity.',
       },
       urgency: {
-        line: 'Anchor round open — limited allocations through Q4 2025',
+        line: 'Preview build: figures are forward‑looking illustrations and some visuals are placeholders for demonstration. Validated data and full assets are available in our investor materials.',
       },
     },
   },
@@ -126,9 +127,10 @@ const resources = {
         invest: 'Mampiasa vola izao',
         lang_en: 'EN',
         lang_mg: 'MG',
+        lang_fr: 'FR',
       },
       hero: {
-        title: "Ala: Avereno velona an’i Madagasikara — Ampiraiso ny Fitrandrahana sy ny Fambolena",
+        title: "Ala: Avereno velona an’i Madagasikara   Ampiraiso ny Fitrandrahana sy ny Fambolena",
         subtitle:
           'Manome hery ny fiarahamonina, manarina ny tany, mampitombo ny vola miditra maharitra',
         cta_install: 'Apetraka ny App',
@@ -215,7 +217,101 @@ const resources = {
         rights: '© Ala 2025. Zo rehetra voatokana.',
       },
       offline: { banner: 'Tsy misy tambajotra. Misy fetrany ny fiasa.' },
-      urgency: { line: 'Fandraisana mpampiasa vola — hatramin’ny Q4 2025' },
+      urgency: {
+        line: 'Fampisehoana ankapobeny: vinavina fanazavana ireo tarehimarika ary misy sary mpisolo toerana ho an’ny demo. Hita ao amin’ny tahirin-kevitra ho an’ny mpampiasa vola ny angona voamarina sy ny sary ofisialy.',
+      },
+    },
+  },
+  fr: {
+    translation: {
+      nav: {
+        install: 'Installer l’application',
+        invest: "Investir maintenant",
+        lang_en: 'EN',
+        lang_mg: 'MG',
+        lang_fr: 'FR',
+      },
+      hero: {
+        title: "Ala : Régénérer l’avenir de Madagascar   Unir mines et agriculture",
+        subtitle: 'Renforcer les communautés, restaurer les terres, créer des rendements durables',
+        cta_install: 'Installer l’application',
+        cta_invest: 'Investir maintenant',
+        listen: 'Écouter',
+      },
+      features: {
+        title: 'Pourquoi investir dans Ala',
+        items: [
+          {
+            title: 'Modèle évolutif avec ROI de 250 %',
+            desc: 'Revenus combinés carbone et matières premières avec hubs solaires légers et coopératives.',
+          },
+          {
+            title: 'Des hubs solaires renforcent la résilience',
+            desc: 'Irrigation, stockage et transformation pour réduire les pertes et améliorer la qualité.',
+          },
+          {
+            title: 'Traçabilité et conformité',
+            desc: 'Achats pilotés par les coopératives et identités numériques conformes aux normes ESG.',
+          },
+          {
+            title: 'Planification sécheresse pilotée par la donnée',
+            desc: 'Capteurs et imagerie satellite optimisent l’eau et les rotations culturales.',
+          },
+          {
+            title: 'Restauration des sites miniers vers l’agroforesterie',
+            desc: 'Conversion des zones perturbées en mosaïques de vanille, clou de girofle et agroforesterie.',
+          },
+          {
+            title: 'Flux de revenus bancables',
+            desc: 'Préventes carbone et cultures d’exportation pour des rendements prévisibles.',
+          },
+        ],
+      },
+      impact: {
+        title: 'Impact mesuré',
+        hectaresRestored: 'Hectares restaurés',
+        farmYieldIncrease: 'Hausse des rendements',
+        co2Sequestered: 't CO₂e séquestrées',
+        communitiesEmpowered: 'Personnes accompagnées',
+        note: "Chiffres illustratifs. Données vérifiées à venir.",
+      },
+      how: {
+        title: 'Comment ça marche',
+        steps: [
+          {
+            title: '1. Cartographier et prioriser les sites',
+            desc: 'Identifier les lisières de mines dégradées et les fermes sujettes à la sécheresse pour la restauration.',
+          },
+          {
+            title: '2. Déployer les hubs solaires',
+            desc: 'Apporter énergie, eau et connectivité aux coopératives.',
+          },
+          {
+            title: '3. Former et organiser les coopératives',
+            desc: 'Fournir agronomie, conformité et accès marché.',
+          },
+          {
+            title: '4. Financer et suivre',
+            desc: 'Panachage de préventes carbone, capitaux d’impact et télémétrie en temps réel.',
+          },
+          {
+            title: '5. Changer d’échelle régionalement',
+            desc: 'Réinvestir les revenus pour étendre hubs et corridors agroforestiers.',
+          },
+        ],
+      },
+      testimonials: { title: 'Ce que disent nos partenaires' },
+      footer: {
+        contact: 'Contact',
+        email_label: 'Email',
+        email_value: 'invest@ala.mg',
+        request_deck: 'Demander le dossier investisseur',
+        rights: '© Ala 2025. Tous droits réservés.',
+      },
+      offline: { banner: "Vous êtes hors ligne. Interactions limitées." },
+      urgency: {
+        line: "Version d’aperçu : chiffres illustratifs et certains visuels sont des substituts de démonstration. Données vérifiées et ressources complètes disponibles dans nos documents investisseurs.",
+      },
     },
   },
 }

@@ -1,26 +1,19 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
 import L from 'leaflet'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-})
-
-function randomHubs(count = 6) {
-  // Madagascar bbox approx: lat [-25.6, -11.9], lon [43.2, 50.5]
-  const hubs = []
-  for (let i = 0; i < count; i++) {
-    const lat = -25.6 + Math.random() * (-11.9 + 25.6)
-    const lon = 43.2 + Math.random() * (50.5 - 43.2)
-    hubs.push({ id: i + 1, lat, lon })
-  }
-  return hubs
-}
+// Real hub coordinates
+const HUBS = [
+  { region: 'SAVA', name: 'Sambava', lat: -14.27, lon: 50.17 },
+  { region: 'SAVA', name: 'Antalaha', lat: -14.91, lon: 50.28 },
+  { region: 'SAVA', name: 'Vohemar', lat: -13.37, lon: 50.0 },
+  { region: 'SAVA', name: 'Andapa', lat: -14.66, lon: 49.65 },
+  { region: 'Anosy', name: 'Taolagnaro (Fort Dauphin)', lat: -25.04, lon: 46.99 },
+  { region: 'Analanjirofo', name: 'Mananara (Nord)', lat: -16.17, lon: 49.77 },
+  { region: 'Analanjirofo', name: 'Maroantsetra', lat: -15.43, lon: 49.75 },
+  { region: 'Toamasina', name: 'Toamasina (general)', lat: -18.15, lon: 49.4 },
+  { region: 'Toamasina', name: 'Ambatovy Mine Area', lat: -18.82, lon: 48.3 },
+  { region: 'Vakinankaratra', name: 'Antsirabe', lat: -19.87, lon: 47.03 },
+]
 
 export default function MapPreview() {
   const mapEl = useRef(null)
@@ -36,10 +29,16 @@ export default function MapPreview() {
     })
     tiles.addTo(map)
 
-    const hubs = randomHubs(7)
-    hubs.forEach((h) => {
-      const marker = L.marker([h.lat, h.lon]).addTo(map)
-      marker.bindPopup(`Hub #${h.id}<br/>Lat ${h.lat.toFixed(2)}, Lon ${h.lon.toFixed(2)}`)
+    // Add red pins
+    HUBS.forEach((h) => {
+      const marker = L.circleMarker([h.lat, h.lon], {
+        radius: 6,
+        color: '#B91C1C', // red stroke
+        weight: 2,
+        fillColor: '#EF4444', // red fill
+        fillOpacity: 0.85,
+      }).addTo(map)
+      marker.bindPopup(`${h.name} — ${h.region}<br/>Lat ${h.lat.toFixed(2)}, Lon ${h.lon.toFixed(2)}`)
     })
 
     // Cleanup on unmount
@@ -55,7 +54,7 @@ export default function MapPreview() {
         <div ref={mapEl} style={{ height: 400, width: '100%' }} />
       </div>
       <div style={{ color: '#A7A39B', fontSize: 12, marginTop: 8 }}>
-        Tiles: &copy; OpenStreetMap contributors. Pins are random for preview.
+        Tiles: &copy; OpenStreetMap contributors. Hub pins shown are approximate placeholders pending field verification.
       </div>
     </section>
   )

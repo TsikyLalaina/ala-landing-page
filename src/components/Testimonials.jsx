@@ -9,7 +9,7 @@ export default function Testimonials() {
       <div className="ala-carousel" mask="true" style={{['--items']: items.length}}>
         {items.map((x, idx) => (
           <article key={idx} style={{['--i']: idx}}>
-            <img src="/images/hero-after.svg" alt="Community and landscape"/>
+            <img src={`/images/partner${(idx % 3) + 1}.jpg`} alt={`${x.name} — ${x.role}`} />
             <h3>{x.name} — <span style={{fontWeight:400,color:'#CFCBC3'}}>{x.role}</span></h3>
             <div>
               <p style={{fontSize:16,lineHeight:1.5}}>“{x.quote}”</p>
