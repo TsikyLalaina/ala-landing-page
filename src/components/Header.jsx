@@ -8,9 +8,21 @@ export default function Header() {
   return (
     <header style={{position:'sticky',top:0,zIndex:30,backdropFilter:'saturate(140%) blur(6px)'}}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,padding:'10px 16px',maxWidth:1100,margin:'0 auto'}}>
-        <a href="#" style={{display:'flex',alignItems:'center',gap:10,textDecoration:'none'}}>
-          <div style={{width:28,height:28,borderRadius:6,background:'#2E5E4E'}} />
-          <div style={{color:'#EAE7E2',fontWeight:800,letterSpacing:0.4}}>Ala</div>
+        <a href="#" style={{display:'flex',alignItems:'center',textDecoration:'none',overflow:'visible',lineHeight:0}}>
+          <span
+            aria-label="Ala"
+            role="img"
+            style={{
+              width: 28,
+              height: 28,
+              display: 'block',
+              background: '#EAE7E2',
+              WebkitMask: 'url(/icons/ala.svg) no-repeat center / contain',
+              mask: 'url(/icons/ala.svg) no-repeat center / contain',
+              transform: 'scale(2.4)',
+              transformOrigin: 'center',
+            }}
+          />
         </a>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <LanguageToggle />
