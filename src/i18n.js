@@ -123,89 +123,103 @@ const resources = {
   mg: {
     translation: {
       nav: {
-        install: 'Apetraka ny App',
-        invest: 'Mampiasa vola izao',
+        install: 'Hampiasa ny App',
+        invest: 'Hampanjary Vola',
         lang_en: 'EN',
         lang_mg: 'MG',
         lang_fr: 'FR',
       },
       hero: {
-        title: "Ala: Avereno velona an’i Madagasikara   Ampiraiso ny Fitrandrahana sy ny Fambolena",
-        subtitle:
-          'Manome hery ny fiarahamonina, manarina ny tany, mampitombo ny vola miditra maharitra',
-        cta_install: 'Apetraka ny App',
-        cta_invest: 'Mampiasa vola izao',
-        listen: 'Henoina',
+        title: "Ala: Mamerina ny Hoavin'i Madagasikara   Mampivondrona ny Harena An-kibon'ny Tany sy ny Fambolena",
+        subtitle: 'Manome hery ny fiaraha-monina, mamerina ny tany simba, mitondra tombony maharitra',
+        cta_install: 'Hampiasa ny App',
+        cta_invest: 'Hampanjary Vola',
+        listen: 'Mihaino',
         voice_text:
-          'Ala dia rafitra manam-pahaizana mampifandray ny fitrandrahana sy ny fambolena. Manorina ala fambolena amin’ny tany simba izahay, mampandeha toerana amin’ny herinaratra masoandro, ary manohana fikambanana mba hiakatra ny vola miditra. Ampiasao vola hanitarana maodely maharitra sy mahasoa.',
+          'Ala dia rafitra nomerika ao Madagasikara izay mampivondrona ny harena an-kibon’ny tany sy ny toeram-pambolena. Mamerina ny tany simba ho toy ny ala fambolena mahomby izahay, manome herin’aratra avy amin’ny masoandro ny ivon-toerana, ary manampy ny fikambanana mpiara-miasa hampiakatra ny fidiram-bola. Mampiasa vola mba hanitarana ny modely mahomby sy mamerina ny tontolo iainana ho an’ny fiaraha-monina sy ny natiora.',
       },
       features: {
-        title: 'Antony hanohanana an’i Ala',
+        title: 'Maninona no tokony hampanjary vola ao amin’ny Ala',
         items: [
           {
-            title: 'Maodely azo ampitomboina, ROI 250%',
-            desc: 'Vola avy amin’ny karbônina sy vokatra, miaraka amin’ny toby masoandro mora apetraka.',
+            title: 'Modely azo hitarina miaraka amin’ny fiverenam-bola 250%',
+            desc: 'Fampifangaroana ny fidiram-bola avy amin’ny karbônina sy ny vokatra ara-barotra miaraka amin’ny ivon-toerana masoandro maivana sy ny fikambanan\'ny mpiara-miasa.',
           },
           {
-            title: 'Toerana masoandro ho an’ny faharetana',
-            desc: 'Fandrarahana, fitahirizana, sy fanodinana hampihenana fatiantoka.',
+            title: 'Ivon-toerana masoandro manome herin\'aratra maharitra',
+            desc: 'Fanondrahana, fitahirizana, ary fanodinana izay mampihena ny fatiantoka ary mampiakatra ny kalitao.',
           },
           {
-            title: 'Fanaraha-maso sy fankatoavana',
-            desc: 'Fividianana tarihin’ny fikambanana sy ID nomerika ho an’ny fenitra ESG.',
+            title: 'Fanaraha-maso sy fanajana ny fitsipika',
+            desc: 'Fividianana entana notarihin’ny fikambanana mpiara-miasa miaraka amin’ny ID nomerika mahafeno ny fenitra ESG ny mpampanjary vola',
           },
           {
-            title: 'Fandrafetana amin’ny angona',
-            desc: 'Sensor sy sary zanabolana hanatsarana ny rano sy ny fikafika fambolena.',
+            title: 'Fandrindrana ny mosary maina mifototra amin’ny fahalalana',
+            desc: 'Sensor sy fanadihadiana avy amin’ny zanabolana manatsara ny rano sy ny fihodin’ny vokatra.',
           },
           {
-            title: 'Fanarenana avy amin’ny fitrandrahana ho fambolena',
-            desc: 'Famindrana toerana simba ho amin’ny lavanila, jirofo, sy agroforestry.',
+            title: 'Fanarenana avy amin’ny harena an-kibon’ny tany mankany amin’ny toeram-pambolena',
+            desc: 'Mamindra ny toerana simba ho toy ny mosaika vanilla, girofo, ary ala fambolena.',
           },
           {
-            title: 'Loharanom-bola azo antoka',
-            desc: 'Karbônina mialoha sy vokatra fanondrana ho an’ny fiverenam-bola azo vinaniana.',
+            title: 'Lalan-drakitra azo antoka',
+            desc: 'Karbônina efa amidy mialoha miampy vokatra aondrana manome fiverenana azo vinaniana.',
           },
         ],
       },
       impact: {
-        title: 'Voka-dratsy tsara refesina',
-        hectaresRestored: 'Hektara voarenina',
-        farmYieldIncrease: 'Fitombon’ny vokatra',
-        co2Sequestered: 't CO₂e voasintona',
-        communitiesEmpowered: 'Olona voaofana/voatsara',
-        note: 'Marika ohatra. Soloy angona ofisialy rehefa vonona.',
+        title: 'Voka-pifanoherana Voarindra',
+        hectaresRestored: 'Hektara Narenina',
+        farmYieldIncrease: 'Fampitomboana ny Voka-pambolena',
+        co2Sequestered: 't CO₂e Voatahiry',
+        communitiesEmpowered: 'Olona Mahaleo-tena',
+        note: 'Tarehimarika fanoharana. Soloy amin’ny M&E voamarina rehefa misy.',
       },
       how: {
-        title: 'Fomba Fiasan’i Ala',
+        title: 'Ahoana no Iasany',
         steps: [
-          { title: '1. Fandrefesana toerana', desc: 'Mamaritra faritra simba sy maina indrindra.' },
-          { title: '2. Fametrahana toby masoandro', desc: 'Energia, rano, fifandraisana ho an’ny fikambanana.' },
-          { title: '3. Fampiofanana sy fandaminana', desc: 'Agronomia, fankatoavana, fidirana amin’ny tsena.' },
-          { title: '4. Famatsiam-bola sy fanaraha-maso', desc: 'Karbônina mialoha, renivola, sy telemetry.' },
-          { title: '5. Fanitarana', desc: 'Mamerina ny vola ho fanitarana.' },
+          {
+            title: '1. Sarintany sy laharam-pahamehana ny Toerana',
+            desc: 'Mamantatra ny sisin’ny harena an-kibon’ny tany simba sy ny toeram-pambolena mora mosary maina ho an’ny fanarenana.',
+          },
+          {
+            title: '2. Mametraka Ivon-toerana Masoandro',
+            desc: 'Mitondra angovo, rano, ary fifandraisan-davitra ho an’ny fikambanana mpiara-miasa eo an-toerana.',
+          },
+          {
+            title: '3. Mampiofana sy Mandamina ny Fikambanana Mpiara-miasa',
+            desc: 'Manome fitaovana momba ny agronomia, fanajana fitsipika, ary fidirana amin’ny tsena goavana.',
+          },
+          {
+            title: '4. Famatsiam-bola & Fanaraha-maso',
+            desc: 'Mampifangaro ny varotra karbônina mialoha amin’ny renivohitra misy vokany sy telemetry amin’ny fotoana marina.',
+          },
+          {
+            title: '5. Manitatra ny Faritra',
+            desc: 'Mamerina mampiasa ny vokatra hanitarana ny ivon-toerana sy ny lalan’ala fambolena.',
+          },
         ],
       },
       testimonials: {
-        title: 'Hevitry ny mpiara-miombon’antoka',
+        title: 'Inona no Lazain’ny Mpiray Tsikay',
         items: [
           {
             quote:
-              'Mifanaraka amin’ny drafitra fanakatonana toeram-pitrandrahana sy famoronana lanja — mazava ny angona.',
+              'Ala dia mampifanaraka ny drafitry ny fanakatonana harena an-kibon’ny tany amin’ny famoronana lanja ho an’ny fiaraha-monina — ny fangaraharan’ny angona dia ampy ho an’ny mpampiasa vola.',
             name: 'R. Andriambelo',
-            role: 'Talen’ny Tontolo iainana',
+            role: 'Talentsoratra Maharitra, Orinasa Harena An-kibon’ny Tany',
           },
           {
             quote:
-              'Nampiakatra kalitao sy nampihena fatiantoka ny toby masoandro. Nihatsara ny fidiram-bola.',
+              'Ny ivon-toerana masoandro sy ny fikambanana mpiara-miasa dia nanandratra ny kalitao ary namely ny fatiantoka. Ny ankohonana dia avo roa heny ny fidiram-bola tao anatin’ny vanim-potoana iray.',
             name: 'F. Raharisoa',
-            role: 'Lehiben’ny fikambanana, Sofia',
+            role: 'Mpitarika Fikambanana Mpiara-miasa, Faritra Sofia',
           },
           {
             quote:
-              'Mampihena loza ny vola maro mitambatra. Maodely azo ampitomboina.',
+              'Ny fidiram-bola mifangarika dia mampihena ny risika amin’ny fiverenana. Modely azo ampitarina ho an’ny toetrandro sy ny fivelomana.',
             name: 'E. Johnson',
-            role: 'Mpampiasa vola',
+            role: 'Mpampiasa Vola Misy Vokany',
           },
         ],
       },
@@ -213,12 +227,14 @@ const resources = {
         contact: 'Fifandraisana',
         email_label: 'Mailaka',
         email_value: 'invest@ala.mg',
-        request_deck: 'Mangataka pejy ho an’ny mpampiasa vola',
-        rights: '© Ala 2025. Zo rehetra voatokana.',
+        request_deck: 'Mangataka ny taratasy ho an’ny mpampanjary vola',
+        rights: '© Ala 2025. Zo rehetra voaaro.',
       },
-      offline: { banner: 'Tsy misy tambajotra. Misy fetrany ny fiasa.' },
+      offline: {
+        banner: 'Tsy mifandray amin\'ny interinety ny fitaovanao. Misy votoaty voafetra.',
+      },
       urgency: {
-        line: 'Fampisehoana ankapobeny: vinavina fanazavana ireo tarehimarika ary misy sary mpisolo toerana ho an’ny demo. Hita ao amin’ny tahirin-kevitra ho an’ny mpampiasa vola ny angona voamarina sy ny sary ofisialy.',
+        line: 'Fanorenana mialoha: tarehimarika mialoha sy sary sasany dia placeholder ho an’ny fampisehoana. Angona voamarina sy fananana feno dia misy ao amin’ny fitaovana ho an’ny mpampanjary vola.',
       },
     },
   },
