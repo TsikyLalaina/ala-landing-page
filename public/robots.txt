@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ala-mg.com/sitemap.xml

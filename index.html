@@ -1,9 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Ala unites Madagascar’s mining and agricultural sectors to regenerate land, empower communities, and create bankable, sustainable returns." />
+    <meta
+      name="description"
+      content="Ala unites Madagascar’s mining and agricultural sectors to regenerate land, empower communities, and create bankable, sustainable returns."
+    />
     <meta name="theme-color" content="#0B3D2E" />
     <meta name="color-scheme" content="dark light" />
     <link rel="icon" type="image/svg+xml" href="/icons/ala.svg" />
@@ -11,10 +14,47 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preload" as="image" href="/images/After.png" />
     <link rel="preload" as="video" href="/images/Before.mp4" type="video/mp4" />
-    <title>Ala   Regenerate Madagascar's Future</title>
+
+    <!-- SEO & Open Graph -->
+    <link rel="canonical" href="https://ala-mg.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ala-mg.com/" />
+    <meta property="og:title" content="Ala — Regenerate Madagascar's Future" />
+    <meta
+      property="og:description"
+      content="Ala unites Madagascar’s mining and agricultural sectors to regenerate land, empower communities, and create bankable, sustainable returns."
+    />
+    <meta property="og:image" content="https://ala-mg.com/images/After.png" />
+    <meta property="og:site_name" content="Ala" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ala — Regenerate Madagascar's Future" />
+    <meta
+      name="twitter:description"
+      content="Ala unites Madagascar’s mining and agricultural sectors to regenerate land, empower communities, and create bankable, sustainable returns."
+    />
+    <meta name="twitter:image" content="https://ala-mg.com/images/After.png" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Ala",
+        "url": "https://ala-mg.com/",
+        "logo": "https://ala-mg.com/icons/ala.png",
+        "sameAs": [],
+        "description": "Ala unites Madagascar’s mining and agricultural sectors to regenerate land, empower communities, and create bankable, sustainable returns."
+      }
+    </script>
+    <title>Ala Regenerate Madagascar's Future</title>
   </head>
   <body>
-    <noscript>JavaScript is required to run Ala’s interactive landing page.</noscript>
+    <noscript
+      >JavaScript is required to run Ala’s interactive landing page.</noscript
+    >
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
