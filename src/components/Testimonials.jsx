@@ -13,7 +13,7 @@ export default function Testimonials() {
             <h3>{x.name} — <span style={{fontWeight:400,color:'#CFCBC3'}}>{x.role}</span></h3>
             <div>
               <p style={{fontSize:16,lineHeight:1.5}}>“{x.quote}”</p>
-              <a href="mailto:invest@ala.mg?subject=Reference%20check">Contact</a>
+              <a href="mailto:tsikyloharanontsoa@ala-mg.com?subject=Reference%20check">Contact</a>
             </div>
           </article>
         ))}

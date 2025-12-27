@@ -108,7 +108,7 @@ const resources = {
       footer: {
         contact: 'Contact',
         email_label: 'Email',
-        email_value: 'invest@ala.mg',
+        email_value: 'tsikyloharanontsoa@ala-mg.com',
         request_deck: 'Request the investor deck',
         rights: '© Ala 2025. All rights reserved.',
       },
@@ -226,7 +226,7 @@ const resources = {
       footer: {
         contact: 'Fifandraisana',
         email_label: 'Mailaka',
-        email_value: 'invest@ala.mg',
+        email_value: 'tsikyloharanontsoa@ala-mg.com',
         request_deck: 'Mangataka ny taratasy ho an’ny mpampanjary vola',
         rights: '© Ala 2025. Zo rehetra voaaro.',
       },
@@ -320,7 +320,7 @@ const resources = {
       footer: {
         contact: 'Contact',
         email_label: 'Email',
-        email_value: 'invest@ala.mg',
+        email_value: 'tsikyloharanontsoa@ala-mg.com',
         request_deck: 'Demander le dossier investisseur',
         rights: '© Ala 2025. Tous droits réservés.',
       },

@@ -31,7 +31,7 @@ export default function Header() {
               {t('nav.install')}
             </button>
           ) : (
-            <a href="mailto:invest@ala.mg?subject=Ala%20Investment%20Interest" style={{background:'transparent',color:'#EAE7E2',border:'1px solid #2E5E4E',padding:'8px 12px',borderRadius:8,fontWeight:700,textDecoration:'none'}}>{t('nav.invest')}</a>
+            <a href="mailto:tsikyloharanontsoa@ala-mg.com?subject=Ala%20Investment%20Interest" style={{background:'transparent',color:'#EAE7E2',border:'1px solid #2E5E4E',padding:'8px 12px',borderRadius:8,fontWeight:700,textDecoration:'none'}}>{t('nav.invest')}</a>
           )}
         </div>
       </div>

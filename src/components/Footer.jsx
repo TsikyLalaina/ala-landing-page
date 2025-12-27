@@ -10,8 +10,8 @@ export default function Footer() {
         <div style={{display:'flex',flexWrap:'wrap',gap:12,alignItems:'center',justifyContent:'space-between'}}>
           <div style={{fontWeight:800}}>Ala</div>
           <div style={{display:'flex',gap:12}}>
-            <a href="mailto:invest@ala.mg?subject=Investor%20Deck%20Request" style={{color:'#C9A66B',textDecoration:'none'}}>{t('footer.request_deck')}</a>
-            <a href="mailto:invest@ala.mg" style={{color:'#EAE7E2',textDecoration:'none'}}>{t('footer.email_label')}: {t('footer.email_value')}</a>
+            <a href="mailto:tsikyloharanontsoa@ala-mg.com?subject=Investor%20Deck%20Request" style={{color:'#C9A66B',textDecoration:'none'}}>{t('footer.request_deck')}</a>
+            <a href="mailto:tsikyloharanontsoa@ala-mg.com" style={{color:'#EAE7E2',textDecoration:'none'}}>{t('footer.email_label')}: {t('footer.email_value')}</a>
             {canInstall && (
               <button onClick={() => promptInstall()} style={{background:'#C9A66B',color:'#0B3D2E',border:'1px solid #C9A66B',padding:'8px 12px',borderRadius:8,fontWeight:700}}>{t('nav.install')}</button>
             )}

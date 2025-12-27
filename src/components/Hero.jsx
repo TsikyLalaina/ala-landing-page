@@ -66,7 +66,7 @@ export default function Hero() {
               <button onClick={() => canInstall ? promptInstall() : window.open('#footer','_self')} style={{background:'#C9A66B',color:'#0B3D2E',border:'1px solid #C9A66B',padding:'12px 16px',borderRadius:10,fontWeight:700}}>
                 {t('hero.cta_install')}
               </button>
-              <a href="mailto:invest@ala.mg?subject=Ala%20Investment%20Interest" style={{background:'transparent',color:'#F2F1EE',border:'1px solid #2E5E4E',padding:'12px 16px',borderRadius:10,fontWeight:700,textDecoration:'none'}}>
+              <a href="mailto:tsikyloharanontsoa@ala-mg.com?subject=Ala%20Investment%20Interest" style={{background:'transparent',color:'#F2F1EE',border:'1px solid #2E5E4E',padding:'12px 16px',borderRadius:10,fontWeight:700,textDecoration:'none'}}>
                 {t('hero.cta_invest')}
               </a>
               <button onClick={handleListen} aria-pressed={speaking} style={{background:'transparent',color:'#F2F1EE',border:'1px solid #2E5E4E',padding:'12px 16px',borderRadius:10,fontWeight:700}}>
