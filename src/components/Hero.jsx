@@ -1,6 +1,7 @@
 import { Parallax } from 'react-parallax'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { useState, useCallback } from 'react'
 import useSpeech from '../hooks/useSpeech'
 import usePWAInstall from '../hooks/usePWAInstall'
@@ -9,6 +10,7 @@ export default function Hero() {
   const prefersReduced = useReducedMotion()
   const { t, i18n } = useTranslation()
   const { supported, speaking, speak, cancel } = useSpeech()
+
   const { canInstall, promptInstall } = usePWAInstall()
   const [faded, setFaded] = useState(prefersReduced)
 
@@ -63,12 +65,13 @@ export default function Hero() {
               whileInView={{opacity:1}}
               transition={{duration:0.6, delay:0.2}}
               style={{display:'flex',justifyContent:'center',gap:12,flexWrap:'wrap'}}>
-              <button onClick={() => canInstall ? promptInstall() : window.open('#footer','_self')} style={{background:'#C9A66B',color:'#0B3D2E',border:'1px solid #C9A66B',padding:'12px 16px',borderRadius:10,fontWeight:700}}>
+              <button onClick={() => canInstall ? promptInstall() : null} style={{background:'#C9A66B',color:'#0B3D2E',border:'1px solid #C9A66B',padding:'12px 16px',borderRadius:10,fontWeight:700}}>
                 {t('hero.cta_install')}
               </button>
-              <a href="mailto:tsikyloharanontsoa@ala-mg.com?subject=Ala%20Investment%20Interest" style={{background:'transparent',color:'#F2F1EE',border:'1px solid #2E5E4E',padding:'12px 16px',borderRadius:10,fontWeight:700,textDecoration:'none'}}>
+              <Link to="/signup" style={{background:'#4ADE80',color:'#0B3D2E',border:'none',padding:'12px 16px',borderRadius:10,fontWeight:700,textDecoration:'none'}}>
                 {t('hero.cta_invest')}
-              </a>
+              </Link>
+
               <button onClick={handleListen} aria-pressed={speaking} style={{background:'transparent',color:'#F2F1EE',border:'1px solid #2E5E4E',padding:'12px 16px',borderRadius:10,fontWeight:700}}>
                 {speaking ? '⏸ ' : '▶ '} {t('hero.listen')}
               </button>
