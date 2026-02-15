@@ -29,9 +29,26 @@ const INTEREST_OPTIONS = [
 
 const validatePhone = (phone) => {
   if (!phone) return true; // Optional
-  // Generic international or local format: matches +123... or 03... with length 8-15
-  const re = /^(\+|0)[0-9\s]{8,15}$/;
-  return re.test(phone.replace(/\s/g, ''));
+  
+  // Remove all spaces for validation
+  const cleaned = phone.replace(/\s/g, '');
+  
+  // Madagascar international format: +261XXXXXXXXX (13 chars with +, 12 digits)
+  // Madagascar local format: 0XXXXXXXXX (10 digits)
+  // Generic international: +XXXXXXXXXXXX (8-15 digits after +)
+  
+  if (cleaned.startsWith('+261')) {
+    // Madagascar international: must be exactly +261 followed by 9 digits
+    return /^\+261\d{9}$/.test(cleaned);
+  } else if (cleaned.startsWith('0')) {
+    // Madagascar local: must be 0 followed by 9 digits
+    return /^0\d{9}$/.test(cleaned);
+  } else if (cleaned.startsWith('+')) {
+    // Other international numbers: + followed by 8-15 digits
+    return /^\+\d{8,15}$/.test(cleaned);
+  }
+  
+  return false;
 };
 
 const Onboarding = () => {
@@ -124,22 +141,45 @@ const Onboarding = () => {
         // Auto-format phone number
         const cleaned = value.replace(/[^\d+\s()-]/g, '');
         
-        // If starts with +261 (Madagascar), format nicely
-        if (cleaned.startsWith('+261')) {
+        // If starts with +261 (Madagascar), format as +261 XX XX XXX XX
+        if (cleaned.startsWith('+261') || cleaned.startsWith('261')) {
           const digits = cleaned.replace(/\D/g, '');
+          
+          // Madagascar format: +261 XX XX XXX XX (country code + 9 digits)
           if (digits.length <= 3) {
             sanitizedValue = '+261';
           } else if (digits.length <= 5) {
+            // +261 34
             sanitizedValue = `+261 ${digits.slice(3)}`;
-          } else if (digits.length <= 8) {
+          } else if (digits.length <= 7) {
+            // +261 34 31
             sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5)}`;
-          } else if (digits.length <= 11) {
-            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 11)}`;
+          } else if (digits.length <= 10) {
+            // +261 34 31 708
+            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7)}`;
+          } else if (digits.length <= 12) {
+            // +261 34 31 708 39
+            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 10)} ${digits.slice(10, 12)}`;
           } else {
-            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 11)} ${digits.slice(11, 13)}`;
+            // Max length reached, don't add more
+            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 10)} ${digits.slice(10, 12)}`;
+          }
+        } else if (cleaned.startsWith('0')) {
+          // Local format starting with 0 (e.g., 034 31 708 39)
+          const digits = cleaned.replace(/\D/g, '');
+          if (digits.length <= 3) {
+            sanitizedValue = digits;
+          } else if (digits.length <= 5) {
+            sanitizedValue = `${digits.slice(0, 3)} ${digits.slice(3)}`;
+          } else if (digits.length <= 8) {
+            sanitizedValue = `${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5)}`;
+          } else if (digits.length <= 10) {
+            sanitizedValue = `${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)}`;
+          } else {
+            sanitizedValue = `${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)}`;
           }
         } else {
-          sanitizedValue = cleaned.slice(0, 20); // Max 20 characters for international
+          sanitizedValue = cleaned.slice(0, 20); // Max 20 characters for other international
         }
         break;
 
@@ -444,7 +484,7 @@ const Onboarding = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       onBlur={() => handleBlur('phone')}
-                      placeholder="+261 34 00 000 00"
+                      placeholder="+261 34 31 708 39"
                       style={getInputStyles('phone')}
                     />
                   </div>
