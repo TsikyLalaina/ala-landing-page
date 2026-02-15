@@ -424,10 +424,28 @@ const Profile = () => {
               <textarea 
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                style={{ width: '100%', height: 100, background: 'rgba(0,0,0,0.2)', border: '1px solid #4ADE80', borderRadius: 8, padding: 8, color: 'white' }}
+                style={{ 
+                  width: '100%', 
+                  height: 100, 
+                  background: 'rgba(0,0,0,0.2)', 
+                  border: '1px solid #4ADE80', 
+                  borderRadius: 8, 
+                  padding: 8, 
+                  color: 'white',
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  resize: 'vertical'
+                }}
               />
             ) : (
-              <p style={{ color: '#D7D4CE', lineHeight: 1.6 }}>{profile.bio || t('auth.profile.bio_placeholder')}</p>
+              <p style={{ 
+                color: '#D7D4CE', 
+                lineHeight: 1.6,
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap'
+              }}>{profile.bio || t('auth.profile.bio_placeholder')}</p>
             )}
             
             <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
