@@ -203,10 +203,7 @@ const Feed = () => {
             <span style={{ fontSize: 10 }}>Chat</span>
           </Link>
 
-          <Link to={`/profile/${user.id}`} style={{ color: '#F2F1EE', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
-            <User size={24} />
-            <span style={{ fontSize: 10 }}>Profile</span>
-          </Link>
+
 
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
