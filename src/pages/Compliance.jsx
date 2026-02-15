@@ -305,13 +305,13 @@ const Compliance = () => {
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         
                         {/* Type & Location */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                        <div className="compliance-grid" style={{ display: 'grid', gap: 12 }}>
                             <div>
                                 <label style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 'bold', color: '#A7C7BC' }}>Type</label>
                                 <select 
                                     value={form.activity_type} 
                                     onChange={e => setForm({...form, activity_type: e.target.value})}
-                                    style={{ width: '100%', padding: '10px', borderRadius: 8, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white' }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: 8, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white', boxSizing: 'border-box' }}
                                 >
                                     {activityTypes.map(type => (
                                         <option key={type.value} value={type.value}>{type.label}</option>
@@ -327,7 +327,7 @@ const Compliance = () => {
                                         value={form.location}
                                         onChange={e => setForm({...form, location: e.target.value})}
                                         placeholder="Site, Village..."
-                                        style={{ width: '100%', padding: '10px 10px 10px 34px', borderRadius: 8, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white' }}
+                                        style={{ width: '100%', padding: '10px 10px 10px 34px', borderRadius: 8, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white', boxSizing: 'border-box' }}
                                     />
                                 </div>
                             </div>
@@ -343,7 +343,7 @@ const Compliance = () => {
                                 <textarea 
                                     value={form.description}
                                     onChange={e => setForm({...form, description: e.target.value})}
-                                    style={{ width: '100%', minHeight: 120, padding: 12, paddingRight: 50, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: isRecording ? '1px solid #EF4444' : '1px solid #2E7D67', color: 'white', resize: 'vertical', lineHeight: 1.6 }}
+                                    style={{ width: '100%', minHeight: 120, padding: 12, paddingRight: 50, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: isRecording ? '1px solid #EF4444' : '1px solid #2E7D67', color: 'white', resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
                                     placeholder={isRecording ? "Listening..." : "Type or record details..."}
                                 />
                                 <button 
@@ -474,6 +474,8 @@ const Compliance = () => {
             </div>
             <style>{`
                 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+                .compliance-grid { grid-template-columns: 1fr; }
+                @media (min-width: 640px) { .compliance-grid { grid-template-columns: 1fr 1fr; } }
             `}</style>
         </div>
     );

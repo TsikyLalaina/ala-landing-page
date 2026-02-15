@@ -55,7 +55,8 @@ const Groups = () => {
         backdropFilter: 'blur(10px)',
         padding: '16px 20px',
         borderBottom: '1px solid #2E7D67',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        flexWrap: 'wrap', gap: 10
       }}>
         <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Users color="#4ADE80" /> {t('auth.groups.title') || 'Groups'}
@@ -68,7 +69,8 @@ const Groups = () => {
               padding: '8px 16px', borderRadius: 20, 
               textDecoration: 'none', fontWeight: 'bold',
               display: 'flex', alignItems: 'center', gap: 6,
-              fontSize: 14
+              fontSize: 14,
+              whiteSpace: 'nowrap'
             }}
           >
             <PlusSquare size={18} /> {t('auth.groups.create') || 'Create Group'}
@@ -92,7 +94,8 @@ const Groups = () => {
               padding: '12px 12px 12px 44px', 
               color: 'white', 
               fontSize: 16,
-              outline: 'none'
+              outline: 'none',
+              boxSizing: 'border-box'
             }}
           />
         </div>

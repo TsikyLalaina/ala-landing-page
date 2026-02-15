@@ -314,19 +314,19 @@ const GroupDetails = () => {
                     </div>
                 )}
 
-                <div style={{ background: 'rgba(13, 77, 58, 0.6)', borderRadius: 16, padding: 32, border: '1px solid #2E7D67', marginBottom: 24 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                        <div>
-                            <h1 style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>{group.name}</h1>
+                <div style={{ background: 'rgba(13, 77, 58, 0.6)', borderRadius: 16, padding: 24, border: '1px solid #2E7D67', marginBottom: 24 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 20 }}>
+                        <div style={{ flex: '1 1 300px' }}>
+                            <h1 style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8, wordBreak: 'break-word' }}>{group.name}</h1>
                             <p style={{ color: '#A7C7BC', fontSize: 16, lineHeight: 1.6, marginBottom: 16 }}>{group.description}</p>
-                            <div style={{ display: 'flex', gap: 16, fontSize: 14, color: '#A7C7BC' }}>
+                            <div style={{ display: 'flex', gap: 16, fontSize: 14, color: '#A7C7BC', flexWrap: 'wrap' }}>
                                 <span>{group.is_public ? 'Public Group' : 'Private Group'}</span>
                                 <span>Created by {group.creator?.name}</span>
                                 <span>{members.length} Members</span>
                             </div>
                         </div>
                         {user && (
-                            <div style={{ display: 'flex', gap: 10 }}>
+                            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                                 {isMember && (
                                     <button
                                         onClick={copyInviteLink}
@@ -335,7 +335,8 @@ const GroupDetails = () => {
                                             padding: '10px 16px', borderRadius: 24, 
                                             color: '#A7C7BC', cursor: 'pointer',
                                             display: 'flex', alignItems: 'center', gap: 8,
-                                            fontWeight: 'bold', fontSize: 14
+                                            fontWeight: 'bold', fontSize: 14,
+                                            whiteSpace: 'nowrap'
                                         }}
                                     >
                                         Share Invite
@@ -351,7 +352,8 @@ const GroupDetails = () => {
                                         color: user.id === group.creator_id ? '#4ADE80' : (status ? (status === 'pending' ? '#FBBF24' : '#F2F1EE') : '#0B3D2E'),
                                         border: user.id === group.creator_id ? '1px solid #4ADE80' : (status ? (status === 'pending' ? '1px solid #FBBF24' : '1px solid #EF4444') : 'none'),
                                         fontWeight: 'bold', 
-                                        cursor: (user.id === group.creator_id || joinLoading) ? 'default' : 'pointer'
+                                        cursor: (user.id === group.creator_id || joinLoading) ? 'default' : 'pointer',
+                                        whiteSpace: 'nowrap'
                                     }}
                                 >
                                     {status === 'pending' ? (
