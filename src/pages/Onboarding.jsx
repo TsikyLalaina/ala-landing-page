@@ -61,17 +61,30 @@ const Onboarding = () => {
     const newErrors = {};
     
     // Name
-    if (!data.name.trim()) newErrors.name = t('auth.validation.name_required');
-    else if (data.name.trim().length < 2) newErrors.name = t('auth.validation.name_min');
+    if (!data.name.trim()) {
+      newErrors.name = t('auth.validation.name_required');
+    } else if (data.name.trim().length < 2) {
+      newErrors.name = t('auth.validation.name_min');
+    } else if (data.name.trim().length > 100) {
+      newErrors.name = 'Name is too long (max 100 characters)';
+    } else if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(data.name.trim())) {
+      newErrors.name = 'Name can only contain letters, spaces, hyphens, and apostrophes';
+    }
+
+    // Username (Optional but validated if provided)
+    if (data.username) {
+      if (data.username.length < 3) {
+        newErrors.username = "Username must be at least 3 characters";
+      } else if (data.username.length > 30) {
+        newErrors.username = "Username is too long (max 30 characters)";
+      } else if (!/^[a-z][a-z0-9_-]*$/.test(data.username)) {
+        newErrors.username = "Username must start with a letter and contain only lowercase letters, numbers, _ or -";
+      }
+    }
 
     // Phone
     if (data.phone && !validatePhone(data.phone)) {
       newErrors.phone = t('auth.validation.phone_invalid');
-    }
-
-    // Username (Optional min length if exists)
-    if (data.username && data.username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
     }
 
     return newErrors;
@@ -82,10 +95,74 @@ const Onboarding = () => {
   }, [formData, validate]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    let sanitizedValue = value;
+
+    // Field-specific formatting and sanitization
+    switch (name) {
+      case 'name':
+        // Allow letters, spaces, hyphens, apostrophes only
+        // Remove any numbers or special characters except space, hyphen, apostrophe
+        sanitizedValue = value
+          .replace(/[^a-zA-ZÀ-ÿ\s'-]/g, '') // Keep only letters, accented chars, space, hyphen, apostrophe
+          .replace(/\s{2,}/g, ' ') // Replace multiple spaces with single space
+          .slice(0, 100); // Max 100 characters
+        break;
+
+      case 'username':
+        // Allow lowercase letters, numbers, underscores, hyphens only
+        // Auto-convert to lowercase and remove invalid chars
+        sanitizedValue = value
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]/g, '')
+          .replace(/^[^a-z]+/, '') // Username must start with a letter
+          .slice(0, 30); // Max 30 characters
+        break;
+
+      case 'phone':
+        // Allow only digits, +, spaces, hyphens, parentheses
+        // Auto-format phone number
+        const cleaned = value.replace(/[^\d+\s()-]/g, '');
+        
+        // If starts with +261 (Madagascar), format nicely
+        if (cleaned.startsWith('+261')) {
+          const digits = cleaned.replace(/\D/g, '');
+          if (digits.length <= 3) {
+            sanitizedValue = '+261';
+          } else if (digits.length <= 5) {
+            sanitizedValue = `+261 ${digits.slice(3)}`;
+          } else if (digits.length <= 8) {
+            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5)}`;
+          } else if (digits.length <= 11) {
+            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 11)}`;
+          } else {
+            sanitizedValue = `+261 ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 11)} ${digits.slice(11, 13)}`;
+          }
+        } else {
+          sanitizedValue = cleaned.slice(0, 20); // Max 20 characters for international
+        }
+        break;
+
+      case 'bio':
+        // Allow most characters but limit length
+        sanitizedValue = value.slice(0, 500); // Max 500 characters
+        break;
+
+      default:
+        sanitizedValue = value;
+    }
+
+    setFormData({ ...formData, [name]: sanitizedValue });
   };
 
   const handleBlur = (field) => {
+    // Trim whitespace on blur for name and bio
+    if (field === 'name' || field === 'bio') {
+      setFormData(prev => ({
+        ...prev,
+        [field]: prev[field].trim()
+      }));
+    }
     setTouched({ ...touched, [field]: true });
   };
 
@@ -371,6 +448,11 @@ const Onboarding = () => {
                       style={getInputStyles('phone')}
                     />
                   </div>
+                  {!touched.phone && !formData.phone && (
+                    <p style={{ color: '#6B9B8A', fontSize: '12px', marginTop: '6px', fontStyle: 'italic' }}>
+                      Start with +261 for auto-formatting
+                    </p>
+                  )}
                   {touched.phone && errors.phone && (
                     <motion.p 
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
@@ -463,7 +545,12 @@ const Onboarding = () => {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>{t('auth.bio')}</label>
+                  <label style={labelStyle}>
+                    {t('auth.bio')}
+                    <span style={{ fontSize: '12px', color: '#6B9B8A' }}>
+                      {formData.bio.length}/500
+                    </span>
+                  </label>
                   <div style={{ position: 'relative' }}>
                     <FileText style={{ ...iconStyle, top: '20px', transform: 'none' }} />
                     <textarea 
