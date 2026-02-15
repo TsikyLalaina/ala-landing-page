@@ -122,7 +122,7 @@ const CreateAlert = () => {
     };
 
     const selectedCrisis = crisisTypes.find(c => c.value === formData.crisis_type);
-    const inputStyle = { width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 };
+    const inputStyle = { width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' };
     const severityColors = ['', '#4ADE80', '#FBBF24', '#F97316', '#EF4444', '#DC2626'];
 
     return (
@@ -151,7 +151,7 @@ const CreateAlert = () => {
                     {/* Crisis Type */}
                     <div>
                         <label style={{ display: 'block', marginBottom: 10, fontWeight: 'bold' }}>Crisis Type</label>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 8 }}>
                             {crisisTypes.map(ct => (
                                 <button
                                     key={ct.value}
@@ -175,8 +175,8 @@ const CreateAlert = () => {
                     </div>
 
                     {/* Alert Type & Severity */}
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Alert Level</label>
                             <select name="alert_type" value={formData.alert_type} onChange={handleInputChange} style={inputStyle}>
                                 <option value="info">ℹ️ Info</option>
@@ -185,7 +185,7 @@ const CreateAlert = () => {
                                 <option value="critical">🔴 Critical</option>
                             </select>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
                                 Severity: <span style={{ color: severityColors[formData.severity] }}>{formData.severity}/5</span>
                             </label>
@@ -219,12 +219,12 @@ const CreateAlert = () => {
                     </div>
 
                     {/* Affected Area */}
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <div style={{ flex: 2 }}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '2 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Affected Area</label>
                             <input name="affected_area" value={formData.affected_area} onChange={handleInputChange} placeholder="e.g., SAVA Region" style={inputStyle} />
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: '1 1 120px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Radius (km)</label>
                             <input name="affected_radius_km" type="number" value={formData.affected_radius_km} onChange={handleInputChange} placeholder="10" style={inputStyle} />
                         </div>

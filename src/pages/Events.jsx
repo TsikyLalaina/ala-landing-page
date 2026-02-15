@@ -215,25 +215,25 @@ const Events = () => {
                         <form onSubmit={handleCreate} style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>Title</label>
-                                <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white' }} />
+                                <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white', boxSizing: 'border-box' }} />
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>Description</label>
-                                <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={3} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white' }} />
+                                <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={3} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white', boxSizing: 'border-box' }} />
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>Start</label>
-                                    <input type="datetime-local" required value={formData.start_time} onChange={e => setFormData({...formData, start_time: e.target.value})} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white' }} />
+                                    <input type="datetime-local" required value={formData.start_time} onChange={e => setFormData({...formData, start_time: e.target.value})} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white', boxSizing: 'border-box' }} />
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>End</label>
-                                    <input type="datetime-local" value={formData.end_time} onChange={e => setFormData({...formData, end_time: e.target.value})} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white' }} />
+                                    <input type="datetime-local" value={formData.end_time} onChange={e => setFormData({...formData, end_time: e.target.value})} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white', boxSizing: 'border-box' }} />
                                 </div>
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>Location</label>
-                                <input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} placeholder="e.g. Community Center or Online" style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white' }} />
+                                <input value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} placeholder="e.g. Community Center or Online" style={{ width: '100%', padding: 12, borderRadius: 12, background: 'rgba(0,0,0,0.2)', border: '1px solid #2E7D67', color: 'white', boxSizing: 'border-box' }} />
                             </div>
                             <button type="submit" disabled={creating} style={{ background: '#4ADE80', color: '#0B3D2E', padding: 16, borderRadius: 12, fontWeight: 'bold', border: 'none', cursor: 'pointer', marginTop: 10, display: 'flex', justifyContent: 'center' }}>
                                 {creating ? <Loader2 className="animate-spin" /> : 'Create Event'}

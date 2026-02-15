@@ -131,7 +131,7 @@ const FileGrievance = () => {
         }
     };
 
-    const inputStyle = { width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 };
+    const inputStyle = { width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' };
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
@@ -173,14 +173,14 @@ const FileGrievance = () => {
                     </div>
 
                     {/* Category & Priority */}
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Category</label>
                             <select name="category" value={formData.category} onChange={handleInputChange} style={inputStyle}>
                                 {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                             </select>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Priority</label>
                             <select name="priority" value={formData.priority} onChange={handleInputChange} style={inputStyle}>
                                 <option value="low">Low</option>

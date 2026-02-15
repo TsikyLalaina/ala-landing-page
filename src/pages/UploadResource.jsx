@@ -162,7 +162,7 @@ const UploadResource = () => {
                     {/* Resource Type Selector */}
                     <div>
                         <label style={{ display: 'block', marginBottom: 10, fontWeight: 'bold' }}>Resource Type</label>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 10 }}>
                             {types.map(type => (
                                 <button
                                     key={type.value}
@@ -229,7 +229,7 @@ const UploadResource = () => {
                             value={formData.title}
                             onChange={handleInputChange}
                             placeholder="e.g., How to Grow Shade Trees for Vanilla"
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                             required
                         />
                     </div>
@@ -244,24 +244,24 @@ const UploadResource = () => {
                             value={formData.content_url}
                             onChange={handleInputChange}
                             placeholder={formData.type === 'video' ? 'https://youtube.com/watch?v=...' : 'https://...'}
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                         />
                     </div>
 
                     {/* Category & Language */}
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Category</label>
                             <select
                                 name="category"
                                 value={formData.category}
                                 onChange={handleInputChange}
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                             >
                                 {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                             </select>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <Globe size={16} /> Language
                             </label>
@@ -269,7 +269,7 @@ const UploadResource = () => {
                                 name="language"
                                 value={formData.language}
                                 onChange={handleInputChange}
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                             >
                                 <option value="en">🇬🇧 English</option>
                                 <option value="fr">🇫🇷 Français</option>
@@ -288,7 +288,7 @@ const UploadResource = () => {
                             value={formData.duration}
                             onChange={handleInputChange}
                             placeholder={formData.type === 'video' ? '12:30' : '5 min read'}
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                         />
                     </div>
 
@@ -303,7 +303,7 @@ const UploadResource = () => {
                             onChange={handleInputChange}
                             placeholder="Write the full article/guide content, or a summary for videos..."
                             rows={8}
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, resize: 'vertical', lineHeight: 1.6 }}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
                             required
                         />
                     </div>
@@ -334,7 +334,7 @@ const UploadResource = () => {
                                 onChange={e => setTagInput(e.target.value)}
                                 onKeyDown={handleTagKeyDown}
                                 placeholder="Add a tag and press Enter"
-                                style={{ flex: 1, padding: '10px 12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 14 }}
+                                style={{ flex: 1, padding: '10px 12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 14, boxSizing: 'border-box', minWidth: '150px' }}
                             />
                             <button
                                 type="button"

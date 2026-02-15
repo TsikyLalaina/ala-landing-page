@@ -205,14 +205,14 @@ const CreateListing = () => {
                             value={formData.title}
                             onChange={handleInputChange}
                             placeholder="e.g., Premium Bourbon Vanilla"
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                             required
                         />
                     </div>
 
                     {/* Unit Price & Currency */}
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <div style={{ flex: 2 }}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '2 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
                                 Unit Price (per {formData.category === 'vanilla' || formData.category === 'spices' ? 'kg' : 'item'}) *
                             </label>
@@ -223,20 +223,20 @@ const CreateListing = () => {
                                 value={formData.price}
                                 onChange={handleInputChange}
                                 placeholder="e.g., 25000"
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                                 required
                             />
                             <div style={{ fontSize: 12, color: '#A7C7BC', marginTop: 4 }}>
                                 Price for one {formData.category === 'vanilla' || formData.category === 'spices' ? 'kilogram' : 'item'}
                             </div>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: '1 1 120px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Currency</label>
                             <select
                                 name="currency"
                                 value={formData.currency}
                                 onChange={handleInputChange}
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                             >
                                 {currencies.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
@@ -255,7 +255,7 @@ const CreateListing = () => {
                             value={formData.quantity}
                             onChange={handleInputChange}
                             placeholder="e.g., 5"
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                         />
                         <div style={{ fontSize: 12, color: '#A7C7BC', marginTop: 4 }}>
                             Total amount you're selling
@@ -286,25 +286,25 @@ const CreateListing = () => {
                     )}
 
                     {/* Category & Type */}
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Category</label>
                             <select
                                 name="category"
                                 value={formData.category}
                                 onChange={handleInputChange}
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                             >
                                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: '1 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Listing Type</label>
                             <select
                                 name="listing_type"
                                 value={formData.listing_type}
                                 onChange={handleInputChange}
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                             >
                                 <option value="fixed">Fixed Price</option>
                                 <option value="auction">Auction (Bidding)</option>
@@ -321,7 +321,7 @@ const CreateListing = () => {
                                 type="datetime-local"
                                 value={formData.expires_at}
                                 onChange={handleInputChange}
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16 }}
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
                                 required={formData.listing_type === 'auction'}
                             />
                         </div>
@@ -336,7 +336,7 @@ const CreateListing = () => {
                             onChange={handleInputChange}
                             placeholder="Describe your item..."
                             rows={5}
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, resize: 'vertical' }}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, resize: 'vertical', boxSizing: 'border-box' }}
                         />
                     </div>
 
