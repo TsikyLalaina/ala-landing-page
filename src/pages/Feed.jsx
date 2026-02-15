@@ -6,18 +6,19 @@ import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import { 
   Heart, MessageCircle, Share2, MapPin, Loader2,
-  Home, PlusSquare, User, LogOut, Users, ShoppingCart, BookOpen, Scale, Radio, ClipboardList, Calendar
+  Home, PlusSquare, User, LogOut, Users, ShoppingCart, BookOpen, Scale, Radio, ClipboardList, Calendar, Menu, X
 } from 'lucide-react';
 
 const Feed = () => {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [likedPosts, setLikedPosts] = useState(new Set());
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const PAGE_SIZE = 5;
 
@@ -180,63 +181,113 @@ const Feed = () => {
           <h1 style={{ fontSize: 20, fontWeight: 'bold', color: '#F2F1EE', margin: 0, display: 'none', sm: 'block' }}>Ala</h1>
         </div>
 
-        {/* Icons Navigation */}
+        {/* Primary Navigation (Visible) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Link to="/feed" style={{ color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Home size={28} strokeWidth={2.5} />
+          <Link to="/feed" style={{ color: '#4ADE80', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+            <Home size={24} strokeWidth={2.5} />
+            <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
           </Link>
 
-          <Link to="/groups" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Users size={28} />
+          <Link to="/groups" style={{ color: '#F2F1EE', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+            <Users size={24} />
+            <span style={{ fontSize: 10 }}>Groups</span>
           </Link>
           
-          <Link to="/new-post" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <PlusSquare size={28} />
+          <Link to="/new-post" style={{ color: '#4ADE80', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+            <PlusSquare size={24} />
+            <span style={{ fontSize: 10 }}>Post</span>
           </Link>
 
-          <Link to="/marketplace" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ShoppingCart size={28} />
+          <Link to="/messages" style={{ color: '#F2F1EE', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+            <MessageCircle size={24} />
+            <span style={{ fontSize: 10 }}>Chat</span>
           </Link>
 
-          <Link to="/resources" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BookOpen size={28} />
-          </Link>
-
-          <Link to="/grievances" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Scale size={28} />
-          </Link>
-
-          <Link to="/crisis" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Radio size={28} />
-          </Link>
-
-          <Link to="/compliance" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ClipboardList size={28} />
-          </Link>
-
-          <Link to="/messages" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <MessageCircle size={28} />
-          </Link>
-
-          <Link to="/events" style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Calendar size={28} />
-          </Link>
-
-          <Link to={`/profile/${user.id}`} style={{ color: '#F2F1EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <User size={28} />
+          <Link to={`/profile/${user.id}`} style={{ color: '#F2F1EE', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+            <User size={24} />
+            <span style={{ fontSize: 10 }}>Profile</span>
           </Link>
 
           <button 
-            onClick={handleLogout}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             style={{ 
               background: 'transparent', border: 'none', 
               color: '#F2F1EE', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: 0
             }}
           >
-            <LogOut size={26} />
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <span style={{ fontSize: 10 }}>More</span>
           </button>
         </div>
+
+        {/* Secondary Navigation (Dropdown Menu) */}
+        {isMenuOpen && (
+          <div style={{
+            position: 'absolute',
+            top: '100%', right: 0,
+            width: 250,
+            background: 'rgba(11, 61, 46, 0.98)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid #2E7D67',
+            borderTop: 'none',
+            borderBottomLeftRadius: 16,
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
+            padding: '16px',
+            display: 'flex', flexDirection: 'column', gap: 8
+          }}>
+            <div style={{ paddingBottom: 12, marginBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: 12 }}>
+                 <Link to={`/profile/${user.id}`} style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: 'white', flex: 1 }} onClick={() => setIsMenuOpen(false)}>
+                    {profile?.avatar_url || user.user_metadata?.avatar_url ? (
+                        <img src={profile?.avatar_url || user.user_metadata.avatar_url} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                    ) : (
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2E7D67', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={16} /></div>
+                    )}
+                    <div>
+                        <div style={{ fontWeight: 'bold', fontSize: 14 }}>{profile?.name || user.user_metadata?.name || 'User'}</div>
+                        <div style={{ fontSize: 12, color: '#A7C7BC' }}>View Profile</div>
+                    </div>
+                 </Link>
+            </div>
+
+            <Link to="/marketplace" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px', color: '#F2F1EE', textDecoration: 'none', borderRadius: 8, transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <ShoppingCart size={20} color="#C9A66B" /> Marketplace
+            </Link>
+
+            <Link to="/resources" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px', color: '#F2F1EE', textDecoration: 'none', borderRadius: 8, transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <BookOpen size={20} color="#60A5FA" /> Resources
+            </Link>
+
+            <Link to="/events" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px', color: '#F2F1EE', textDecoration: 'none', borderRadius: 8, transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <Calendar size={20} color="#F472B6" /> Events
+            </Link>
+
+            <Link to="/grievances" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px', color: '#F2F1EE', textDecoration: 'none', borderRadius: 8, transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <Scale size={20} color="#F87171" /> Grievances
+            </Link>
+            
+            <Link to="/crisis" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px', color: '#F2F1EE', textDecoration: 'none', borderRadius: 8, transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <Radio size={20} color="#EF4444" /> Crisis Alerts
+            </Link>
+
+            <Link to="/compliance" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px', color: '#F2F1EE', textDecoration: 'none', borderRadius: 8, transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <ClipboardList size={20} color="#34D399" /> Compliance
+            </Link>
+
+            <button 
+              onClick={() => { setIsMenuOpen(false); handleLogout(); }}
+              style={{
+                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px',
+                 background: 'transparent', border: 'none',
+                 color: '#EF4444', cursor: 'pointer',
+                 width: '100%', textAlign: 'left',
+                 marginTop: 8, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16
+              }}
+            >
+              <LogOut size={20} /> Logout
+            </button>
+          </div>
+        )}
       </div>
 
       <div style={{ maxWidth: 600, margin: '0 auto', padding: '20px 0' }}>
