@@ -176,7 +176,7 @@ const Messages = () => {
                 <div style={{ padding: 12 }}>
                     <div style={{ position: 'relative' }}>
                         <Search size={16} style={{ position: 'absolute', left: 12, top: 12, color: '#A7C7BC' }} />
-                        <input placeholder="Search conversations..." style={{ width: '100%', padding: '10px 10px 10px 36px', borderRadius: 20, border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white' }} />
+                        <input placeholder="Search conversations..." style={{ width: '100%', padding: '10px 10px 10px 36px', borderRadius: 20, border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', boxSizing: 'border-box', outline: 'none' }} />
                     </div>
                 </div>
 
