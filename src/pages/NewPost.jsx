@@ -111,6 +111,12 @@ const NewPost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast.error(t('auth.errors.login_required') || 'You must be logged in');
+      return;
+    }
+
     if (!content.trim() && mediaFiles.length === 0) {
       toast.error('Post cannot be empty');
       return;
@@ -119,23 +125,43 @@ const NewPost = () => {
     setLoading(true);
 
     try {
-      // 1. Upload Media
+      // 1. Upload Media (Concurrent with Timeout)
       const uploadedUrls = [];
-      for (const file of mediaFiles) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}_${Math.random()}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('post_media')
-          .upload(fileName, file);
+      
+      if (mediaFiles.length > 0) {
+        const uploadPromises = mediaFiles.map(async (file) => {
+          // Sanitize file name
+          const fileExt = file.name.split('.').pop();
+          const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_');
+          const fileName = `${user.id}/${Date.now()}_${cleanName}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('post_media')
+            .upload(fileName, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
 
-        if (uploadError) throw uploadError;
+          if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('post_media')
-          .getPublicUrl(fileName);
+          const { data } = supabase.storage
+            .from('post_media')
+            .getPublicUrl(fileName);
+            
+          return data.publicUrl;
+        });
+
+        // 30s timeout for uploads
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Media upload timed out. Please check your connection.')), 30000)
+        );
+
+        const results = await Promise.race([
+          Promise.all(uploadPromises),
+          timeoutPromise
+        ]);
         
-        uploadedUrls.push(publicUrl);
+        uploadedUrls.push(...results);
       }
 
       // 2. Process Hashtags
@@ -166,8 +192,16 @@ const NewPost = () => {
         navigate('/feed');
       }
     } catch (error) {
-      console.error(error);
-      toast.error(error.message || 'Failed to create post');
+      console.error('Post creation error:', error);
+      
+      // Handle specific Supabase Storage errors
+      if (error.message && error.message.includes('Bucket not found')) {
+        toast.error('System error: Media storage bucket missing. Contact admin.');
+      } else if (error.statusCode === '413') {
+        toast.error('File too large. Please upload smaller files.');
+      } else {
+        toast.error(error.message || 'Failed to create post');
+      }
     } finally {
       setLoading(false);
     }
@@ -321,7 +355,10 @@ const NewPost = () => {
                     type="file" 
                     multiple 
                     accept="image/*,video/*" 
-                    onChange={handleMediaSelect}
+                    onChange={(e) => {
+                      handleMediaSelect(e);
+                      e.target.value = null;
+                    }}
                     hidden
                   />
                 </label>
