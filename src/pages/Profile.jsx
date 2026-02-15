@@ -47,6 +47,7 @@ const Profile = () => {
   const [editing, setEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [bioExpanded, setBioExpanded] = useState(false);
 
   // Follow Feature State
   const [isFollowing, setIsFollowing] = useState(false);
@@ -438,14 +439,43 @@ const Profile = () => {
                 }}
               />
             ) : (
-              <p style={{ 
-                color: '#D7D4CE', 
-                lineHeight: 1.6,
-                wordWrap: 'break-word',
-                overflowWrap: 'break-word',
-                wordBreak: 'break-word',
-                whiteSpace: 'pre-wrap'
-              }}>{profile.bio || t('auth.profile.bio_placeholder')}</p>
+              <>
+                <p style={{ 
+                  color: '#D7D4CE', 
+                  lineHeight: 1.6,
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  margin: 0,
+                  ...(profile.bio && profile.bio.length > 150 && !bioExpanded ? {
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  } : {})
+                }}>
+                  {profile.bio || t('auth.profile.bio_placeholder')}
+                </p>
+                {profile.bio && profile.bio.length > 150 && (
+                  <button
+                    onClick={() => setBioExpanded(!bioExpanded)}
+                    style={{
+                      marginTop: 8,
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#4ADE80',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      fontWeight: '500',
+                      padding: 0,
+                      textAlign: 'left'
+                    }}
+                  >
+                    {bioExpanded ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </>
             )}
             
             <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
