@@ -15,10 +15,11 @@ export const AuthProvider = ({ children }) => {
         .from('users')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching profile:', error);
+        return null;
       }
       return data;
     } catch (err) {
