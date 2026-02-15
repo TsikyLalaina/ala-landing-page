@@ -201,7 +201,7 @@ const GroupDetails = () => {
     };
 
     const copyInviteLink = () => {
-        const link = `${window.location.origin}/group/${id}?invite=${group.invitation_code}`;
+        const link = `https://ala-mg.com/group/${id}?invite=${group.invitation_code}`;
         navigator.clipboard.writeText(link);
         toast.success('Invite link copied!');
     };
