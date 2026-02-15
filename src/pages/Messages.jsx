@@ -286,8 +286,18 @@ const Messages = () => {
                                     placeholder="Type a message..."
                                     style={{ flex: 1, padding: '12px 16px', borderRadius: 24, border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none' }}
                                 />
-                                <button type="submit" disabled={sending || !newMessage.trim()} style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: '50%', width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: sending ? 0.7 : 1 }}>
-                                    {sending ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
+                                <button 
+                                    type="submit" 
+                                    disabled={sending || !newMessage.trim()} 
+                                    style={{ 
+                                        background: 'transparent', 
+                                        border: 'none', 
+                                        padding: 8,
+                                        cursor: !newMessage.trim() || sending ? 'not-allowed' : 'pointer',
+                                        opacity: sending || !newMessage.trim() ? 0.5 : 1
+                                    }}
+                                >
+                                    {sending ? <Loader2 className="animate-spin" size={24} color="#4ADE80" /> : <Send size={28} color="#4ADE80" />}
                                 </button>
                             </form>
                         </div>

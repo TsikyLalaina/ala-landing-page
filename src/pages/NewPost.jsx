@@ -6,7 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import { 
-  Image as ImageIcon, Trash2, Send, Loader2, Hash, Tag, ArrowLeft, Users 
+  Image as ImageIcon, X, Send, Loader2, Hash, Tag, ArrowLeft, Users 
 } from 'lucide-react';
 
 
@@ -46,24 +46,15 @@ const MediaPreview = ({ file, url, onRemove }) => {
         style={{
           position: 'absolute',
           top: 4, right: 4,
-          background: 'rgba(0,0,0,0.6)',
-          color: 'white',
+          background: 'transparent',
           border: 'none',
-          borderRadius: '50%',
-          width: 24, height: 24,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 4,
           cursor: 'pointer',
-          transition: 'all 0.2s',
-          zIndex: 10
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#EF4444'; 
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'rgba(0,0,0,0.6)';
+          zIndex: 10,
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
         }}
       >
-        <Trash2 size={16} color="white" style={{ width: '16px', height: '16px' }} />
+        <X size={24} color="white" strokeWidth={2.5} />
       </button>
 
       {isVideo && !loading && (
