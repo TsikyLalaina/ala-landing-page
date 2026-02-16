@@ -375,17 +375,14 @@ const GroupPostDetails = () => {
              onClick={() => handleCreateComment(null)}
              disabled={!newComment.trim() || sending}
              style={{ 
-               background: '#4ADE80', 
-               color: '#0B3D2E', 
+               background: 'transparent', 
                border: 'none', 
-               borderRadius: '50%', 
-               width: 42, height: 42, 
-               display: 'flex', alignItems: 'center', justifyContent: 'center',
-               cursor: 'pointer',
-               opacity: sending ? 0.7 : 1
+               padding: 8,
+               cursor: !newComment.trim() || sending ? 'not-allowed' : 'pointer',
+               opacity: !newComment.trim() || sending ? 0.5 : 1
              }}
            >
-             {sending ? <Loader2 size={20} className="animate-spin" color="#0B3D2E" /> : <SendHorizontal size={20} color="#0B3D2E" />}
+             {sending ? <Loader2 size={24} style={{ animation: 'spin 1s linear infinite' }} color="#4ADE80" /> : <SendHorizontal size={28} color="#4ADE80" />}
            </button>
         </div>
       </div>
