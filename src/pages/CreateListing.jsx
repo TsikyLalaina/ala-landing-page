@@ -21,6 +21,7 @@ const CreateListing = () => {
         category: 'vanilla',
         listing_type: 'fixed',
         quantity: '',
+        min_order_quantity: '1',
         expires_at: '',
         image_urls: []
     });
@@ -97,6 +98,7 @@ const CreateListing = () => {
                 currency: formData.currency,
                 category: formData.category,
                 listing_type: formData.listing_type,
+                min_order_quantity: parseFloat(formData.min_order_quantity) || 1,
                 image_urls: formData.image_urls.length > 0 ? formData.image_urls : null,
                 status: 'active',
                 quantity: formData.quantity ? parseFloat(formData.quantity) : null,
@@ -244,22 +246,43 @@ const CreateListing = () => {
                         </div>
                     </div>
 
-                    {/* Quantity */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
-                            Quantity Available ({formData.category === 'vanilla' || formData.category === 'spices' ? 'kg' : 'items'})
-                        </label>
-                        <input
-                            name="quantity"
-                            type="number"
-                            step="0.001"
-                            value={formData.quantity}
-                            onChange={handleInputChange}
-                            placeholder="e.g., 5"
-                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
-                        />
-                        <div style={{ fontSize: 12, color: '#A7C7BC', marginTop: 4 }}>
-                            Total amount you're selling
+
+
+                    {/* Quantity & Minimum Order */}
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 200px' }}>
+                            <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
+                                Total Quantity Available ({formData.category === 'vanilla' || formData.category === 'spices' ? 'kg' : 'items'})
+                            </label>
+                            <input
+                                name="quantity"
+                                type="number"
+                                step="0.001"
+                                value={formData.quantity}
+                                onChange={handleInputChange}
+                                placeholder="e.g., 5"
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
+                            />
+                            <div style={{ fontSize: 12, color: '#A7C7BC', marginTop: 4 }}>
+                                Total stock you have
+                            </div>
+                        </div>
+                        <div style={{ flex: '1 1 200px' }}>
+                            <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
+                                Minimum Order ({formData.category === 'vanilla' || formData.category === 'spices' ? 'kg' : 'items'})
+                            </label>
+                            <input
+                                name="min_order_quantity"
+                                type="number"
+                                step="0.001"
+                                value={formData.min_order_quantity}
+                                onChange={handleInputChange}
+                                placeholder="e.g., 1"
+                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
+                            />
+                            <div style={{ fontSize: 12, color: '#A7C7BC', marginTop: 4 }}>
+                                Minimum amount a buyer can purchase
+                            </div>
                         </div>
                     </div>
 

@@ -15,6 +15,7 @@ const ListingDetails = () => {
     const [bids, setBids] = useState([]);
     const [loading, setLoading] = useState(true);
     const [bidAmount, setBidAmount] = useState('');
+    const [purchaseQuantity, setPurchaseQuantity] = useState(1);
     const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
@@ -43,7 +44,10 @@ const ListingDetails = () => {
                 .single();
 
             if (error) throw error;
+            if (error) throw error;
             setListing(data);
+            // Set initial purchase quantity to min order or 1
+            if (data.min_order_quantity) setPurchaseQuantity(data.min_order_quantity);
             if (data.listing_type === 'auction') {
                 fetchBids();
             }
@@ -70,8 +74,24 @@ const ListingDetails = () => {
             toast.error('Please login to buy items');
             return;
         }
+
+        const qty = parseFloat(purchaseQuantity);
+        const minQty = listing.min_order_quantity || 1;
+        
+        if (isNaN(qty) || qty < minQty) {
+            toast.error(`Minimum order quantity is ${minQty}`);
+            return;
+        }
+
+        if (listing.quantity && qty > listing.quantity) {
+             toast.error(`Only ${listing.quantity} available`);
+             return;
+        }
+
         setProcessing(true);
         try {
+            const totalAmount = qty * listing.price;
+
             // 1. Create Transaction Log
             const { error: txError } = await supabase
                 .from('transactions')
@@ -79,24 +99,35 @@ const ListingDetails = () => {
                     listing_id: id,
                     seller_id: listing.seller_id,
                     buyer_id: user.id,
-                    amount: listing.price,
+                    amount: totalAmount,
+                    quantity: qty,
                     currency: listing.currency
                 });
             if (txError) throw txError;
 
-            // 2. Update Listing Status
+            // 2. Update Listing Status or Quantity
+            let updateData = {};
+            if (listing.quantity) {
+                const newQty = listing.quantity - qty;
+                updateData = { 
+                    quantity: newQty,
+                    status: newQty <= 0 ? 'sold' : 'active',
+                    sold_at: newQty <= 0 ? new Date().toISOString() : null
+                };
+            } else {
+                 // If no quantity tracking (legacy), just mark sold
+                 updateData = { status: 'sold', sold_at: new Date().toISOString() };
+            }
+
             const { error: updateError } = await supabase
                 .from('marketplace_listings')
-                .update({ 
-                    status: 'sold',
-                    sold_at: new Date().toISOString()
-                })
+                .update(updateData)
                 .eq('id', id);
             
             if (updateError) throw updateError;
 
             toast.success('Item purchased successfully!');
-            fetchListingDetails(); // Refresh to show sold status
+            fetchListingDetails(); // Refresh
         } catch (error) {
             console.error('Error purchasing:', error);
             toast.error('Purchase failed');
@@ -216,8 +247,14 @@ const ListingDetails = () => {
                             <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: 24, fontSize: 14 }}>
                                 {listing.quantity && (
                                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                        <span style={{ color: '#A7C7BC', fontWeight: 'bold' }}>Quantity</span>
+                                        <span style={{ color: '#A7C7BC', fontWeight: 'bold' }}>Available</span>
                                         <span style={{ color: '#F2F1EE' }}>{listing.quantity} {listing.category === 'vanilla' || listing.category === 'spices' ? 'kg' : 'items'}</span>
+                                    </div>
+                                )}
+                                {listing.min_order_quantity > 1 && (
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ color: '#A7C7BC', fontWeight: 'bold' }}>Min Order</span>
+                                        <span style={{ color: '#F2F1EE' }}>{listing.min_order_quantity} {listing.category === 'vanilla' || listing.category === 'spices' ? 'kg' : 'items'}</span>
                                     </div>
                                 )}
                                 {listing.expires_at && (
@@ -267,13 +304,34 @@ const ListingDetails = () => {
                             {!isOwner && !isSold && (
                                 <>
                                     {listing.listing_type === 'fixed' ? (
-                                        <button 
-                                            onClick={handleBuyNow}
-                                            disabled={processing}
-                                            style={{ width: '100%', background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 12, padding: 16, fontSize: 18, fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-                                        >
-                                            <ShoppingBag /> Buy Now
-                                        </button>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <label style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 'bold', color: '#A7C7BC' }}>
+                                                        Quantity ({listing.category === 'vanilla' || listing.category === 'spices' ? 'kg' : 'items'})
+                                                    </label>
+                                                    <input 
+                                                        type="number"
+                                                        step="0.001"
+                                                        value={purchaseQuantity}
+                                                        onChange={(e) => setPurchaseQuantity(e.target.value)}
+                                                        min={listing.min_order_quantity || 1}
+                                                        max={listing.quantity}
+                                                        style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', boxSizing: 'border-box' }}
+                                                    />
+                                                </div>
+                                                <div style={{ paddingBottom: 12, fontSize: 18, fontWeight: 'bold', color: '#4ADE80' }}>
+                                                     = {(purchaseQuantity * listing.price).toLocaleString()} {listing.currency}
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={handleBuyNow}
+                                                disabled={processing}
+                                                style={{ width: '100%', background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 12, padding: 16, fontSize: 18, fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                                            >
+                                                <ShoppingBag /> Purchase
+                                            </button>
+                                        </div>
                                     ) : (
                                         <form onSubmit={handlePlaceBid} style={{ display: 'flex', gap: 10 }}>
                                             <input 
