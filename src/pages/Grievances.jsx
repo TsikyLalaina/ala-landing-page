@@ -81,28 +81,28 @@ const Grievances = () => {
                 padding: '16px 20px',
                 borderBottom: '1px solid #2E7D67',
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                            <ArrowLeft size={24} />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                        <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4, flexShrink: 0 }}>
+                            <ArrowLeft size={22} />
                         </button>
-                        <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>
-                            <Scale size={20} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+                        <h1 style={{ fontSize: 17, fontWeight: 'bold', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <Scale size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} />
                             Conflict Resolution
                         </h1>
                     </div>
                     {user && (
                         <button 
                             onClick={() => navigate('/file-grievance')}
-                            style={{ background: '#F97316', color: 'white', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+                            style={{ background: '#F97316', color: 'white', border: 'none', borderRadius: 20, padding: '7px 12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12, flexShrink: 0, whiteSpace: 'nowrap' }}
                         >
-                            <Plus size={18} /> File Issue
+                            <Plus size={16} /> File Issue
                         </button>
                     )}
                 </div>
 
                 {/* View Mode Tabs */}
-                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
                     {[
                         { value: 'all', label: 'All Cases' },
                         { value: 'mine', label: 'My Filed' },
@@ -157,7 +157,7 @@ const Grievances = () => {
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
                 {/* Stats Summary */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20 }}>
+                <div className="grievance-stats" style={{ display: 'grid', gap: 10, marginBottom: 20 }}>
                     {['open', 'under_review', 'mediation', 'resolved'].map(status => {
                         const count = grievances.filter(g => g.status === status).length;
                         const cfg = statusConfig[status];
@@ -255,7 +255,13 @@ const Grievances = () => {
                     </div>
                 )}
             </div>
-            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+            <style>{`
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .grievance-stats { grid-template-columns: repeat(2, 1fr); }
+                @media (min-width: 480px) {
+                    .grievance-stats { grid-template-columns: repeat(4, 1fr); }
+                }
+            `}</style>
         </div>
     );
 };
