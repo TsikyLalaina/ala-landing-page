@@ -159,14 +159,15 @@ const CreateListing = () => {
                                             onClick={() => handleRemoveImage(index)}
                                             style={{
                                                 position: 'absolute', top: 4, right: 4,
-                                                background: 'rgba(0,0,0,0.6)', color: 'white',
-                                                border: 'none', borderRadius: '50%',
-                                                width: 24, height: 24,
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                cursor: 'pointer'
+                                                background: 'transparent',
+                                                border: 'none',
+                                                padding: 4,
+                                                cursor: 'pointer',
+                                                zIndex: 10,
+                                                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
                                             }}
                                         >
-                                            <X size={14} />
+                                            <X size={24} color="white" strokeWidth={2.5} />
                                         </button>
                                     </div>
                                 ))}

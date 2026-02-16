@@ -265,8 +265,16 @@ const FileGrievance = () => {
                                 {formData.evidence_urls.map((url, idx) => (
                                     <div key={idx} style={{ position: 'relative', height: 90, borderRadius: 10, overflow: 'hidden' }}>
                                         <img src={url} alt={`Evidence ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        <button type="button" onClick={() => removeEvidence(idx)} style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(239,68,68,0.8)', color: 'white', border: 'none', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                                            <X size={12} />
+                                        <button type="button" onClick={() => removeEvidence(idx)} style={{ 
+                                            position: 'absolute', top: 4, right: 4, 
+                                            background: 'transparent', 
+                                            border: 'none', 
+                                            padding: 4, 
+                                            cursor: 'pointer',
+                                            zIndex: 10, 
+                                            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' 
+                                        }}>
+                                            <X size={24} color="white" strokeWidth={2.5} />
                                         </button>
                                     </div>
                                 ))}

@@ -200,10 +200,18 @@ const UploadResource = () => {
                                 <img src={formData.thumbnail_url} alt="Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 <button
                                     type="button"
-                                    onClick={() => setFormData(prev => ({ ...prev, thumbnail_url: '' }))}
-                                    style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                                    onClick={() => setFormData(prev => ({ ...prev, thumbnail_url: null }))}
+                                    style={{
+                                        position: 'absolute', top: 4, right: 4,
+                                        background: 'transparent',
+                                        border: 'none',
+                                        padding: 4,
+                                        cursor: 'pointer',
+                                        zIndex: 10,
+                                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
+                                    }}
                                 >
-                                    <X size={16} />
+                                    <X size={24} color="white" strokeWidth={2.5} />
                                 </button>
                             </div>
                         ) : (
