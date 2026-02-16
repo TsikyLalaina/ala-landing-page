@@ -13,9 +13,10 @@ import GroupPostDetails from './pages/GroupPostDetails'
 import Groups from './pages/Groups'
 import CreateGroup from './pages/CreateGroup'
 import GroupDetails from './pages/GroupDetails'
-import Marketplace from './pages/Marketplace'
+import Marketplace from './pages/marketplace/Marketplace'
 import CreateListing from './pages/CreateListing'
 import ListingDetails from './pages/ListingDetails'
+import MyOrders from './pages/MyOrders'
 import Resources from './pages/Resources'
 import ResourceDetails from './pages/ResourceDetails'
 import UploadResource from './pages/UploadResource'
@@ -144,6 +145,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ListingDetails />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/my-orders" 
+              element={
+                <ProtectedRoute>
+                  <MyOrders />
                 </ProtectedRoute>
               } 
             />

@@ -26,7 +26,7 @@ const CreateListing = () => {
         image_urls: []
     });
 
-    const categories = ['vanilla', 'spices', 'crafts', 'services'];
+    const categories = ['vanilla', 'spices', 'mining', 'crafts', 'services'];
     const currencies = ['MGA', 'EUR', 'USD'];
 
     const handleInputChange = (e) => {

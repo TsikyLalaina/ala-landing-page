@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
-import { Loader2, Plus, ArrowLeft, MoreHorizontal, ShoppingBag } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
+import { Loader2, Plus, ArrowLeft, MoreHorizontal, ShoppingBag, Package } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Marketplace = () => {
@@ -60,19 +60,27 @@ const Marketplace = () => {
                     <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>Marketplace</h1>
                 </div>
                 {user && (
-                    <button 
-                        onClick={() => navigate('/create-listing')}
-                        style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
-                    >
-                        <Plus size={18} /> Sell Item
-                    </button>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <button 
+                            onClick={() => navigate('/my-orders')}
+                            style={{ background: 'rgba(255,255,255,0.1)', color: '#A7C7BC', border: 'none', borderRadius: 20, padding: '8px 14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}
+                        >
+                            <Package size={16} /> Orders
+                        </button>
+                        <button 
+                            onClick={() => navigate('/create-listing')}
+                            style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+                        >
+                            <Plus size={18} /> Sell Item
+                        </button>
+                    </div>
                 )}
             </div>
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
                 {/* Categories */}
                 <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 16, marginBottom: 16 }}>
-                    {['all', 'vanilla', 'spices', 'crafts', 'services'].map(cat => (
+                    {['all', 'vanilla', 'spices', 'mining', 'crafts', 'services'].map(cat => (
                         <button
                             key={cat}
                             onClick={() => setCategory(cat)}
@@ -102,7 +110,9 @@ const Marketplace = () => {
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
-                        {listings.map(item => (
+                        {listings.map(item => {
+                            const isExpired = item.expires_at && new Date(item.expires_at) < new Date();
+                            return (
                             <motion.div 
                                 key={item.id}
                                 initial={{ opacity: 0, y: 10 }}
@@ -112,22 +122,26 @@ const Marketplace = () => {
                                     background: 'rgba(13, 77, 58, 0.6)', borderRadius: 16, overflow: 'hidden',
                                     border: '1px solid rgba(46, 125, 103, 0.5)', cursor: 'pointer',
                                     transition: 'transform 0.2s',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    opacity: isExpired ? 0.6 : 1
                                 }}
                                 whileHover={{ scale: 1.02 }}
                             >
-                                <div style={{ height: 180, background: '#2E7D67', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                <div style={{ height: 180, background: '#2E7D67', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
                                     {item.image_urls && item.image_urls[0] ? (
                                         <img src={item.image_urls[0]} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
                                         <ShoppingBag size={48} color="rgba(255,255,255,0.2)" />
                                     )}
+                                    {isExpired && (
+                                        <div style={{ position: 'absolute', top: 8, left: 8, background: '#F59E0B', color: '#0B3D2E', fontSize: 10, fontWeight: 'bold', padding: '2px 8px', borderRadius: 8, textTransform: 'uppercase' }}>Expired</div>
+                                    )}
                                 </div>
                                 <div style={{ padding: 16 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
                                         <h3 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, color: '#F2F1EE', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '70%' }}>{item.title}</h3>
-                                        <span style={{ background: '#4ADE80', color: '#0B3D2E', fontSize: 12, fontWeight: 'bold', padding: '2px 8px', borderRadius: 12 }}>
-                                            {item.listing_type === 'auction' ? 'Bid' : 'Buy'}
+                                        <span style={{ background: isExpired ? '#F59E0B' : '#4ADE80', color: '#0B3D2E', fontSize: 12, fontWeight: 'bold', padding: '2px 8px', borderRadius: 12 }}>
+                                            {isExpired ? 'Expired' : item.listing_type === 'auction' ? 'Bid' : 'Buy'}
                                         </span>
                                     </div>
                                     <p style={{ color: '#A7C7BC', fontSize: 14, margin: '0 0 12px 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', height: 40 }}>
@@ -143,7 +157,8 @@ const Marketplace = () => {
                                     </div>
                                 </div>
                             </motion.div>
-                        ))}
+                        );
+                        })}
                     </div>
                 )}
             </div>
