@@ -49,29 +49,30 @@ const Marketplace = () => {
                 position: 'sticky', top: 0, zIndex: 10, 
                 background: 'rgba(11, 61, 46, 0.95)', 
                 backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
+                padding: '12px 16px',
                 borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                gap: 8
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                        <ArrowLeft size={24} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
+                        <ArrowLeft size={22} />
                     </button>
-                    <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>Marketplace</h1>
+                    <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, whiteSpace: 'nowrap' }}>Marketplace</h1>
                 </div>
                 {user && (
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                         <button 
                             onClick={() => navigate('/my-orders')}
-                            style={{ background: 'rgba(255,255,255,0.1)', color: '#A7C7BC', border: 'none', borderRadius: 20, padding: '8px 14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}
+                            style={{ background: 'rgba(255,255,255,0.1)', color: '#A7C7BC', border: 'none', borderRadius: 20, padding: '7px 10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12 }}
                         >
-                            <Package size={16} /> Orders
+                            <Package size={15} /> <span>Orders</span>
                         </button>
                         <button 
                             onClick={() => navigate('/create-listing')}
-                            style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+                            style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '7px 10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12 }}
                         >
-                            <Plus size={18} /> Sell Item
+                            <Plus size={16} /> <span>Sell</span>
                         </button>
                     </div>
                 )}

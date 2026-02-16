@@ -276,31 +276,31 @@ const ListingDetails = () => {
                 position: 'sticky', top: 0, zIndex: 10, 
                 background: 'rgba(11, 61, 46, 0.95)', 
                 backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
+                padding: '12px 16px',
                 borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 16
+                display: 'flex', alignItems: 'center', gap: 10
             }}>
-                <button onClick={() => navigate('/marketplace')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                    <ArrowLeft size={24} />
+                <button onClick={() => navigate('/marketplace')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
+                    <ArrowLeft size={22} />
                 </button>
-                <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0, flex: 1 }}>Item Details</h1>
+                <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, flex: 1, whiteSpace: 'nowrap' }}>Item Details</h1>
                 {isOwner && (
                     <button 
                         onClick={() => setShowOrders(!showOrders)}
                         style={{ 
                             background: showOrders ? '#4ADE80' : 'rgba(255,255,255,0.1)', 
                             color: showOrders ? '#0B3D2E' : '#A7C7BC', 
-                            border: 'none', borderRadius: 20, padding: '8px 14px', 
-                            fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-                            fontSize: 13
+                            border: 'none', borderRadius: 20, padding: '7px 10px', 
+                            fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer',
+                            fontSize: 12, flexShrink: 0
                         }}
                     >
-                        <Package size={16} /> Orders {transactions.filter(t => t.status === 'pending').length > 0 && `(${transactions.filter(t => t.status === 'pending').length})`}
+                        <Package size={15} /> Orders {transactions.filter(t => t.status === 'pending').length > 0 && `(${transactions.filter(t => t.status === 'pending').length})`}
                     </button>
                 )}
             </div>
 
-            <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
+            <div style={{ maxWidth: 800, margin: '0 auto', padding: '16px' }}>
 
                 {/* Seller Orders Panel */}
                 {isOwner && showOrders && (
@@ -365,7 +365,7 @@ const ListingDetails = () => {
                     </div>
                 )}
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, alignItems: 'start' }}>
+                <div className="listing-grid" style={{ display: 'grid', gap: 20, alignItems: 'start' }}>
                     
                     {/* Image Section */}
                     <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #2E7D67' }}>
@@ -654,7 +654,13 @@ const ListingDetails = () => {
                     </div>
                 </div>
             </div>
-            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+            <style>{`
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .listing-grid { grid-template-columns: 1fr; }
+                @media (min-width: 600px) {
+                    .listing-grid { grid-template-columns: 1fr 1fr; }
+                }
+            `}</style>
         </div>
     );
 };
