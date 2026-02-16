@@ -336,20 +336,25 @@ const CreateListing = () => {
                         </div>
                     </div>
 
-                    {/* Expires At (Auction Only or Optional for Fixed) */}
-                    {formData.listing_type === 'auction' && (
-                        <div>
-                            <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Auction Ends At *</label>
-                            <input
-                                name="expires_at"
-                                type="datetime-local"
-                                value={formData.expires_at}
-                                onChange={handleInputChange}
-                                style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
-                                required={formData.listing_type === 'auction'}
-                            />
+                    {/* Expiration Date */}
+                    <div>
+                        <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
+                            {formData.listing_type === 'auction' ? 'Auction Ends At *' : 'Listing Expiration Date (optional)'}
+                        </label>
+                        <input
+                            name="expires_at"
+                            type="datetime-local"
+                            value={formData.expires_at}
+                            onChange={handleInputChange}
+                            style={{ width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' }}
+                            required={formData.listing_type === 'auction'}
+                        />
+                        <div style={{ fontSize: 12, color: '#A7C7BC', marginTop: 4 }}>
+                            {formData.listing_type === 'auction' 
+                                ? 'When the auction closes and bidding ends' 
+                                : 'After this date, the listing will be shown as expired and cannot be purchased'}
                         </div>
-                    )}
+                    </div>
 
                     {/* Description */}
                     <div>
