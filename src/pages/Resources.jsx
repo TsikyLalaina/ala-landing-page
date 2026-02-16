@@ -129,7 +129,7 @@ const Resources = () => {
                             style={{ 
                                 width: '100%', padding: '10px 12px 10px 40px', borderRadius: 12, 
                                 border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', 
-                                color: 'white', fontSize: 14 
+                                color: 'white', fontSize: 14, boxSizing: 'border-box'
                             }}
                         />
                         {searchQuery && (
@@ -276,8 +276,8 @@ const Resources = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
                                 onClick={() => navigate(`/resource/${resource.id}`)}
+                                className="resource-card"
                                 style={{ 
-                                    display: 'flex', gap: 16, 
                                     background: 'rgba(13, 77, 58, 0.4)', 
                                     borderRadius: 16, 
                                     border: '1px solid #2E7D67',
@@ -289,8 +289,8 @@ const Resources = () => {
                                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#2E7D67'; }}
                             >
                                 {/* Thumbnail */}
-                                <div style={{ 
-                                    width: 140, minHeight: 120, flexShrink: 0,
+                                <div className="resource-thumb" style={{ 
+                                    flexShrink: 0,
                                     background: `linear-gradient(135deg, ${typeColors[resource.type] || '#4ADE80'}33, rgba(0,0,0,0.3))`,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     position: 'relative'
@@ -315,7 +315,7 @@ const Resources = () => {
                                 </div>
 
                                 {/* Content */}
-                                <div style={{ flex: 1, padding: '14px 14px 14px 0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
                                     <div>
                                         <h3 style={{ margin: '0 0 6px 0', fontSize: 16, fontWeight: 'bold', lineHeight: 1.3 }}>{resource.title}</h3>
                                         <p style={{ margin: 0, fontSize: 13, color: '#A7C7BC', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -353,7 +353,15 @@ const Resources = () => {
                     </div>
                 )}
             </div>
-            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+            <style>{`
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .resource-card { display: flex; flex-direction: column; }
+                .resource-thumb { width: 100%; min-height: 160px; }
+                @media (min-width: 480px) {
+                    .resource-card { flex-direction: row; }
+                    .resource-thumb { width: 140px; min-height: 120px; }
+                }
+            `}</style>
         </div>
     );
 };
