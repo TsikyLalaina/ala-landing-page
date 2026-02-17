@@ -126,7 +126,7 @@ const CreateAlert = () => {
                 crisis_type: formData.crisis_type,
                 alert_type: formData.alert_type,
                 severity_level: parseInt(formData.severity),
-                affected_area: formData.affected_area || null,
+                location: formData.affected_area || null,
                 affected_radius_km: parseFloat(formData.affected_radius_km) || 10,
                 latitude: mapPosition ? mapPosition[0] : null,
                 longitude: mapPosition ? mapPosition[1] : null,
