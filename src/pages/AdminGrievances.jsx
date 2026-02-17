@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
 import { 
-    ArrowLeft, Loader2, Shield, User, Search, X, CheckCircle2, AlertTriangle, Users, Award
+    ArrowLeft, Loader2, Shield, User, Search, X, CheckCircle2, AlertTriangle, Users, Award, ChevronDown
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -16,9 +16,9 @@ const AdminGrievances = () => {
     const [grievances, setGrievances] = useState([]);
     const [loading, setLoading] = useState(true);
     const [assigningId, setAssigningId] = useState(null); // ID of grievance being assigned
-    const [mediatorSearch, setMediatorSearch] = useState('');
-    const [mediatorResults, setMediatorResults] = useState([]);
-    const [selectedMediator, setSelectedMediator] = useState(null);
+    const [availableMediators, setAvailableMediators] = useState([]);
+    const [excludedIds, setExcludedIds] = useState(new Set());
+    const [selectedMediatorId, setSelectedMediatorId] = useState('');
     const [mediatorBadgeId, setMediatorBadgeId] = useState(null);
 
     useEffect(() => {
@@ -30,9 +30,23 @@ const AdminGrievances = () => {
         fetchMediatorBadgeId();
     }, [isAdmin]);
 
+    useEffect(() => {
+        if (mediatorBadgeId) fetchMediators();
+    }, [mediatorBadgeId]);
+
     const fetchMediatorBadgeId = async () => {
         const { data } = await supabase.from('badges').select('id').eq('name', 'Mediator').single();
         if (data) setMediatorBadgeId(data.id);
+    };
+
+    const fetchMediators = async () => {
+        try {
+            const { data } = await supabase
+                .from('users')
+                .select('id, name, avatar_url, user_badges!inner(badge_id)')
+                .eq('user_badges.badge_id', mediatorBadgeId);
+            setAvailableMediators(data || []);
+        } catch (error) { console.error('Error fetching mediators:', error); }
     };
 
     const fetchGrievances = async () => {
@@ -59,55 +73,57 @@ const AdminGrievances = () => {
         }
     };
 
-    const handleSearchMediator = async (query) => {
-        setMediatorSearch(query);
-        if (query.length < 2) { setMediatorResults([]); return; }
-        if (!mediatorBadgeId) return; // Wait for badge ID to load
+    const handleStartAssign = async (grievance) => {
+        if (assigningId === grievance.id) {
+            setAssigningId(null);
+            setSelectedMediatorId('');
+            setExcludedIds(new Set());
+            return;
+        }
 
-        try {
-            const { data, error } = await supabase
-                .from('users')
-                .select('id, name, avatar_url, user_badges!inner(badge_id)')
-                .eq('user_badges.badge_id', mediatorBadgeId)
-                .ilike('name', `%${query}%`)
-                .limit(5);
-            
-            if (error) throw error;
-            setMediatorResults(data || []);
-        } catch (error) { console.error(error); }
+        setAssigningId(grievance.id);
+        setSelectedMediatorId(''); 
+        
+        const exclude = new Set();
+        if (grievance.reporter_id) exclude.add(grievance.reporter_id);
+        if (grievance.against_user_id) exclude.add(grievance.against_user_id);
+
+        if (grievance.group_id) {
+            try {
+                const { data } = await supabase.from('group_members').select('user_id').eq('group_id', grievance.group_id);
+                (data || []).forEach(m => exclude.add(m.user_id));
+            } catch (e) { console.error(e); }
+        }
+        setExcludedIds(exclude);
     };
 
     const handleAssignMediator = async () => {
-        if (!assigningId || !selectedMediator) return;
+        if (!assigningId || !selectedMediatorId) return;
         try {
+            const mediatorName = availableMediators.find(u => u.id === selectedMediatorId)?.name || 'Unknown';
             const { error } = await supabase
                 .from('grievances')
                 .update({ 
-                    mediator_id: selectedMediator.id,
-                    status: 'under_review', // Auto-move to under_review
+                    mediator_id: selectedMediatorId,
+                    status: 'under_review',
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', assigningId);
 
             if (error) throw error;
             
-            // Add system note
             await supabase.from('resolution_notes').insert({
-                grievance_id: assigningId,
-                author_id: user.id, // Admin handles this
-                content: `Admin assigned mediator: ${selectedMediator.name}`,
+                grievance_id: assigningId, author_id: user.id,
+                content: `Admin assigned mediator: ${mediatorName}`,
                 note_type: 'mediation'
             });
 
             toast.success('Mediator assigned');
             setAssigningId(null);
-            setSelectedMediator(null);
-            setMediatorSearch('');
+            setSelectedMediatorId('');
+            setExcludedIds(new Set());
             fetchGrievances();
-        } catch (error) {
-            console.error(error);
-            toast.error('Failed to assign mediator');
-        }
+        } catch (error) { toast.error('Failed to assign'); }
     };
 
     if (loading) return (
@@ -186,7 +202,7 @@ const AdminGrievances = () => {
                                         <button onClick={() => navigate(`/grievance/${g.id}`)} style={{ background: 'transparent', border: '1px solid #2E7D67', color: '#A7C7BC', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 12 }}>
                                             View Details
                                         </button>
-                                        <button onClick={() => setAssigningId(g.id)} style={{ background: '#F97316', border: 'none', color: 'white', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 'bold' }}>
+                                        <button onClick={() => handleStartAssign(g)} style={{ background: assigningId === g.id ? '#F97316' : '#2E7D67', border: 'none', color: 'white', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 'bold' }}>
                                             {g.mediator ? 'Reassign' : 'Assign Mediator'}
                                         </button>
                                     </div>
@@ -197,52 +213,35 @@ const AdminGrievances = () => {
                                     <div style={{ marginTop: 16, padding: 12, background: 'rgba(0,0,0,0.2)', borderRadius: 10, border: '1px solid #F97316' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                             <span style={{ fontWeight: 'bold', fontSize: 13, color: '#F97316' }}>Select Mediator</span>
-                                            <button onClick={() => { setAssigningId(null); setSelectedMediator(null); }} style={{ background: 'none', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}><X size={14} /></button>
+                                            <button onClick={() => setAssigningId(null)} style={{ background: 'none', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}><X size={14} /></button>
                                         </div>
                                         
-                                        {!selectedMediator ? (
-                                            <div style={{ marginBottom: 10, position: 'relative' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: '8px 12px', border: '1px solid #2E7D67' }}>
-                                                    <Search size={14} color="#A7C7BC" />
-                                                    <input 
-                                                        value={mediatorSearch} 
-                                                        onChange={e => handleSearchMediator(e.target.value)}
-                                                        placeholder="Search user by name..."
-                                                        style={{ background: 'none', border: 'none', color: 'white', fontSize: 13, flex: 1, outline: 'none' }}
-                                                        autoFocus
-                                                    />
-                                                </div>
-                                                {mediatorResults.length > 0 && (
-                                                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#0D4D3A', border: '1px solid #2E7D67', borderRadius: '0 0 8px 8px', zIndex: 5, maxHeight: 150, overflowY: 'auto' }}>
-                                                        {mediatorResults.map(u => (
-                                                            <div key={u.id} onClick={() => { setSelectedMediator(u); setMediatorResults([]); }} 
-                                                                style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                                                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                                                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                                                            >
-                                                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2E7D67', overflow: 'hidden' }}>
-                                                                    {u.avatar_url && <img src={u.avatar_url} style={{ width: '100%', height: '100%' }} />}
-                                                                </div>
-                                                                <span style={{ fontSize: 13 }}>{u.name}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(249, 115, 22, 0.1)', padding: '8px 12px', borderRadius: 8, marginBottom: 10, border: '1px solid rgba(249, 115, 22, 0.3)' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <CheckCircle2 size={16} color="#F97316" />
-                                                    <span style={{ fontWeight: 'bold', fontSize: 13 }}>{selectedMediator.name}</span>
-                                                </div>
-                                                <button onClick={() => setSelectedMediator(null)} style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer' }}><X size={14} /></button>
-                                            </div>
+                                        <div style={{ position: 'relative', marginBottom: 12 }}>
+                                            <div style={{ position: 'absolute', right: 12, top: 12, pointerEvents: 'none' }}><ChevronDown size={14} color="#A7C7BC"/></div>
+                                            <select 
+                                                value={selectedMediatorId}
+                                                onChange={e => setSelectedMediatorId(e.target.value)}
+                                                style={{ width: '100%', padding: '10px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid #2E7D67', color: 'white', appearance: 'none', fontSize: 13 }}
+                                            >
+                                                <option value="">Select a certified mediator...</option>
+                                                {availableMediators.filter(u => !excludedIds.has(u.id)).map(u => (
+                                                    <option key={u.id} value={u.id}>
+                                                        {u.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        {availableMediators.filter(u => !excludedIds.has(u.id)).length === 0 && (
+                                             <div style={{ marginBottom: 10, fontSize: 12, color: '#F97316', fontStyle: 'italic', display: 'flex', gap: 6, alignItems: 'center' }}>
+                                                <AlertTriangle size={14}/> No eligible mediators found.
+                                             </div>
                                         )}
 
                                         <button 
                                             onClick={handleAssignMediator} 
-                                            disabled={!selectedMediator}
-                                            style={{ width: '100%', background: selectedMediator ? '#F97316' : 'rgba(255,255,255,0.05)', color: selectedMediator ? 'white' : 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 8, padding: 10, fontWeight: 'bold', cursor: selectedMediator ? 'pointer' : 'default', transition: 'all 0.2s' }}
+                                            disabled={!selectedMediatorId}
+                                            style={{ width: '100%', background: selectedMediatorId ? '#F97316' : 'rgba(255,255,255,0.05)', color: selectedMediatorId ? 'white' : 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 8, padding: 10, fontWeight: 'bold', cursor: selectedMediatorId ? 'pointer' : 'default', transition: 'all 0.2s' }}
                                         >
                                             Confirm Assignment
                                         </button>
