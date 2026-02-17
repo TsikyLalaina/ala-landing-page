@@ -337,16 +337,19 @@ const Compliance = () => {
                                     type="button"
                                     onClick={toggleRecording}
                                     style={{ 
-                                        position: 'absolute', right: 10, top: 10, 
-                                        background: isRecording ? '#EF4444' : '#2E7D67', 
-                                        color: 'white', border: 'none', borderRadius: '50%', 
-                                        width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                        cursor: 'pointer', transition: 'background 0.2s',
-                                        boxShadow: isRecording ? '0 0 10px rgba(239,68,68,0.5)' : 'none'
+                                        position: 'absolute', right: 12, bottom: 12,
+                                        background: 'transparent', 
+                                        color: isRecording ? '#EF4444' : '#4ADE80', 
+                                        border: 'none', 
+                                        padding: 8,
+                                        cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        transition: 'all 0.2s',
+                                        transform: isRecording ? 'scale(1.1)' : 'scale(1)'
                                     }}
                                     title={t.voiceInput}
                                 >
-                                    {isRecording ? <Square size={16} fill="white" /> : <Mic size={18} />}
+                                    {isRecording ? <Square size={20} fill="currentColor" /> : <Mic size={24} />}
                                 </button>
                             </div>
                         </div>
