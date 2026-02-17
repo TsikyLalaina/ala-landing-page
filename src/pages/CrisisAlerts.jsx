@@ -90,21 +90,17 @@ const CrisisAlerts = () => {
                 borderBottom: `1px solid ${criticalCount > 0 ? '#EF4444' : '#2E7D67'}`,
                 transition: 'background 0.3s'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
+                <div className="header-top-row">
+                    <div className="header-left-group">
+                        <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 0 }}>
                             <ArrowLeft size={24} />
                         </button>
-                        <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <h1 className="header-title">
                             <Radio size={20} style={{ color: criticalCount > 0 ? '#EF4444' : '#F97316' }} />
-                            Emergency Alerts
+                            <span>Emergency Alerts</span>
                         </h1>
                         {activeCount > 0 && (
-                            <span style={{ 
-                                background: '#EF4444', color: 'white', 
-                                fontSize: 11, fontWeight: 'bold', padding: '2px 8px', borderRadius: 10,
-                                animation: 'pulse 2s infinite'
-                            }}>
+                            <span className="active-badge">
                                 {activeCount} ACTIVE
                             </span>
                         )}
@@ -112,9 +108,9 @@ const CrisisAlerts = () => {
                     <div style={{ display: 'flex', gap: 8 }}>
                         <button 
                             onClick={() => navigate('/create-alert')}
-                            style={{ background: '#EF4444', color: 'white', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+                            className="create-alert-btn"
                         >
-                            <Plus size={18} /> Alert
+                            <Plus size={18} /> <span className="btn-label">Alert</span>
                         </button>
                     </div>
                 </div>
@@ -290,6 +286,22 @@ const CrisisAlerts = () => {
                 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
                 .leaflet-container { background: #0B3D2E; }
+
+                /* Header Responsive Styles */
+                .header-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
+                .header-left-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+                .header-title { font-size: 20px; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+                .active-badge { background: #EF4444; color: white; font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 10px; animation: pulse 2s infinite; white-space: nowrap; flex-shrink: 0; }
+                .create-alert-btn { background: #EF4444; color: white; border: none; border-radius: 20px; padding: 8px 16px; font-weight: bold; display: flex; align-items: center; gap: 6; cursor: pointer; white-space: nowrap; }
+                
+                @media (max-width: 480px) {
+                    .header-top-row { gap: 4px; }
+                    .header-title { font-size: 16px; gap: 6px; }
+                    .btn-label { display: none; }
+                    .create-alert-btn { padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; } 
+                    .active-badge { font-size: 9px; padding: 2px 6px; }
+                    .header-left-group { gap: 6px; }
+                }
             `}</style>
         </div>
     );
