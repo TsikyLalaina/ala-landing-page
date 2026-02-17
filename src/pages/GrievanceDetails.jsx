@@ -54,7 +54,7 @@ const getAvailableTransitions = (currentStatus, isReporter, isRespondent, isMedi
 
 const GrievanceDetails = () => {
     const { id } = useParams();
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const { toast } = useToast();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
@@ -73,6 +73,16 @@ const GrievanceDetails = () => {
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => { fetchAll(); }, [id]);
+
+    useEffect(() => {
+        if (grievance && user) {
+            const isReporter = user.id === grievance.reporter_id;
+            const isMediator = user.id === grievance.mediator_id;
+            if (isMediator || isAdmin) setNoteType('mediation');
+            else if (isReporter) setNoteType('note');
+            else setNoteType('response');
+        }
+    }, [grievance, user, isAdmin]);
 
     const fetchAll = async () => {
         setLoading(true);
@@ -248,21 +258,17 @@ const GrievanceDetails = () => {
     const isReporter = user?.id === grievance.reporter_id;
     const isRespondent = user?.id === grievance.against_user_id;
     const isMediator = user?.id === grievance.mediator_id;
-    const isInvolved = isReporter || isRespondent || isMediator;
+    const canManage = isMediator || isAdmin;
+    const isInvolved = isReporter || isRespondent || isMediator || isAdmin;
     const isClosed = grievance.status === 'resolved' || grievance.status === 'dismissed';
-    const availableTransitions = getAvailableTransitions(grievance.status, isReporter, isRespondent, isMediator);
+    const availableTransitions = getAvailableTransitions(grievance.status, isReporter, isRespondent, canManage);
 
     const supportReporter = votes.filter(v => v.vote === 'support_reporter').length;
     const supportRespondent = votes.filter(v => v.vote === 'support_respondent').length;
     const neutralVotes = votes.filter(v => v.vote === 'neutral').length;
     const userVote = votes.find(v => v.user_id === user?.id);
 
-    // Determine default note type based on role
-    const getDefaultNoteType = () => {
-        if (isRespondent) return 'response';
-        if (isMediator) return 'mediation';
-        return 'note';
-    };
+
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
@@ -385,11 +391,7 @@ const GrievanceDetails = () => {
                             <span style={{ fontSize: 13, color: '#A7C7BC', fontStyle: 'italic' }}>No mediator assigned yet</span>
                         )}
                     </div>
-                    {!grievance.mediator && !isReporter && !isRespondent && !isClosed && (
-                        <button onClick={handleAssignMediator} style={{ background: 'rgba(167, 139, 250, 0.2)', color: '#A78BFA', border: '1px solid rgba(167, 139, 250, 0.4)', borderRadius: 10, padding: '6px 12px', cursor: 'pointer', fontWeight: 'bold', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <Shield size={14} /> Volunteer as Mediator
-                        </button>
-                    )}
+
                 </div>
 
                 {/* Location & Date */}
@@ -561,7 +563,11 @@ const GrievanceDetails = () => {
                     {!isClosed && (
                         <form onSubmit={handleAddNote} style={{ marginTop: 14 }}>
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-                                {Object.entries(noteTypeConfig).map(([key, ntCfg]) => (
+                                {Object.entries(noteTypeConfig).filter(([key]) => {
+                                    if (canManage) return true;
+                                    if (isReporter) return ['note', 'escalation'].includes(key);
+                                    return ['response', 'proposal'].includes(key);
+                                }).map(([key, ntCfg]) => (
                                     <button key={key} type="button" onClick={() => setNoteType(key)}
                                         style={{
                                             background: noteType === key ? `${ntCfg.color}22` : 'rgba(255,255,255,0.05)',

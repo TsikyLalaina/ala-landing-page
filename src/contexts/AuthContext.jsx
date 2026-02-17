@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId) => {
@@ -28,6 +29,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const checkAdmin = async (userId) => {
+    try {
+      const { data } = await supabase.from('admin_users').select('role').eq('user_id', userId).maybeSingle();
+      return !!data;
+    } catch { return false; }
+  };
+
   useEffect(() => {
     const initAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -35,8 +43,12 @@ export const AuthProvider = ({ children }) => {
       if (session?.user) {
         setSession(session);
         setUser(session.user);
-        const userProfile = await fetchProfile(session.user.id);
+        const [userProfile, adminStatus] = await Promise.all([
+          fetchProfile(session.user.id),
+          checkAdmin(session.user.id)
+        ]);
         setProfile(userProfile);
+        setIsAdmin(adminStatus);
       }
       
       setLoading(false);
@@ -47,10 +59,15 @@ export const AuthProvider = ({ children }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        const userProfile = await fetchProfile(session.user.id);
+        const [userProfile, adminStatus] = await Promise.all([
+          fetchProfile(session.user.id),
+          checkAdmin(session.user.id)
+        ]);
         setProfile(userProfile);
+        setIsAdmin(adminStatus);
       } else {
         setProfile(null);
+        setIsAdmin(false);
       }
       
       setLoading(false);
@@ -102,6 +119,7 @@ export const AuthProvider = ({ children }) => {
     session,
     profile,
     loading,
+    isAdmin,
     isOnboarded: !!profile,
   };
 

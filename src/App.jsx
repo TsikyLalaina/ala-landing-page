@@ -31,10 +31,19 @@ import Messages from './pages/Messages'
 import Events from './pages/Events'
 import Analytics from './pages/Analytics'
 
+import AdminGrievances from './pages/AdminGrievances'
+
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
   if (loading) return null
   if (!user) return <Navigate to="/login" />
+  return children
+}
+
+const AdminRoute = ({ children }) => {
+  const { user, isAdmin, loading } = useAuth()
+  if (loading) return null
+  if (!user || !isAdmin) return <Navigate to="/feed" />
   return children
 }
 
@@ -178,6 +187,14 @@ function App() {
                 <ProtectedRoute>
                   <UploadResource />
                 </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/grievances" 
+              element={
+                <AdminRoute>
+                  <AdminGrievances />
+                </AdminRoute>
               } 
             />
             <Route 
