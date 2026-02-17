@@ -32,6 +32,7 @@ import Events from './pages/Events'
 import Analytics from './pages/Analytics'
 
 import AdminGrievances from './pages/AdminGrievances'
+import AdminUsers from './pages/AdminUsers'
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
