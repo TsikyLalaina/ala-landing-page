@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { 
     ArrowLeft, Loader2, Upload, X, AlertTriangle, MapPin, 
     CloudLightning, Droplets, Flame, Bug, ShieldAlert, Radio
 } from 'lucide-react';
+import LocationPickerInput from '../components/LocationPicker';
 
 // Fix default Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -29,14 +30,22 @@ const crisisTypes = [
     { value: 'other', label: 'Other', icon: <AlertTriangle size={20} />, color: '#A7C7BC' },
 ];
 
-function LocationPicker({ position, setPosition }) {
+const MapUpdater = ({ center }) => {
+    const map = useMap();
+    React.useEffect(() => {
+        if (center) map.setView(center, 10);
+    }, [center, map]);
+    return null;
+};
+
+const MapClickHandler = ({ onLocationSelect }) => {
     useMapEvents({
         click(e) {
-            setPosition([e.latlng.lat, e.latlng.lng]);
+            onLocationSelect(e.latlng.lat, e.latlng.lng);
         },
     });
-    return position ? <Marker position={position} /> : null;
-}
+    return null;
+};
 
 const CreateAlert = () => {
     const { user } = useAuth();
@@ -62,6 +71,21 @@ const CreateAlert = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleMapSelect = async (lat, lng) => {
+        setMapPosition([lat, lng]);
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const data = await res.json();
+            if (data && data.display_name) {
+                const addr = data.address || {};
+                const name = addr.city || addr.town || addr.village || addr.county || data.display_name.split(',')[0];
+                setFormData(prev => ({ ...prev, affected_area: name }));
+            }
+        } catch (e) {
+            console.error('Reverse geocode failed', e);
+        }
     };
 
     const handleImageUpload = async (e) => {
@@ -222,7 +246,18 @@ const CreateAlert = () => {
                     <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                         <div style={{ flex: '2 1 200px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Affected Area</label>
-                            <input name="affected_area" value={formData.affected_area} onChange={handleInputChange} placeholder="e.g., SAVA Region" style={inputStyle} />
+                            <LocationPickerInput 
+                                value={formData.affected_area ? { name: formData.affected_area, lat: mapPosition?.[0]||0, lng: mapPosition?.[1]||0 } : null}
+                                onChange={(loc) => {
+                                    if (loc) {
+                                        setFormData(prev => ({ ...prev, affected_area: loc.name }));
+                                        setMapPosition([loc.lat, loc.lng]);
+                                    } else {
+                                        setFormData(prev => ({ ...prev, affected_area: '' }));
+                                    }
+                                }}
+                                placeholder="Search e.g., Antananarivo, Tamatave..."
+                            />
                         </div>
                         <div style={{ flex: '1 1 120px' }}>
                             <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>Radius (km)</label>
@@ -238,7 +273,9 @@ const CreateAlert = () => {
                         <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #2E7D67', height: 250 }}>
                             <MapContainer center={[-18.9, 47.5]} zoom={6} style={{ height: '100%', width: '100%' }}>
                                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                <LocationPicker position={mapPosition} setPosition={setMapPosition} />
+                                <MapUpdater center={mapPosition} />
+                                <MapClickHandler onLocationSelect={handleMapSelect} />
+                                {mapPosition && <Marker position={mapPosition} />}
                             </MapContainer>
                         </div>
                         {mapPosition && (
