@@ -198,6 +198,14 @@ function App() {
               } 
             />
             <Route 
+              path="/admin/users" 
+              element={
+                <AdminRoute>
+                  <AdminUsers />
+                </AdminRoute>
+              } 
+            />
+            <Route 
               path="/grievances" 
               element={
                 <ProtectedRoute>

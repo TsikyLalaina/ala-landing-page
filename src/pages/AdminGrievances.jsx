@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
 import { 
-    ArrowLeft, Loader2, Shield, User, Search, X, CheckCircle2, AlertTriangle, Users
+    ArrowLeft, Loader2, Shield, User, Search, X, CheckCircle2, AlertTriangle, Users, Award
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -19,6 +19,7 @@ const AdminGrievances = () => {
     const [mediatorSearch, setMediatorSearch] = useState('');
     const [mediatorResults, setMediatorResults] = useState([]);
     const [selectedMediator, setSelectedMediator] = useState(null);
+    const [mediatorBadgeId, setMediatorBadgeId] = useState(null);
 
     useEffect(() => {
         if (!isAdmin) {
@@ -26,7 +27,13 @@ const AdminGrievances = () => {
             return;
         }
         fetchGrievances();
+        fetchMediatorBadgeId();
     }, [isAdmin]);
+
+    const fetchMediatorBadgeId = async () => {
+        const { data } = await supabase.from('badges').select('id').eq('name', 'Mediator').single();
+        if (data) setMediatorBadgeId(data.id);
+    };
 
     const fetchGrievances = async () => {
         setLoading(true);
@@ -55,10 +62,13 @@ const AdminGrievances = () => {
     const handleSearchMediator = async (query) => {
         setMediatorSearch(query);
         if (query.length < 2) { setMediatorResults([]); return; }
+        if (!mediatorBadgeId) return; // Wait for badge ID to load
+
         try {
             const { data, error } = await supabase
                 .from('users')
-                .select('id, name, avatar_url')
+                .select('id, name, avatar_url, user_badges!inner(badge_id)')
+                .eq('user_badges.badge_id', mediatorBadgeId)
                 .ilike('name', `%${query}%`)
                 .limit(5);
             
@@ -123,6 +133,9 @@ const AdminGrievances = () => {
                         <Shield size={18} style={{ color: '#F97316' }} /> Admin Grievance Panel
                     </h1>
                 </div>
+                <button onClick={() => navigate('/admin/users')} style={{ background: 'rgba(255,255,255,0.05)', color: '#A7C7BC', border: '1px solid #2E7D67', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Award size={14} style={{ color: '#FBBF24' }} /> Manage Badges
+                </button>
             </div>
 
             <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20 }}>
