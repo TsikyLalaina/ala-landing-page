@@ -30,7 +30,7 @@ const Grievances = () => {
     const [grievances, setGrievances] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('all');
-    const [viewMode, setViewMode] = useState('all'); // 'all', 'mine', 'against_me'
+    const [viewMode, setViewMode] = useState('all'); // 'all', 'mine', 'against_me', 'mediating'
 
     useEffect(() => {
         fetchGrievances();
@@ -55,6 +55,8 @@ const Grievances = () => {
                 query = query.eq('reporter_id', user.id);
             } else if (viewMode === 'against_me') {
                 query = query.eq('against_user_id', user.id);
+            } else if (viewMode === 'mediating') {
+                query = query.eq('mediator_id', user.id);
             }
 
             const { data, error } = await query;
@@ -107,6 +109,7 @@ const Grievances = () => {
                         { value: 'all', label: 'All Cases' },
                         { value: 'mine', label: 'My Filed' },
                         { value: 'against_me', label: 'Against Me' },
+                        { value: 'mediating', label: 'Mediating' },
                     ].map(tab => (
                         <button
                             key={tab.value}
