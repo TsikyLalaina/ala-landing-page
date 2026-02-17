@@ -46,6 +46,7 @@ const Grievances = () => {
                     reporter:users!grievances_reporter_id_fkey(name, avatar_url),
                     respondent:users!grievances_against_user_id_fkey(name, avatar_url),
                     mediator:users!grievances_mediator_id_fkey(name, avatar_url),
+                    group:groups!grievances_group_id_fkey(name),
                     resolution_notes(count),
                     grievance_votes(count)
                 `)
@@ -246,9 +247,11 @@ const Grievances = () => {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#A7C7BC', marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                                         <div style={{ display: 'flex', gap: 12 }}>
                                             <span>Filed by: <strong style={{ color: '#F2F1EE' }}>{grievance.reporter?.name || 'Anonymous'}</strong></span>
-                                            {grievance.respondent && (
-                                                <span>Against: <strong style={{ color: '#F2F1EE' }}>{grievance.respondent?.name}</strong></span>
-                                            )}
+                                            {grievance.respondent ? (
+                                                <span>Against: <strong style={{ color: '#F2F1EE' }}>{grievance.respondent.name}</strong></span>
+                                            ) : grievance.group ? (
+                                                <span>Against: <strong style={{ color: '#F2F1EE' }}>{grievance.group.name}</strong></span>
+                                            ) : null}
                                         </div>
                                         <span>{new Date(grievance.created_at).toLocaleDateString()}</span>
                                     </div>

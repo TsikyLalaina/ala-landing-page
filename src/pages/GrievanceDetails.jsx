@@ -5,7 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
 import { 
     ArrowLeft, Loader2, Scale, AlertTriangle, Clock, CheckCircle2, XCircle,
-    User, MapPin, Calendar, ThumbsUp, ThumbsDown, Minus, Send, 
+    User, Users, MapPin, Calendar, ThumbsUp, ThumbsDown, Minus, Send, 
     Shield, FileText, MessageSquare, Upload, X, Camera, AlertCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -88,7 +88,8 @@ const GrievanceDetails = () => {
                     *,
                     reporter:users!grievances_reporter_id_fkey(id, name, avatar_url, location),
                     respondent:users!grievances_against_user_id_fkey(id, name, avatar_url, location),
-                    mediator:users!grievances_mediator_id_fkey(id, name, avatar_url)
+                    mediator:users!grievances_mediator_id_fkey(id, name, avatar_url),
+                    group:groups!grievances_group_id_fkey(id, name)
                 `)
                 .eq('id', id)
                 .single();
@@ -356,6 +357,16 @@ const GrievanceDetails = () => {
                                 <div>
                                     <div style={{ fontWeight: 'bold', fontSize: 14 }}>{grievance.respondent.name}</div>
                                     {grievance.respondent?.location && <div style={{ fontSize: 11, color: '#A7C7BC' }}>{grievance.respondent.location}</div>}
+                                </div>
+                            </div>
+                        ) : grievance.group ? (
+                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#F97316', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Users size={18} color="white" />
+                                </div>
+                                <div>
+                                    <div style={{ fontWeight: 'bold', fontSize: 14 }}>{grievance.group.name}</div>
+                                    <div style={{ fontSize: 11, color: '#A7C7BC' }}>Group / Co-op</div>
                                 </div>
                             </div>
                         ) : (
