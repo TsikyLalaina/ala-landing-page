@@ -60,7 +60,7 @@ const CrisisDetails = () => {
         // Real-time subscription for responses
         const channel = supabase
             .channel(`crisis-${id}`)
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'crisis_responses', filter: `alert_id=eq.${id}` }, () => fetchResponses())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'crisis_responses', filter: `alert_id=eq.${id}` }, () => fetchResponses())
             .subscribe();
         return () => supabase.removeChannel(channel);
     }, [id]);
@@ -100,6 +100,7 @@ const CrisisDetails = () => {
             });
             if (error) throw error;
             setNewResponse('');
+            fetchResponses(); // Immediate refresh
             toast.success('Response posted');
         } catch (error) {
             toast.error('Failed to post response');
