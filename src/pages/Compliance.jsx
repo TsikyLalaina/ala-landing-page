@@ -252,38 +252,25 @@ const Compliance = () => {
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
             {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 1000, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
+            {/* Header */}
+            <div className="compliance-header">
+                <div className="header-left-group">
+                    <button onClick={() => navigate('/feed')} className="back-btn">
                         <ArrowLeft size={24} />
                     </button>
-                    <div>
-                        <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <ClipboardList size={20} style={{ color: '#4ADE80' }} />
-                            {t.title}
-                        </h1>
-                    </div>
+                    <h1 className="header-title">
+                        <ClipboardList size={20} style={{ color: '#4ADE80', flexShrink: 0 }} />
+                        <span>{t.title}</span>
+                    </h1>
                 </div>
 
                 {/* Language Toggle */}
-                <div style={{ display: 'flex', gap: 4 }}>
+                <div className="lang-toggle">
                     {Object.entries(languages).map(([key, { flag }]) => (
                         <button 
                             key={key}
                             onClick={() => setUiLang(key)}
-                            style={{ 
-                                background: uiLang === key ? 'rgba(255,255,255,0.2)' : 'transparent',
-                                border: '1px solid transparent', //uiLang === key ? 'rgba(255,255,255,0.4)' : 'transparent',
-                                borderRadius: 8, padding: '4px 8px', cursor: 'pointer', fontSize: 16,
-                                opacity: uiLang === key ? 1 : 0.5
-                            }}
+                            className={`lang-btn ${uiLang === key ? 'active' : ''}`}
                             title={translations[key].title}
                         >
                             {flag}
@@ -476,6 +463,34 @@ const Compliance = () => {
                 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
                 .compliance-grid { grid-template-columns: 1fr; }
                 @media (min-width: 640px) { .compliance-grid { grid-template-columns: 1fr 1fr; } }
+
+                .compliance-header {
+                    position: sticky; top: 0; z-index: 1000;
+                    background: rgba(11, 61, 46, 0.95);
+                    backdrop-filter: blur(10px);
+                    padding: 16px 20px;
+                    border-bottom: 1px solid #2E7D67;
+                    display: flex; align-items: center; justify-content: space-between;
+                    gap: 12px;
+                }
+                .header-left-group { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+                .back-btn { background: transparent; border: none; color: #A7C7BC; cursor: pointer; padding: 0; display: flex; align-items: center; flex-shrink: 0; }
+                .header-title { font-size: 18px; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #F2F1EE; }
+                .lang-toggle { display: flex; gap: 4px; flex-shrink: 0; }
+                .lang-btn {
+                    background: transparent; border: 1px solid transparent; border-radius: 8px;
+                    padding: 4px 8px; cursor: pointer; font-size: 16px; opacity: 0.5;
+                    transition: all 0.2s;
+                }
+                .lang-btn.active { background: rgba(255,255,255,0.2); opacity: 1; }
+
+                @media (max-width: 480px) {
+                    .compliance-header { padding: 12px 14px; gap: 8px; }
+                    .header-left-group { gap: 8px; }
+                    .header-title { font-size: 15px; gap: 6px; }
+                    .back-btn svg { width: 22px; height: 22px; }
+                    .lang-btn { padding: 4px 6px; font-size: 14px; }
+                }
             `}</style>
         </div>
     );
