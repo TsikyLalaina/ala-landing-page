@@ -63,14 +63,28 @@ const FileGrievance = () => {
         setSearchUser(query);
         if (query.length < 2) { setUserResults([]); return; }
         try {
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from('users')
                 .select('id, name, avatar_url')
                 .ilike('name', `%${query}%`)
                 .neq('id', user.id)
                 .limit(5);
-            setUserResults(data || []);
-        } catch (err) { console.error(err); }
+            if (error) {
+                console.error('User search error:', error);
+                // Fallback: try without ilike, use a broader match
+                const { data: fallbackData } = await supabase
+                    .from('users')
+                    .select('id, name, avatar_url')
+                    .neq('id', user.id)
+                    .limit(20);
+                const filtered = (fallbackData || []).filter(u => 
+                    u.name && u.name.toLowerCase().includes(query.toLowerCase())
+                ).slice(0, 5);
+                setUserResults(filtered);
+            } else {
+                setUserResults(data || []);
+            }
+        } catch (err) { console.error('User search exception:', err); }
     };
 
     const selectUser = (u) => {
