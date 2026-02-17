@@ -521,28 +521,41 @@ const GrievanceDetails = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             {notes.map((note, i) => {
                                 const ntCfg = noteTypeConfig[note.note_type] || noteTypeConfig.note;
-                                const isAuthor = note.author?.id === user?.id;
+                                const uid = note.author?.id;
+                                let roleCfg = { label: 'Participant', color: '#A7C7BC', bg: 'rgba(255,255,255,0.05)' };
+                                
+                                if (uid === grievance.mediator_id) {
+                                    roleCfg = { label: 'Mediator', color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)' };
+                                } else if (uid === grievance.reporter_id) {
+                                    roleCfg = { label: 'Reporter', color: '#FBBF24', bg: 'rgba(251, 191, 36, 0.08)' };
+                                } else if (uid === grievance.against_user_id || (grievance.group && uid !== grievance.reporter_id && uid !== grievance.mediator_id)) {
+                                    roleCfg = { label: 'Respondent', color: '#60A5FA', bg: 'rgba(96, 165, 250, 0.08)' };
+                                }
+
                                 return (
                                     <motion.div key={note.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }} style={{ display: 'flex', gap: 10 }}>
                                         {/* Timeline dot */}
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20, flexShrink: 0 }}>
-                                            <div style={{ width: 10, height: 10, borderRadius: '50%', background: ntCfg.color, flexShrink: 0, marginTop: 14 }} />
+                                            <div style={{ width: 10, height: 10, borderRadius: '50%', background: roleCfg.color, flexShrink: 0, marginTop: 14 }} />
                                             {i < notes.length - 1 && <div style={{ width: 2, flex: 1, background: 'rgba(255,255,255,0.08)' }} />}
                                         </div>
                                         {/* Content */}
-                                        <div style={{ flex: 1, background: isAuthor ? 'rgba(74, 222, 128, 0.06)' : 'rgba(13, 77, 58, 0.3)', borderRadius: 12, padding: 12, marginBottom: 6, border: `1px solid ${ntCfg.color}22`, minWidth: 0 }}>
+                                        <div style={{ flex: 1, background: roleCfg.bg, borderRadius: 12, padding: 12, marginBottom: 8, border: `1px solid ${roleCfg.color}44`, minWidth: 0 }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 4 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                                    <span style={{ fontSize: 10, background: `${ntCfg.color}22`, color: ntCfg.color, padding: '2px 8px', borderRadius: 8, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 3 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                    <span style={{ fontSize: 13, fontWeight: 'bold' }}>{note.author?.name || 'System'}</span>
+                                                    <span style={{ fontSize: 10, background: roleCfg.color, color: '#0B3D2E', padding: '2px 8px', borderRadius: 10, fontWeight: 'bold' }}>
+                                                        {roleCfg.label}
+                                                    </span>
+                                                    <span style={{ fontSize: 10, color: ntCfg.color, display: 'flex', alignItems: 'center', gap: 3, opacity: 0.8 }}>
                                                         {ntCfg.icon} {ntCfg.label}
                                                     </span>
-                                                    <span style={{ fontSize: 12, fontWeight: 'bold' }}>{note.author?.name || 'System'}</span>
                                                 </div>
                                                 <span style={{ fontSize: 10, color: '#A7C7BC' }}>
                                                     {new Date(note.created_at).toLocaleDateString()} {new Date(note.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
-                                            <p style={{ margin: 0, fontSize: 13, color: '#D1D5D8', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{note.content}</p>
+                                            <p style={{ margin: 0, fontSize: 13, color: '#F2F1EE', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{note.content}</p>
                                             {note.evidence_urls && note.evidence_urls.length > 0 && (
                                                 <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
                                                     {note.evidence_urls.map((url, ei) => (
@@ -564,7 +577,7 @@ const GrievanceDetails = () => {
                         <form onSubmit={handleAddNote} style={{ marginTop: 14 }}>
                             <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                                 {Object.entries(noteTypeConfig).filter(([key]) => {
-                                    if (canManage) return true;
+                                    if (canManage) return ['mediation', 'decision'].includes(key);
                                     if (isReporter) return ['note', 'escalation'].includes(key);
                                     return ['response', 'proposal'].includes(key);
                                 }).map(([key, ntCfg]) => (
