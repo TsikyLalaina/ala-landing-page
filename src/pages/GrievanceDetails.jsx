@@ -544,9 +544,7 @@ const GrievanceDetails = () => {
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 4 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                     <span style={{ fontSize: 13, fontWeight: 'bold' }}>{note.author?.name || 'System'}</span>
-                                                    <span style={{ fontSize: 10, background: roleCfg.color, color: '#0B3D2E', padding: '2px 8px', borderRadius: 10, fontWeight: 'bold' }}>
-                                                        {roleCfg.label}
-                                                    </span>
+
                                                     <span style={{ fontSize: 10, color: ntCfg.color, display: 'flex', alignItems: 'center', gap: 3, opacity: 0.8 }}>
                                                         {ntCfg.icon} {ntCfg.label}
                                                     </span>
