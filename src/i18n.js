@@ -20,6 +20,10 @@ const resources = {
         voice_text:
           'Ala is Madagascar’s tech-enabled ecosystem uniting mines and farms. We restore degraded lands into productive agroforestry, power hubs with solar, and enable co-ops to raise incomes. Invest to scale a profitable, regenerative model for communities and nature.',
       },
+      demonstration: {
+        title: 'See Ala in Action',
+        subtitle: 'Watch how our platform connects mines and farms for a sustainable future.',
+      },
       features: {
         title: 'Why Invest in Ala',
         items: [
@@ -256,6 +260,10 @@ const resources = {
         voice_text:
           'Ala dia rafitra nomerika ao Madagasikara izay mampivondrona ny harena an-kibon’ny tany sy ny toeram-pambolena. Mamerina ny tany simba ho toy ny ala fambolena mahomby izahay, manome herin’aratra avy amin’ny masoandro ny ivon-toerana, ary manampy ny fikambanana mpiara-miasa hampiakatra ny fidiram-bola. Mampiasa vola mba hanitarana ny modely mahomby sy mamerina ny tontolo iainana ho an’ny fiaraha-monina sy ny natiora.',
       },
+      demonstration: {
+        title: "Jereo ny fiasan'ny Ala",
+        subtitle: "Jereo ny fomba fampifandraisana ny harena an-kibon'ny tany sy ny fambolena ho an'ny hoavy maharitra.",
+      },
       features: {
         title: 'Maninona no tokony hampanjary vola ao amin’ny Ala',
         items: [
@@ -408,6 +416,10 @@ const resources = {
         cta_install: 'Installer l’application',
         cta_invest: 'Investir maintenant',
         listen: 'Écouter',
+      },
+      demonstration: {
+        title: 'Découvrez Ala en action',
+        subtitle: 'Regardez comment notre plateforme connecte mines et fermes pour un avenir durable.',
       },
       features: {
         title: 'Pourquoi investir dans Ala',
