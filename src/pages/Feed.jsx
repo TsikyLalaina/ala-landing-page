@@ -8,6 +8,7 @@ import {
   Heart, MessageCircle, Share2, MapPin, Loader2,
   Home, PlusSquare, User, LogOut, Users, ShoppingCart, BookOpen, Scale, Radio, ClipboardList, Calendar, Menu, X
 } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
 
 const Feed = () => {
   const { t } = useTranslation();
@@ -160,6 +161,12 @@ const Feed = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0B3D2E', paddingBottom: 80 }}>
+      <SEOHead
+        title="Feed — Ala Community"
+        description="Your Ala community feed."
+        path="/feed"
+        noindex={true}
+      />
       {/* Top Navigation Bar */}
       <div style={{ 
         position: 'sticky', top: 0, zIndex: 50, 

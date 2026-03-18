@@ -32,7 +32,7 @@ const Compliance = () => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isRecording, setIsRecording] = useState(false);
-    const [transcript, setTranscript] = useState('');
+    const [, setTranscript] = useState('');
     const recognitionRef = useRef(null);
 
     const [form, setForm] = useState({

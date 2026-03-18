@@ -270,7 +270,7 @@ const UploadResource = () => {
                             </select>
                         </div>
                         <div style={{ flex: '1 1 200px' }}>
-                            <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <label style={{ display: 'flex', marginBottom: 8, fontWeight: 'bold', alignItems: 'center', gap: 6 }}>
                                 <Globe size={16} /> Language
                             </label>
                             <select

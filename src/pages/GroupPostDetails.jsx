@@ -95,7 +95,6 @@ const CommentItem = ({ comment, allComments, onReply, onFlag, depth = 0 }) => {
 
 const GroupPostDetails = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -120,7 +119,7 @@ const GroupPostDetails = () => {
         schema: 'public', 
         table: 'group_comments', 
         filter: `post_id=eq.${id}` 
-      }, (payload) => {
+      }, () => {
         fetchComments(); 
       })
       .subscribe();

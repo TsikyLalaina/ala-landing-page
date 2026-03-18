@@ -7,11 +7,11 @@ import usePWAInstall from '../hooks/usePWAInstall'
 
 export default function Header() {
   const { t } = useTranslation()
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const { canInstall, promptInstall } = usePWAInstall()
   return (
     <header style={{position:'sticky',top:0,zIndex:30,backdropFilter:'saturate(140%) blur(6px)'}}>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,padding:'10px 16px',maxWidth:1100,margin:'0 auto'}}>
+      <nav aria-label="Main navigation" style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,padding:'10px 16px',maxWidth:1100,margin:'0 auto'}}>
         <a href="#" style={{display:'flex',alignItems:'center',textDecoration:'none',overflow:'visible',lineHeight:0}}>
           <span
             aria-label="Ala"
@@ -52,7 +52,7 @@ export default function Header() {
             </button>
           )}
         </div>
-      </div>
+      </nav>
     </header>
   )
 }

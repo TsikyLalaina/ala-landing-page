@@ -137,7 +137,7 @@ const GrievanceDetails = () => {
             setNoteEvidence([]);
             fetchNotes();
             toast.success('Response added');
-        } catch (error) {
+        } catch {
             toast.error('Failed to add response');
         } finally { setSubmitting(false); }
     };
@@ -154,7 +154,7 @@ const GrievanceDetails = () => {
             const { data } = supabase.storage.from('grievances').getPublicUrl(fileName);
             setNoteEvidence(prev => [...prev, data.publicUrl]);
             toast.success('Evidence attached');
-        } catch (error) {
+        } catch {
             toast.error('Failed to upload');
         } finally {
             setUploading(false);
@@ -171,7 +171,7 @@ const GrievanceDetails = () => {
             if (error) throw error;
             fetchVotes();
             toast.success('Vote recorded');
-        } catch (error) { toast.error('Failed to vote'); }
+        } catch { toast.error('Failed to vote'); }
         finally { setVoting(false); }
     };
 
@@ -192,7 +192,7 @@ const GrievanceDetails = () => {
             });
             fetchAll();
             toast.success(`Status updated to ${statusConfig[newStatus]?.label}`);
-        } catch (error) { toast.error('Failed to update status'); }
+        } catch { toast.error('Failed to update status'); }
     };
 
     const handleResolve = async () => {
@@ -217,10 +217,10 @@ const GrievanceDetails = () => {
             setResolutionText('');
             fetchAll();
             toast.success('Case resolved! Resolution recorded.');
-        } catch (error) { toast.error('Failed to resolve'); }
+        } catch { toast.error('Failed to resolve'); }
     };
 
-    const handleAssignMediator = async () => {
+    const _handleAssignMediator = async () => {
         // Self-assign as mediator (in a full system, this would be admin-assigned)
         try {
             const { error } = await supabase.from('grievances').update({
@@ -234,7 +234,7 @@ const GrievanceDetails = () => {
             });
             fetchAll();
             toast.success('You are now the mediator for this case');
-        } catch (error) { toast.error('Failed to assign mediator'); }
+        } catch { toast.error('Failed to assign mediator'); }
     };
 
     if (loading) {

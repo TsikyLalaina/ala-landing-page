@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { 
     ArrowLeft, Loader2, BookOpen, Video, FileText, HelpCircle, 
@@ -23,7 +22,6 @@ const typeColors = {
 
 const ResourceDetails = () => {
     const { id } = useParams();
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [resource, setResource] = useState(null);

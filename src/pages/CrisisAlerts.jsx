@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { MapContainer, TileLayer, CircleMarker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -33,7 +32,6 @@ const severityLabels = ['', 'Low', 'Moderate', 'Serious', 'Severe', 'Catastrophi
 const severityColors = ['', '#4ADE80', '#FBBF24', '#F97316', '#EF4444', '#DC2626'];
 
 const CrisisAlerts = () => {
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [alerts, setAlerts] = useState([]);

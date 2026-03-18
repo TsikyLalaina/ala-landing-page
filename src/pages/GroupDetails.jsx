@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
@@ -11,7 +10,6 @@ import {
 
 const GroupDetails = () => {
     const { id } = useParams();
-    const { t } = useTranslation();
     const { user } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();

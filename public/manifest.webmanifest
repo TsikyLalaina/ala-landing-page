@@ -5,7 +5,10 @@
   "display": "standalone",
   "background_color": "#0B3D2E",
   "theme_color": "#0B3D2E",
-  "description": "Tech-enabled ecosystem uniting mining and agriculture for regenerative impact.",
+  "description": "A community platform uniting Madagascar's mining and agricultural sectors for regenerative impact. Connect, trade, report, and build a sustainable future.",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["social", "business", "sustainability"],
   "icons": [
     {
       "src": "/icons/icon-192.svg",

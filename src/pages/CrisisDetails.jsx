@@ -102,7 +102,7 @@ const CrisisDetails = () => {
             setNewResponse('');
             fetchResponses(); // Immediate refresh
             toast.success('Response posted');
-        } catch (error) {
+        } catch {
             toast.error('Failed to post response');
         } finally {
             setSubmitting(false);
@@ -117,7 +117,7 @@ const CrisisDetails = () => {
             if (error) throw error;
             fetchAlert();
             toast.success(`Status: ${newStatus}`);
-        } catch (error) {
+        } catch {
             toast.error('Failed to update');
         }
     };

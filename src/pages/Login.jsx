@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { motion } from 'framer-motion';
 import { LogIn, Mail, Lock, AlertCircle, Loader2, ArrowRight, CheckCircle } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
 
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -57,6 +58,11 @@ const Login = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #0B3D2E 0%, #0D4D3A 50%, #0B3D2E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: "'Inter', sans-serif" }}>
+      <SEOHead
+        title="Sign In — Ala | Community Platform for Madagascar"
+        description="Sign in to your Ala account to access the community feed, marketplace, resource hub, and more. Join the regenerative movement."
+        path="/login"
+      />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ width: '100%', maxWidth: '420px' }}>
         <div style={{ background: 'rgba(13, 77, 58, 0.8)', backdropFilter: 'blur(20px)', border: '1px solid #2E7D67', borderRadius: '24px', padding: '40px 32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>

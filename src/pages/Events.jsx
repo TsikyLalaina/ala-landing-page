@@ -66,7 +66,7 @@ const Events = () => {
             setShowCreate(false);
             setFormData({ title: '', description: '', location: '', start_time: '', end_time: '', is_virtual: false });
             fetchEvents();
-        } catch (error) {
+        } catch {
             toast.error('Failed to create event');
         } finally {
             setCreating(false);
@@ -89,7 +89,7 @@ const Events = () => {
             }
             fetchEvents();
             toast.success(newStatus === 'going' ? 'You are going!' : 'Removed from event');
-        } catch (error) {
+        } catch {
             toast.error('Failed to update status');
         }
     };

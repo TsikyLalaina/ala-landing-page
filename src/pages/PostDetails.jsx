@@ -119,7 +119,7 @@ const PostDetails = () => {
         schema: 'public', 
         table: 'comments', 
         filter: `post_id=eq.${id}` 
-      }, (payload) => {
+      }, () => {
         // Fetch the new comment with author details ideally, 
         // simplified here by re-fetching or optimistic update.
         // For accurate author info, re-fetching is safer.
@@ -203,7 +203,7 @@ const PostDetails = () => {
       if (!parentId) setNewComment('');
       // Update comments list immediately
       await fetchComments();
-    } catch (error) {
+    } catch {
       toast.error('Failed to post comment');
     } finally {
       if (!parentId) setSending(false);

@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { motion } from 'framer-motion';
 import { Mail, Lock, AlertCircle, Loader2, MailCheck, ArrowRight, CheckCircle } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
 
 // Validation helpers
 const validateEmail = (email) => {
@@ -221,6 +222,11 @@ const Signup = () => {
       padding: '24px',
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     }}>
+      <SEOHead
+        title="Join Ala — Sign Up to Regenerate Madagascar's Future"
+        description="Create your Ala account and join a community uniting mining and agriculture for regenerative impact in Madagascar."
+        path="/signup"
+      />
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

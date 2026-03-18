@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer id="footer" style={{padding:'36px 20px',maxWidth:1100,margin:'0 auto'}}>
       <div style={{display:'grid',gridTemplateColumns:'1fr',gap:16,background:'#0E3F31',border:'1px solid #1E5A49',borderRadius:14,padding:18,color:'#EAE7E2'}}>
-        <div style={{display:'flex',flexWrap:'wrap',gap:12,alignItems:'center',justifyContent:'space-between'}}>
+        <nav aria-label="Footer navigation" style={{display:'flex',flexWrap:'wrap',gap:12,alignItems:'center',justifyContent:'space-between'}}>
           <div style={{fontWeight:800}}>Ala</div>
           <div style={{display:'flex',gap:12}}>
             <a href="mailto:tsikyloharanontsoa@ala-mg.com?subject=Investor%20Deck%20Request" style={{color:'#C9A66B',textDecoration:'none'}}>{t('footer.request_deck')}</a>
@@ -16,7 +16,7 @@ export default function Footer() {
               <button onClick={() => promptInstall()} style={{background:'#C9A66B',color:'#0B3D2E',border:'1px solid #C9A66B',padding:'8px 12px',borderRadius:8,fontWeight:700}}>{t('nav.install')}</button>
             )}
           </div>
-        </div>
+        </nav>
         <div style={{color:'#A7A39B',fontSize:12}}>{t('footer.rights')}</div>
       </div>
     </footer>

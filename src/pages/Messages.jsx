@@ -255,7 +255,7 @@ const Messages = () => {
 
                         {/* Messages Feed */}
                         <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }} ref={scrollRef}>
-                            {messages.map((msg, i) => {
+                            {messages.map((msg) => {
                                 const isMe = msg.sender_id === user.id;
                                 return (
                                     <div key={msg.id} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '75%' }}>

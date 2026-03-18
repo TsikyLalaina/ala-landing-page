@@ -136,7 +136,7 @@ const Onboarding = () => {
           .slice(0, 30); // Max 30 characters
         break;
 
-      case 'phone':
+      case 'phone': {
         // Allow only digits, +, spaces, hyphens, parentheses
         // Auto-format phone number
         const cleaned = value.replace(/[^\d+\s()-]/g, '');
@@ -182,6 +182,7 @@ const Onboarding = () => {
           sanitizedValue = cleaned.slice(0, 20); // Max 20 characters for other international
         }
         break;
+      }
 
       case 'bio':
         // Allow most characters but limit length

@@ -123,7 +123,7 @@ const AdminGrievances = () => {
             setSelectedMediatorId('');
             setExcludedIds(new Set());
             fetchGrievances();
-        } catch (error) { toast.error('Failed to assign'); }
+        } catch { toast.error('Failed to assign'); }
     };
 
     if (loading) return (

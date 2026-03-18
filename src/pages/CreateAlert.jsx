@@ -101,7 +101,7 @@ const CreateAlert = () => {
             const { data } = supabase.storage.from('crisis').getPublicUrl(fileName);
             setFormData(prev => ({ ...prev, image_url: data.publicUrl }));
             toast.success('Image uploaded!');
-        } catch (error) {
+        } catch {
             toast.error('Failed to upload image');
         } finally {
             setUploading(false);
@@ -145,7 +145,6 @@ const CreateAlert = () => {
         }
     };
 
-    const selectedCrisis = crisisTypes.find(c => c.value === formData.crisis_type);
     const inputStyle = { width: '100%', padding: '12px', borderRadius: 12, border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', color: 'white', fontSize: 16, boxSizing: 'border-box' };
     const severityColors = ['', '#4ADE80', '#FBBF24', '#F97316', '#EF4444', '#DC2626'];
 
