@@ -30,11 +30,5 @@
         { "key": "Content-Type", "value": "text/plain" }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
   ]
 }
