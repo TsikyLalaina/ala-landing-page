@@ -1,0 +1,17 @@
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /onboarding
+Disallow: /new-post
+Disallow: /create-listing
+Disallow: /create-group
+Disallow: /create-alert
+Disallow: /file-grievance
+Disallow: /upload-resource
+Disallow: /my-orders
+Disallow: /messages/
+
+# Sitemaps
+Sitemap: https://ala-mg.com/sitemap.xml

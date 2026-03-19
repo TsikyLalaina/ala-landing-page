@@ -1,10 +1,30 @@
-import { Parallax } from 'react-parallax'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import useSpeech from '../hooks/useSpeech'
 import usePWAInstall from '../hooks/usePWAInstall'
+
+function ClientParallax({ children, bgImage, strength }) {
+  const [ParallaxComp, setParallaxComp] = useState(null)
+
+  useEffect(() => {
+    import('react-parallax').then((mod) => {
+      setParallaxComp(() => mod.Parallax)
+    })
+  }, [])
+
+  if (ParallaxComp) {
+    return <ParallaxComp bgImage={bgImage} strength={strength}>{children}</ParallaxComp>
+  }
+
+  return (
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <img src={bgImage} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+      {children}
+    </div>
+  )
+}
 
 export default function Hero() {
   const prefersReduced = useReducedMotion()
@@ -27,7 +47,7 @@ export default function Hero() {
 
   return (
     <section style={{position:'relative'}}>
-      <Parallax bgImage={'/images/After.png'} strength={prefersReduced?0:200}>
+      <ClientParallax bgImage={'/images/After.png'} strength={prefersReduced?0:200}>
         <div style={{minHeight:'80vh',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',overflow:'hidden'}}>
           <motion.video
             key="before-video"
@@ -78,7 +98,7 @@ export default function Hero() {
             </motion.div>
           </div>
         </div>
-      </Parallax>
+      </ClientParallax>
     </section>
   )
 }

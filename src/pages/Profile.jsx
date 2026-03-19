@@ -9,26 +9,14 @@ import {
   User, MapPin, Briefcase, Calendar, Edit2, Camera, 
   Save, X, Award, Loader2, Phone, Mail, Plus, BarChart2 
 } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+// Dynamic React Leaflet import
 import LocationPicker from '../components/LocationPicker';
 import 'leaflet/dist/leaflet.css';
 
-// Fix for default marker icon
-import L from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+// Marker icon fix moved to dynamic import inside component
 
-let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
-});
-L.Marker.prototype.options.icon = DefaultIcon;
-
-const MapUpdater = ({ lat, lng, zoom }) => {
-  const map = useMap();
+const MapUpdater = ({ RL, lat, lng, zoom }) => {
+  const map = RL.useMap();
   useEffect(() => {
     map.setView([lat, lng], zoom);
   }, [lat, lng, zoom, map]);
@@ -41,6 +29,22 @@ const Profile = () => {
   const { t } = useTranslation();
   const { user: currentUser } = useAuth();
   const { toast } = useToast();
+
+  useEffect(() => {
+    import('leaflet').then((L) => {
+      import('leaflet/dist/images/marker-icon.png').then((icon) => {
+        import('leaflet/dist/images/marker-shadow.png').then((iconShadow) => {
+          let DefaultIcon = L.default.icon({
+              iconUrl: icon.default,
+              shadowUrl: iconShadow.default,
+              iconSize: [25, 41],
+              iconAnchor: [12, 41]
+          });
+          L.default.Marker.prototype.options.icon = DefaultIcon;
+        });
+      });
+    });
+  }, []);
   
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,6 +58,15 @@ const Profile = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
+
+  const [mapMounted, setMapMounted] = useState(false);
+  const [RL, setRL] = useState(null);
+
+  useEffect(() => {
+    setMapMounted(true);
+    import('react-leaflet').then(m => setRL(m));
+    import('leaflet/dist/leaflet.css');
+  }, []);
 
   // Edit Form State
   const [formData, setFormData] = useState({
@@ -643,34 +656,37 @@ const Profile = () => {
               <MapPin size={20} color="#4ADE80" /> {t('auth.profile.location_map')}
             </h2>
             <div style={{ height: '85%', width: '100%', borderRadius: 12, overflow: 'hidden' }}>
-              <MapContainer 
-                center={[
-                  formData.location?.lat || profile.location_lat || -18.91, 
-                  formData.location?.lng || profile.location_lng || 47.53
-                ]} 
-                zoom={(formData.location?.lat || profile.location_lat) ? 12 : 6} 
-                style={{ height: '100%', width: '100%' }}
-              >
-                <MapUpdater 
-                  lat={formData.location?.lat || profile.location_lat || -18.91}
-                  lng={formData.location?.lng || profile.location_lng || 47.53}
-                  zoom={(formData.location?.lat || profile.location_lat) ? 12 : 6}
-                />
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {(profile.location_lat || formData.location?.lat) && (
-                  <Marker position={[
-                    profile.location_lat || formData.location?.lat, 
-                    profile.location_lng || formData.location?.lng
-                  ]}>
-                    <Popup>
-                      {profile.location || formData.location?.name || 'Your Location'}
-                    </Popup>
-                  </Marker>
-                )}
-              </MapContainer>
+              {mapMounted && RL && (
+                <RL.MapContainer 
+                  center={[
+                    formData.location?.lat || profile.location_lat || -18.91, 
+                    formData.location?.lng || profile.location_lng || 47.53
+                  ]} 
+                  zoom={(formData.location?.lat || profile.location_lat) ? 12 : 6} 
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <MapUpdater 
+                    RL={RL}
+                    lat={formData.location?.lat || profile.location_lat || -18.91}
+                    lng={formData.location?.lng || profile.location_lng || 47.53}
+                    zoom={(formData.location?.lat || profile.location_lat) ? 12 : 6}
+                  />
+                  <RL.TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  {(profile.location_lat || formData.location?.lat) && (
+                    <RL.Marker position={[
+                      profile.location_lat || formData.location?.lat, 
+                      profile.location_lng || formData.location?.lng
+                    ]}>
+                      <RL.Popup>
+                        {profile.location || formData.location?.name || 'Your Location'}
+                      </RL.Popup>
+                    </RL.Marker>
+                  )}
+                </RL.MapContainer>
+              )}
             </div>
         </div>
       </div>

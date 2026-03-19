@@ -1,6 +1,5 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
-import L from 'leaflet'
 // Real hub coordinates
 const HUBS = [
   { region: 'SAVA', name: 'Sambava', lat: -14.27, lon: 50.17 },
@@ -20,30 +19,38 @@ export default function MapPreview() {
 
   useEffect(() => {
     if (!mapEl.current) return
-    const center = [-19.0, 46.5]
-    const zoom = 5.5
-    const map = L.map(mapEl.current, { scrollWheelZoom: false }).setView(center, zoom)
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
-    })
-    tiles.addTo(map)
+    let map = null;
+    let isMounted = true;
 
-    // Add red pins
-    HUBS.forEach((h) => {
-      const marker = L.circleMarker([h.lat, h.lon], {
-        radius: 6,
-        color: '#B91C1C', // red stroke
-        weight: 2,
-        fillColor: '#EF4444', // red fill
-        fillOpacity: 0.85,
-      }).addTo(map)
-      marker.bindPopup(`${h.name} — ${h.region}<br/>Lat ${h.lat.toFixed(2)}, Lon ${h.lon.toFixed(2)}`)
+    import('leaflet').then((LModule) => {
+      if (!isMounted) return;
+      const L = LModule.default || LModule;
+      const center = [-19.0, 46.5]
+      const zoom = 5.5
+      map = L.map(mapEl.current, { scrollWheelZoom: false }).setView(center, zoom)
+      const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19,
+      })
+      tiles.addTo(map)
+
+      // Add red pins
+      HUBS.forEach((h) => {
+        const marker = L.circleMarker([h.lat, h.lon], {
+          radius: 6,
+          color: '#B91C1C', // red stroke
+          weight: 2,
+          fillColor: '#EF4444', // red fill
+          fillOpacity: 0.85,
+        }).addTo(map)
+        marker.bindPopup(`${h.name} — ${h.region}<br/>Lat ${h.lat.toFixed(2)}, Lon ${h.lon.toFixed(2)}`)
+      })
     })
 
     // Cleanup on unmount
     return () => {
-      map.remove()
+      isMounted = false;
+      if (map) map.remove()
     }
   }, [])
 

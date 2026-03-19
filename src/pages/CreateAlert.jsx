@@ -1,24 +1,31 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+// Dynamic React Leaflet import
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import { 
     ArrowLeft, Loader2, Upload, X, AlertTriangle, MapPin, 
     CloudLightning, Droplets, Flame, Bug, ShieldAlert, Radio
 } from 'lucide-react';
 import LocationPickerInput from '../components/LocationPicker';
 
-// Fix default Leaflet marker icon
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-});
+const MapUpdater = ({ RL, center }) => {
+    const map = RL.useMap();
+    React.useEffect(() => {
+        if (center) map.setView(center, 10);
+    }, [center, map]);
+    return null;
+};
+
+const MapClickHandler = ({ RL, onLocationSelect }) => {
+    RL.useMapEvents({
+        click(e) {
+            onLocationSelect(e.latlng.lat, e.latlng.lng);
+        },
+    });
+    return null;
+};
 
 const crisisTypes = [
     { value: 'cyclone', label: 'Cyclone', icon: <CloudLightning size={20} />, color: '#A78BFA' },
@@ -30,28 +37,26 @@ const crisisTypes = [
     { value: 'other', label: 'Other', icon: <AlertTriangle size={20} />, color: '#A7C7BC' },
 ];
 
-const MapUpdater = ({ center }) => {
-    const map = useMap();
-    React.useEffect(() => {
-        if (center) map.setView(center, 10);
-    }, [center, map]);
-    return null;
-};
-
-const MapClickHandler = ({ onLocationSelect }) => {
-    useMapEvents({
-        click(e) {
-            onLocationSelect(e.latlng.lat, e.latlng.lng);
-        },
-    });
-    return null;
-};
-
 const CreateAlert = () => {
     const { user } = useAuth();
     const { toast } = useToast();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
+    const [RL, setRL] = useState(null);
+
+    React.useEffect(() => {
+        import('react-leaflet').then(m => setRL(m));
+        import('leaflet/dist/leaflet.css');
+        import('leaflet').then((LModule) => {
+            const L = LModule.default || LModule;
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+                iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            });
+        });
+    }, []);
 
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -67,6 +72,9 @@ const CreateAlert = () => {
         affected_radius_km: 10,
         image_url: '',
     });
+
+    const [mapMounted, setMapMounted] = useState(false);
+    React.useEffect(() => setMapMounted(true), []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -270,12 +278,14 @@ const CreateAlert = () => {
                             <MapPin size={16} /> Pin Location on Map
                         </label>
                         <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #2E7D67', height: 250 }}>
-                            <MapContainer center={[-18.9, 47.5]} zoom={6} style={{ height: '100%', width: '100%' }}>
-                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                <MapUpdater center={mapPosition} />
-                                <MapClickHandler onLocationSelect={handleMapSelect} />
-                                {mapPosition && <Marker position={mapPosition} />}
-                            </MapContainer>
+                            {mapMounted && RL && (
+                                <RL.MapContainer center={[-18.9, 47.5]} zoom={6} style={{ height: '100%', width: '100%' }}>
+                                    <RL.TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                    <MapUpdater RL={RL} center={mapPosition} />
+                                    <MapClickHandler RL={RL} onLocationSelect={handleMapSelect} />
+                                    {mapPosition && <RL.Marker position={mapPosition} />}
+                                </RL.MapContainer>
+                            )}
                         </div>
                         {mapPosition && (
                             <div style={{ fontSize: 12, color: '#A7C7BC', marginTop: 6, display: 'flex', justifyContent: 'space-between' }}>

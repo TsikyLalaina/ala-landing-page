@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
-import { MapContainer, TileLayer, Circle, CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { 
     ArrowLeft, Loader2, Radio, AlertTriangle, CloudLightning,
@@ -54,8 +53,12 @@ const CrisisDetails = () => {
     const [newResponse, setNewResponse] = useState('');
     const [responseType, setResponseType] = useState('info');
     const [submitting, setSubmitting] = useState(false);
+    const [mapMounted, setMapMounted] = useState(false);
+    const [RL, setRL] = useState(null);
 
     useEffect(() => {
+        setMapMounted(true);
+        import('react-leaflet').then(m => setRL(m));
         fetchAll();
         // Real-time subscription for responses
         const channel = supabase
@@ -235,13 +238,15 @@ const CrisisDetails = () => {
                 {/* Map */}
                 {alert.latitude && alert.longitude && (
                     <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #2E7D67', height: 280, marginBottom: 20 }}>
-                        <MapContainer center={[alert.latitude, alert.longitude]} zoom={9} style={{ height: '100%', width: '100%' }}>
-                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                            {alert.affected_radius_km && (
-                                <Circle center={[alert.latitude, alert.longitude]} radius={alert.affected_radius_km * 1000} pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.15, weight: 2 }} />
-                            )}
-                            <CircleMarker center={[alert.latitude, alert.longitude]} radius={10} pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.8, weight: 2 }} />
-                        </MapContainer>
+                        {mapMounted && RL && (
+                            <RL.MapContainer center={[alert.latitude, alert.longitude]} zoom={9} style={{ height: '100%', width: '100%' }}>
+                                <RL.TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                {alert.affected_radius_km && (
+                                    <RL.Circle center={[alert.latitude, alert.longitude]} radius={alert.affected_radius_km * 1000} pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.15, weight: 2 }} />
+                                )}
+                                <RL.CircleMarker center={[alert.latitude, alert.longitude]} radius={10} pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.8, weight: 2 }} />
+                            </RL.MapContainer>
+                        )}
                     </div>
                 )}
 

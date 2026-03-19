@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { MapContainer, TileLayer, CircleMarker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { 
     ArrowLeft, Loader2, Plus, AlertTriangle, Radio, CloudLightning,
@@ -39,8 +38,12 @@ const CrisisAlerts = () => {
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
     const [statusFilter, setStatusFilter] = useState('active');
     const [typeFilter, setTypeFilter] = useState('all');
+    const [mapMounted, setMapMounted] = useState(false);
+    const [RL, setRL] = useState(null);
 
     useEffect(() => {
+        setMapMounted(true);
+        import('react-leaflet').then(m => setRL(m));
         fetchAlerts();
         // Real-time subscription
         const channel = supabase
@@ -153,52 +156,54 @@ const CrisisAlerts = () => {
                 ) : viewMode === 'map' ? (
                     /* Map View */
                     <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #2E7D67', height: 500 }}>
-                        <MapContainer 
-                            center={[-18.9, 47.5]} 
-                            zoom={6} 
-                            style={{ height: '100%', width: '100%' }}
-                            zoomControl={true}
-                        >
-                            <TileLayer
-                                attribution='&copy; OpenStreetMap'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {filteredAlerts.filter(a => a.latitude && a.longitude).map(alert => {
-                                const ct = crisisTypes[alert.crisis_type] || crisisTypes.other;
-                                const sColor = severityColors[alert.severity_level || 3] || '#FBBF24';
-                                return (
-                                    <React.Fragment key={alert.id}>
-                                        {alert.affected_radius_km && (
-                                            <Circle
+                        {mapMounted && RL && (
+                            <RL.MapContainer 
+                                center={[-18.9, 47.5]} 
+                                zoom={6} 
+                                style={{ height: '100%', width: '100%' }}
+                                zoomControl={true}
+                            >
+                                <RL.TileLayer
+                                    attribution='&copy; OpenStreetMap'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                {filteredAlerts.filter(a => a.latitude && a.longitude).map(alert => {
+                                    const ct = crisisTypes[alert.crisis_type] || crisisTypes.other;
+                                    const sColor = severityColors[alert.severity_level || 3] || '#FBBF24';
+                                    return (
+                                        <React.Fragment key={alert.id}>
+                                            {alert.affected_radius_km && (
+                                                <RL.Circle
+                                                    center={[alert.latitude, alert.longitude]}
+                                                    radius={alert.affected_radius_km * 1000}
+                                                    pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.1, weight: 1 }}
+                                                />
+                                            )}
+                                            <RL.CircleMarker
                                                 center={[alert.latitude, alert.longitude]}
-                                                radius={alert.affected_radius_km * 1000}
-                                                pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.1, weight: 1 }}
-                                            />
-                                        )}
-                                        <CircleMarker
-                                            center={[alert.latitude, alert.longitude]}
-                                            radius={8 + ((alert.severity_level || 3) * 2)}
-                                            pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.7, weight: 2 }}
-                                        >
-                                            <Popup>
-                                                <div style={{ minWidth: 180 }}>
-                                                    <strong>{alert.title}</strong><br />
-                                                    <span style={{ fontSize: 12 }}>
-                                                        {ct.label} · {severityLabels[alert.severity_level || 3]} · {alert.status}
-                                                    </span><br />
-                                                    <button 
-                                                        onClick={() => navigate(`/crisis/${alert.id}`)}
-                                                        style={{ marginTop: 6, background: '#0B3D2E', color: 'white', border: 'none', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontSize: 12 }}
-                                                    >
-                                                        View Details →
-                                                    </button>
-                                                </div>
-                                            </Popup>
-                                        </CircleMarker>
-                                    </React.Fragment>
-                                );
-                            })}
-                        </MapContainer>
+                                                radius={8 + ((alert.severity_level || 3) * 2)}
+                                                pathOptions={{ color: sColor, fillColor: sColor, fillOpacity: 0.7, weight: 2 }}
+                                            >
+                                                <RL.Popup>
+                                                    <div style={{ minWidth: 180 }}>
+                                                        <strong>{alert.title}</strong><br />
+                                                        <span style={{ fontSize: 12 }}>
+                                                            {ct.label} · {severityLabels[alert.severity_level || 3]} · {alert.status}
+                                                        </span><br />
+                                                        <button 
+                                                            onClick={() => navigate(`/crisis/${alert.id}`)}
+                                                            style={{ marginTop: 6, background: '#0B3D2E', color: 'white', border: 'none', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontSize: 12 }}
+                                                        >
+                                                            View Details →
+                                                        </button>
+                                                    </div>
+                                                </RL.Popup>
+                                            </RL.CircleMarker>
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </RL.MapContainer>
+                        )}
                     </div>
                 ) : (
                     /* List View */

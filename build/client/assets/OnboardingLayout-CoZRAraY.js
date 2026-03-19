@@ -1,0 +1,1 @@
+import{w as a,p as t,t as o,O as e}from"./chunk-LFPYN7LY-CisNrVsk.js";import{u as i}from"./AuthContext-Cp18ztuo.js";import"./supabase-Cc_Lwtd_.js";const m=a(function(){const{user:r,isOnboarded:n,loading:s}=i();return s?null:r?n?t.jsx(o,{to:"/feed"}):t.jsx(e,{}):t.jsx(o,{to:"/login"})});export{m as default};
