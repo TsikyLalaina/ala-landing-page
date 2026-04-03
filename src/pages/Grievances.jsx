@@ -81,6 +81,7 @@ const Grievances = () => {
             <TopBar 
                 title="Conflict Resolution"
                 icon={<Scale color="#F97316" />}
+                sticky={false}
                 rightAction={
                     user && (
                         <button 
@@ -95,7 +96,7 @@ const Grievances = () => {
 
             {/* Sub-header (Filters) which also needs some sticky behavior but fits cleanly under TopBar natively if we just apply the sticky logic here or we can let it scroll. Let's make it sticky under the TopBar. */}
             <div style={{ 
-                position: 'sticky', top: 60, zIndex: 9, 
+                zIndex: 9, 
                 background: 'rgba(11, 61, 46, 0.95)', 
                 backdropFilter: 'blur(10px)',
                 padding: '12px 20px',

@@ -88,6 +88,7 @@ const CrisisAlerts = () => {
                 title="Emergency Alerts"
                 icon={<Radio style={{ color: criticalCount > 0 ? '#EF4444' : '#F97316' }} />}
                 critical={criticalCount > 0}
+                sticky={false}
                 rightAction={
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         {activeCount > 0 && (
@@ -107,7 +108,6 @@ const CrisisAlerts = () => {
 
             {/* Sub-header Filters */}
             <div style={{ 
-                position: 'sticky', top: 60, zIndex: 999, 
                 background: criticalCount > 0 ? 'rgba(127, 29, 29, 0.95)' : 'rgba(11, 61, 46, 0.95)', 
                 backdropFilter: 'blur(10px)',
                 padding: '10px 20px',

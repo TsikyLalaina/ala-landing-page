@@ -1,305 +1,222 @@
 {
   "buildManifest": {
-    "serverBundles": {
-      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
-        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
-        "config": {
-          "runtime": "nodejs"
-        }
-      }
-    },
-    "routeIdToServerBundleId": {
-      "root": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Landing": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Signup": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Onboarding": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Feed": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Profile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/PostDetails": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/GroupPostDetails": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Groups": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/CreateGroup": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/GroupDetails": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/marketplace/Marketplace": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/CreateListing": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/ListingDetails": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/MyOrders": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Resources": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/ResourceDetails": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/UploadResource": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Grievances": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/FileGrievance": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/GrievanceDetails": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/CrisisAlerts": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/CreateAlert": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/CrisisDetails": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Compliance": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Messages": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "messages-userId": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Events": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/Analytics": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/NewPost": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/AdminGrievances": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "pages/AdminUsers": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
-    },
     "routes": {
       "root": {
         "id": "root",
-        "file": "src/root.jsx",
-        "path": "",
-        "config": {
-          "runtime": "nodejs"
-        }
+        "file": "root.jsx",
+        "path": ""
       },
       "layouts/PublicLayout": {
         "id": "layouts/PublicLayout",
         "parentId": "root",
-        "file": "src/layouts/PublicLayout.jsx",
-        "config": {}
+        "file": "layouts/PublicLayout.jsx"
       },
       "pages/Landing": {
         "id": "pages/Landing",
         "parentId": "layouts/PublicLayout",
-        "file": "src/pages/Landing.jsx",
-        "index": true,
-        "config": {}
+        "file": "pages/Landing.jsx",
+        "index": true
       },
       "pages/Login": {
         "id": "pages/Login",
         "parentId": "layouts/PublicLayout",
-        "file": "src/pages/Login.jsx",
-        "path": "login",
-        "config": {}
+        "file": "pages/Login.jsx",
+        "path": "login"
       },
       "pages/Signup": {
         "id": "pages/Signup",
         "parentId": "layouts/PublicLayout",
-        "file": "src/pages/Signup.jsx",
-        "path": "signup",
-        "config": {}
+        "file": "pages/Signup.jsx",
+        "path": "signup"
       },
       "layouts/OnboardingLayout": {
         "id": "layouts/OnboardingLayout",
         "parentId": "root",
-        "file": "src/layouts/OnboardingLayout.jsx",
-        "config": {}
+        "file": "layouts/OnboardingLayout.jsx"
       },
       "pages/Onboarding": {
         "id": "pages/Onboarding",
         "parentId": "layouts/OnboardingLayout",
-        "file": "src/pages/Onboarding.jsx",
-        "path": "onboarding",
-        "config": {}
+        "file": "pages/Onboarding.jsx",
+        "path": "onboarding"
       },
       "layouts/ProtectedLayout": {
         "id": "layouts/ProtectedLayout",
         "parentId": "root",
-        "file": "src/layouts/ProtectedLayout.jsx",
-        "config": {}
+        "file": "layouts/ProtectedLayout.jsx"
       },
       "pages/Feed": {
         "id": "pages/Feed",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Feed.jsx",
-        "path": "feed",
-        "config": {}
+        "file": "pages/Feed.jsx",
+        "path": "feed"
       },
       "pages/Profile": {
         "id": "pages/Profile",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Profile.jsx",
-        "path": "profile/:id",
-        "config": {}
+        "file": "pages/Profile.jsx",
+        "path": "profile/:id"
       },
       "pages/PostDetails": {
         "id": "pages/PostDetails",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/PostDetails.jsx",
-        "path": "post/:id",
-        "config": {}
+        "file": "pages/PostDetails.jsx",
+        "path": "post/:id"
       },
       "pages/GroupPostDetails": {
         "id": "pages/GroupPostDetails",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/GroupPostDetails.jsx",
-        "path": "group-post/:id",
-        "config": {}
+        "file": "pages/GroupPostDetails.jsx",
+        "path": "group-post/:id"
       },
       "pages/Groups": {
         "id": "pages/Groups",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Groups.jsx",
-        "path": "groups",
-        "config": {}
+        "file": "pages/Groups.jsx",
+        "path": "groups"
       },
       "pages/CreateGroup": {
         "id": "pages/CreateGroup",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/CreateGroup.jsx",
-        "path": "create-group",
-        "config": {}
+        "file": "pages/CreateGroup.jsx",
+        "path": "create-group"
       },
       "pages/GroupDetails": {
         "id": "pages/GroupDetails",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/GroupDetails.jsx",
-        "path": "group/:id",
-        "config": {}
+        "file": "pages/GroupDetails.jsx",
+        "path": "group/:id"
       },
       "pages/marketplace/Marketplace": {
         "id": "pages/marketplace/Marketplace",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/marketplace/Marketplace.jsx",
-        "path": "marketplace",
-        "config": {}
+        "file": "pages/marketplace/Marketplace.jsx",
+        "path": "marketplace"
       },
       "pages/CreateListing": {
         "id": "pages/CreateListing",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/CreateListing.jsx",
-        "path": "create-listing",
-        "config": {}
+        "file": "pages/CreateListing.jsx",
+        "path": "create-listing"
       },
       "pages/ListingDetails": {
         "id": "pages/ListingDetails",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/ListingDetails.jsx",
-        "path": "listing/:id",
-        "config": {}
+        "file": "pages/ListingDetails.jsx",
+        "path": "listing/:id"
       },
       "pages/MyOrders": {
         "id": "pages/MyOrders",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/MyOrders.jsx",
-        "path": "my-orders",
-        "config": {}
+        "file": "pages/MyOrders.jsx",
+        "path": "my-orders"
       },
       "pages/Resources": {
         "id": "pages/Resources",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Resources.jsx",
-        "path": "resources",
-        "config": {}
+        "file": "pages/Resources.jsx",
+        "path": "resources"
       },
       "pages/ResourceDetails": {
         "id": "pages/ResourceDetails",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/ResourceDetails.jsx",
-        "path": "resource/:id",
-        "config": {}
+        "file": "pages/ResourceDetails.jsx",
+        "path": "resource/:id"
       },
       "pages/UploadResource": {
         "id": "pages/UploadResource",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/UploadResource.jsx",
-        "path": "upload-resource",
-        "config": {}
+        "file": "pages/UploadResource.jsx",
+        "path": "upload-resource"
       },
       "pages/Grievances": {
         "id": "pages/Grievances",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Grievances.jsx",
-        "path": "grievances",
-        "config": {}
+        "file": "pages/Grievances.jsx",
+        "path": "grievances"
       },
       "pages/FileGrievance": {
         "id": "pages/FileGrievance",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/FileGrievance.jsx",
-        "path": "file-grievance",
-        "config": {}
+        "file": "pages/FileGrievance.jsx",
+        "path": "file-grievance"
       },
       "pages/GrievanceDetails": {
         "id": "pages/GrievanceDetails",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/GrievanceDetails.jsx",
-        "path": "grievance/:id",
-        "config": {}
+        "file": "pages/GrievanceDetails.jsx",
+        "path": "grievance/:id"
       },
       "pages/CrisisAlerts": {
         "id": "pages/CrisisAlerts",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/CrisisAlerts.jsx",
-        "path": "crisis",
-        "config": {}
+        "file": "pages/CrisisAlerts.jsx",
+        "path": "crisis"
       },
       "pages/CreateAlert": {
         "id": "pages/CreateAlert",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/CreateAlert.jsx",
-        "path": "create-alert",
-        "config": {}
+        "file": "pages/CreateAlert.jsx",
+        "path": "create-alert"
       },
       "pages/CrisisDetails": {
         "id": "pages/CrisisDetails",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/CrisisDetails.jsx",
-        "path": "crisis/:id",
-        "config": {}
+        "file": "pages/CrisisDetails.jsx",
+        "path": "crisis/:id"
       },
       "pages/Compliance": {
         "id": "pages/Compliance",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Compliance.jsx",
-        "path": "compliance",
-        "config": {}
+        "file": "pages/Compliance.jsx",
+        "path": "compliance"
       },
       "pages/Messages": {
         "id": "pages/Messages",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Messages.jsx",
-        "path": "messages",
-        "config": {}
+        "file": "pages/Messages.jsx",
+        "path": "messages"
       },
       "messages-userId": {
         "id": "messages-userId",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Messages.jsx",
-        "path": "messages/:userId",
-        "config": {}
+        "file": "pages/Messages.jsx",
+        "path": "messages/:userId"
       },
       "pages/Events": {
         "id": "pages/Events",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Events.jsx",
-        "path": "events",
-        "config": {}
+        "file": "pages/Events.jsx",
+        "path": "events"
       },
       "pages/Analytics": {
         "id": "pages/Analytics",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/Analytics.jsx",
-        "path": "analytics",
-        "config": {}
+        "file": "pages/Analytics.jsx",
+        "path": "analytics"
       },
       "pages/NewPost": {
         "id": "pages/NewPost",
         "parentId": "layouts/ProtectedLayout",
-        "file": "src/pages/NewPost.jsx",
-        "path": "new-post",
-        "config": {}
+        "file": "pages/NewPost.jsx",
+        "path": "new-post"
       },
       "layouts/AdminLayout": {
         "id": "layouts/AdminLayout",
         "parentId": "root",
-        "file": "src/layouts/AdminLayout.jsx",
-        "config": {}
+        "file": "layouts/AdminLayout.jsx"
       },
       "pages/AdminGrievances": {
         "id": "pages/AdminGrievances",
         "parentId": "layouts/AdminLayout",
-        "file": "src/pages/AdminGrievances.jsx",
-        "path": "admin/grievances",
-        "config": {}
+        "file": "pages/AdminGrievances.jsx",
+        "path": "admin/grievances"
       },
       "pages/AdminUsers": {
         "id": "pages/AdminUsers",
         "parentId": "layouts/AdminLayout",
-        "file": "src/pages/AdminUsers.jsx",
-        "path": "admin/users",
-        "config": {}
+        "file": "pages/AdminUsers.jsx",
+        "path": "admin/users"
       }
     }
   },
@@ -536,12 +453,11 @@
       }
     },
     "routeDiscovery": {
-      "mode": "lazy",
-      "manifestPath": "/__manifest"
+      "mode": "initial"
     },
     "serverBuildFile": "index.js",
     "serverModuleFormat": "esm",
-    "ssr": true,
+    "ssr": false,
     "allowedActionOrigins": false,
     "unstable_routeConfig": [
       {

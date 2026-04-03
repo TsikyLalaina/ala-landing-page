@@ -10,7 +10,8 @@ export const TopBar = ({
     leftAction, // custom action instead of default back arrow
     rightAction, // custom components on the right (like "Create" buttons)
     titleColor = '#F2F1EE',
-    critical = false // specific prop for CrisisAlerts red styling
+    critical = false, // specific prop for CrisisAlerts red styling
+    sticky = true
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -21,7 +22,7 @@ export const TopBar = ({
         const setIsMenuOpen = rightAction?.setIsMenuOpen;
 
         return (
-            <div className={`top-bar-container ${critical ? 'is-critical' : ''}`}>
+            <div className={`top-bar-container ${critical ? 'is-critical' : ''}`} style={!sticky ? { position: 'static' } : {}}>
                 <div className="top-bar-main-flex">
                     <div className="top-bar-logo-group">
                         <div className="top-bar-logo" />
@@ -65,7 +66,7 @@ export const TopBar = ({
 
     // Standard variant for all other pages
     return (
-        <div className={`top-bar-container ${critical ? 'is-critical' : ''}`}>
+        <div className={`top-bar-container ${critical ? 'is-critical' : ''}`} style={!sticky ? { position: 'static' } : {}}>
             <div className="top-bar-standard-flex">
                 <div className="top-bar-left-group">
                     {leftAction !== null && (
