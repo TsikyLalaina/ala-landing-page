@@ -203,16 +203,19 @@ const NewPost = () => {
     <div style={{
       minHeight: '100vh',
       background: '#0B3D2E',
-      display: 'flex',
-      justifyContent: 'center',
-      padding: '20px'
     }}>
       <TopBar title={t('auth.posts.create_title')} />
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        style={{ width: '100%', maxWidth: '600px', marginTop: '20px' }}
-      >
+      
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ width: '100%', maxWidth: '600px' }}
+        >
 
         {groupId && (
           <div style={{ 
@@ -372,6 +375,7 @@ const NewPost = () => {
           </div>
         </div>
       </motion.div>
+      </div>
       <style>{`
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
