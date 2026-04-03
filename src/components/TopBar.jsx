@@ -26,7 +26,6 @@ export const TopBar = ({
                 <div className="top-bar-main-flex">
                     <div className="top-bar-logo-group">
                         <div className="top-bar-logo" />
-                        <h1 className="top-bar-logo-text">Ala</h1>
                     </div>
 
                     <div className="top-bar-nav-links">
