@@ -11,6 +11,7 @@ import {
     Users, Clock, Shield
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { TopBar } from '../components/TopBar';
 
 const crisisTypes = {
     cyclone: { label: 'Cyclone', icon: <CloudLightning size={18} />, color: '#A78BFA' },
@@ -153,27 +154,18 @@ const CrisisDetails = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 1000, 
-                background: isActive ? 'rgba(127, 29, 29, 0.95)' : 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: `1px solid ${isActive ? '#EF4444' : '#2E7D67'}`,
-                display: 'flex', alignItems: 'center', gap: 16
-            }}>
-                <button onClick={() => navigate('/crisis')} style={{ background: 'transparent', border: 'none', color: '#FCA5A5', cursor: 'pointer' }}>
-                    <ArrowLeft size={24} />
-                </button>
-                <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {alert.title}
-                </h1>
-                {isActive && (
-                    <span style={{ background: '#EF4444', color: 'white', fontSize: 10, padding: '3px 8px', borderRadius: 8, animation: 'pulse 2s infinite', fontWeight: 'bold' }}>
-                        ACTIVE
-                    </span>
-                )}
-            </div>
+            {/* Main Header */}
+            <TopBar 
+                title={alert.title}
+                critical={isActive}
+                rightAction={
+                    isActive && (
+                        <span style={{ background: '#EF4444', color: 'white', fontSize: 10, padding: '3px 8px', borderRadius: 8, animation: 'pulse 2s infinite', fontWeight: 'bold' }}>
+                            ACTIVE
+                        </span>
+                    )
+                }
+            />
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
 

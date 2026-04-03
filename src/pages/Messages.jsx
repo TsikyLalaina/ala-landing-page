@@ -6,6 +6,7 @@ import {
     ArrowLeft, Send, Search, MoreVertical, 
     MessageSquare, User, Loader2, Check, CheckCheck
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const Messages = () => {
     const { userId } = useParams(); // Selected user to chat with
@@ -164,13 +165,7 @@ const Messages = () => {
                 className={`sidebar-container ${userId ? 'hidden-mobile' : ''}`}
                 style={listStyle}
             >
-                {/* Header */}
-                <div style={{ padding: 16, borderBottom: '1px solid #2E7D67', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>Messages</h1>
-                    <button onClick={() => navigate('/feed')} style={{ background: 'none', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                        <ArrowLeft size={20} />
-                    </button>
-                </div>
+                <TopBar title="Messages" leftAction={() => navigate('/feed')} />
 
                 {/* Search */}
                 <div style={{ padding: 12 }}>
@@ -233,25 +228,23 @@ const Messages = () => {
                 {userId ? (
                     <>
                         {/* Chat Header */}
-                        <div style={{ padding: '10px 16px', borderBottom: '1px solid #2E7D67', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(11, 61, 46, 0.95)' }}>
-                            <button onClick={() => navigate('/messages')} className="mobile-only" style={{ background: 'none', border: 'none', color: '#A7C7BC', cursor: 'pointer', marginRight: 4, display: 'flex' }}>
-                                <ArrowLeft size={20} />
-                            </button>
-                            {activeUser && (
-                                <>
-                                    {activeUser.avatar_url ? (
-                                        <img src={activeUser.avatar_url} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
-                                    ) : (
-                                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#2E7D67', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <User size={18} color="#A7C7BC" />
-                                        </div>
-                                    )}
-                                    <div>
-                                        <div style={{ fontWeight: 'bold' }}>{activeUser.name}</div>
+                        <TopBar 
+                            leftAction={() => navigate('/messages')}
+                            title={
+                                activeUser ? (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                        {activeUser.avatar_url ? (
+                                            <img src={activeUser.avatar_url} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                                        ) : (
+                                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2E7D67', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <User size={16} color="#A7C7BC" />
+                                            </div>
+                                        )}
+                                        <span style={{ fontSize: 16 }}>{activeUser.name}</span>
                                     </div>
-                                </>
-                            )}
-                        </div>
+                                ) : ''
+                            }
+                        />
 
                         {/* Messages Feed */}
                         <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }} ref={scrollRef}>

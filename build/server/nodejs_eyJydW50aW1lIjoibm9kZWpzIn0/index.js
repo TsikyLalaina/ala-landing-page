@@ -6,12 +6,14 @@ import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import i18n from "i18next";
 import { initReactI18next, useTranslation } from "react-i18next";
-import { HelmetProvider, Helmet } from "react-helmet-async";
-import React, { createContext, useState, useEffect, useContext, useCallback, useRef, useMemo } from "react";
+import React4, { Component, createContext, useState, useEffect, useContext, useCallback, useRef, useMemo } from "react";
+import fastCompare from "react-fast-compare";
+import invariant from "invariant";
+import shallowEqual from "shallowequal";
 import { createClient } from "@supabase/supabase-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Info, AlertCircle, CheckCircle, X, LogIn, Loader2, Mail, Lock, ArrowRight, MailCheck, MapPin, Sparkles, User, Hash, Phone, Leaf, Mountain, Briefcase, FileText, Check, ArrowLeft, Home, Users, PlusSquare, MessageCircle, Menu, ShoppingCart, BookOpen, Calendar, Scale, Radio, ClipboardList, LogOut, Heart, Share2, Camera, Save, Edit2, BarChart2, Award, Plus, SendHorizontal, Flag, ThumbsUp, ThumbsDown, Search, UserMinus, UserPlus, Package, ShoppingBag, Upload, Clock, Ban, AlertTriangle, Store, ChevronRight, Filter, Eye, Globe, HelpCircle, Video, Tag, ExternalLink, XCircle, CheckCircle2, Shield, Minus, MessageSquare, Send, List, Map as Map$1, ShieldAlert, Bug, Flame, Droplets, CloudLightning, HelpingHand, PackageOpen, Square, Mic, Download, CheckCheck, Ticket, TrendingUp, DollarSign, BarChart3, PieChart, Image, ChevronDown } from "lucide-react";
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 const ABORT_DELAY = 5e3;
 function handleRequest(request, responseStatusCode, responseHeaders, routerContext, _loadContext) {
   return new Promise((resolve, reject) => {
@@ -598,6 +600,983 @@ i18n.use(initReactI18next).init({
   fallbackLng: "en",
   interpolation: { escapeValue: false }
 });
+var TAG_NAMES = /* @__PURE__ */ ((TAG_NAMES2) => {
+  TAG_NAMES2["BASE"] = "base";
+  TAG_NAMES2["BODY"] = "body";
+  TAG_NAMES2["HEAD"] = "head";
+  TAG_NAMES2["HTML"] = "html";
+  TAG_NAMES2["LINK"] = "link";
+  TAG_NAMES2["META"] = "meta";
+  TAG_NAMES2["NOSCRIPT"] = "noscript";
+  TAG_NAMES2["SCRIPT"] = "script";
+  TAG_NAMES2["STYLE"] = "style";
+  TAG_NAMES2["TITLE"] = "title";
+  TAG_NAMES2["FRAGMENT"] = "Symbol(react.fragment)";
+  return TAG_NAMES2;
+})(TAG_NAMES || {});
+var SEO_PRIORITY_TAGS = {
+  link: { rel: ["amphtml", "canonical", "alternate"] },
+  script: { type: ["application/ld+json"] },
+  meta: {
+    charset: "",
+    name: ["generator", "robots", "description"],
+    property: [
+      "og:type",
+      "og:title",
+      "og:url",
+      "og:image",
+      "og:image:alt",
+      "og:description",
+      "twitter:url",
+      "twitter:title",
+      "twitter:description",
+      "twitter:image",
+      "twitter:image:alt",
+      "twitter:card",
+      "twitter:site"
+    ]
+  }
+};
+var VALID_TAG_NAMES = Object.values(TAG_NAMES);
+var REACT_TAG_MAP = {
+  accesskey: "accessKey",
+  charset: "charSet",
+  class: "className",
+  contenteditable: "contentEditable",
+  contextmenu: "contextMenu",
+  "http-equiv": "httpEquiv",
+  itemprop: "itemProp",
+  tabindex: "tabIndex"
+};
+var HTML_TAG_MAP = Object.entries(REACT_TAG_MAP).reduce(
+  (carry, [key, value]) => {
+    carry[value] = key;
+    return carry;
+  },
+  {}
+);
+var HELMET_ATTRIBUTE = "data-rh";
+var HELMET_PROPS = {
+  DEFAULT_TITLE: "defaultTitle",
+  DEFER: "defer",
+  ENCODE_SPECIAL_CHARACTERS: "encodeSpecialCharacters",
+  ON_CHANGE_CLIENT_STATE: "onChangeClientState",
+  TITLE_TEMPLATE: "titleTemplate",
+  PRIORITIZE_SEO_TAGS: "prioritizeSeoTags"
+};
+var getInnermostProperty = (propsList, property) => {
+  for (let i = propsList.length - 1; i >= 0; i -= 1) {
+    const props = propsList[i];
+    if (Object.prototype.hasOwnProperty.call(props, property)) {
+      return props[property];
+    }
+  }
+  return null;
+};
+var getTitleFromPropsList = (propsList) => {
+  let innermostTitle = getInnermostProperty(
+    propsList,
+    "title"
+    /* TITLE */
+  );
+  const innermostTemplate = getInnermostProperty(propsList, HELMET_PROPS.TITLE_TEMPLATE);
+  if (Array.isArray(innermostTitle)) {
+    innermostTitle = innermostTitle.join("");
+  }
+  if (innermostTemplate && innermostTitle) {
+    return innermostTemplate.replace(/%s/g, () => innermostTitle);
+  }
+  const innermostDefaultTitle = getInnermostProperty(propsList, HELMET_PROPS.DEFAULT_TITLE);
+  return innermostTitle || innermostDefaultTitle || void 0;
+};
+var getOnChangeClientState = (propsList) => getInnermostProperty(propsList, HELMET_PROPS.ON_CHANGE_CLIENT_STATE) || (() => {
+});
+var getAttributesFromPropsList = (tagType, propsList) => propsList.filter((props) => typeof props[tagType] !== "undefined").map((props) => props[tagType]).reduce((tagAttrs, current) => ({ ...tagAttrs, ...current }), {});
+var getBaseTagFromPropsList = (primaryAttributes, propsList) => propsList.filter((props) => typeof props[
+  "base"
+  /* BASE */
+] !== "undefined").map((props) => props[
+  "base"
+  /* BASE */
+]).reverse().reduce((innermostBaseTag, tag) => {
+  if (!innermostBaseTag.length) {
+    const keys = Object.keys(tag);
+    for (let i = 0; i < keys.length; i += 1) {
+      const attributeKey = keys[i];
+      const lowerCaseAttributeKey = attributeKey.toLowerCase();
+      if (primaryAttributes.indexOf(lowerCaseAttributeKey) !== -1 && tag[lowerCaseAttributeKey]) {
+        return innermostBaseTag.concat(tag);
+      }
+    }
+  }
+  return innermostBaseTag;
+}, []);
+var warn = (msg) => console && typeof console.warn === "function" && console.warn(msg);
+var getTagsFromPropsList = (tagName, primaryAttributes, propsList) => {
+  const approvedSeenTags = {};
+  return propsList.filter((props) => {
+    if (Array.isArray(props[tagName])) {
+      return true;
+    }
+    if (typeof props[tagName] !== "undefined") {
+      warn(
+        `Helmet: ${tagName} should be of type "Array". Instead found type "${typeof props[tagName]}"`
+      );
+    }
+    return false;
+  }).map((props) => props[tagName]).reverse().reduce((approvedTags, instanceTags) => {
+    const instanceSeenTags = {};
+    instanceTags.filter((tag) => {
+      let primaryAttributeKey;
+      const keys2 = Object.keys(tag);
+      for (let i = 0; i < keys2.length; i += 1) {
+        const attributeKey = keys2[i];
+        const lowerCaseAttributeKey = attributeKey.toLowerCase();
+        if (primaryAttributes.indexOf(lowerCaseAttributeKey) !== -1 && !(primaryAttributeKey === "rel" && tag[primaryAttributeKey].toLowerCase() === "canonical") && !(lowerCaseAttributeKey === "rel" && tag[lowerCaseAttributeKey].toLowerCase() === "stylesheet")) {
+          primaryAttributeKey = lowerCaseAttributeKey;
+        }
+        if (primaryAttributes.indexOf(attributeKey) !== -1 && (attributeKey === "innerHTML" || attributeKey === "cssText" || attributeKey === "itemprop")) {
+          primaryAttributeKey = attributeKey;
+        }
+      }
+      if (!primaryAttributeKey || !tag[primaryAttributeKey]) {
+        return false;
+      }
+      const value = tag[primaryAttributeKey].toLowerCase();
+      if (!approvedSeenTags[primaryAttributeKey]) {
+        approvedSeenTags[primaryAttributeKey] = {};
+      }
+      if (!instanceSeenTags[primaryAttributeKey]) {
+        instanceSeenTags[primaryAttributeKey] = {};
+      }
+      if (!approvedSeenTags[primaryAttributeKey][value]) {
+        instanceSeenTags[primaryAttributeKey][value] = true;
+        return true;
+      }
+      return false;
+    }).reverse().forEach((tag) => approvedTags.push(tag));
+    const keys = Object.keys(instanceSeenTags);
+    for (let i = 0; i < keys.length; i += 1) {
+      const attributeKey = keys[i];
+      const tagUnion = {
+        ...approvedSeenTags[attributeKey],
+        ...instanceSeenTags[attributeKey]
+      };
+      approvedSeenTags[attributeKey] = tagUnion;
+    }
+    return approvedTags;
+  }, []).reverse();
+};
+var getAnyTrueFromPropsList = (propsList, checkedTag) => {
+  if (Array.isArray(propsList) && propsList.length) {
+    for (let index = 0; index < propsList.length; index += 1) {
+      const prop = propsList[index];
+      if (prop[checkedTag]) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+var reducePropsToState = (propsList) => ({
+  baseTag: getBaseTagFromPropsList([
+    "href"
+    /* HREF */
+  ], propsList),
+  bodyAttributes: getAttributesFromPropsList("bodyAttributes", propsList),
+  defer: getInnermostProperty(propsList, HELMET_PROPS.DEFER),
+  encode: getInnermostProperty(propsList, HELMET_PROPS.ENCODE_SPECIAL_CHARACTERS),
+  htmlAttributes: getAttributesFromPropsList("htmlAttributes", propsList),
+  linkTags: getTagsFromPropsList(
+    "link",
+    [
+      "rel",
+      "href"
+      /* HREF */
+    ],
+    propsList
+  ),
+  metaTags: getTagsFromPropsList(
+    "meta",
+    [
+      "name",
+      "charset",
+      "http-equiv",
+      "property",
+      "itemprop"
+      /* ITEM_PROP */
+    ],
+    propsList
+  ),
+  noscriptTags: getTagsFromPropsList("noscript", [
+    "innerHTML"
+    /* INNER_HTML */
+  ], propsList),
+  onChangeClientState: getOnChangeClientState(propsList),
+  scriptTags: getTagsFromPropsList(
+    "script",
+    [
+      "src",
+      "innerHTML"
+      /* INNER_HTML */
+    ],
+    propsList
+  ),
+  styleTags: getTagsFromPropsList("style", [
+    "cssText"
+    /* CSS_TEXT */
+  ], propsList),
+  title: getTitleFromPropsList(propsList),
+  titleAttributes: getAttributesFromPropsList("titleAttributes", propsList),
+  prioritizeSeoTags: getAnyTrueFromPropsList(propsList, HELMET_PROPS.PRIORITIZE_SEO_TAGS)
+});
+var flattenArray = (possibleArray) => Array.isArray(possibleArray) ? possibleArray.join("") : possibleArray;
+var checkIfPropsMatch = (props, toMatch) => {
+  const keys = Object.keys(props);
+  for (let i = 0; i < keys.length; i += 1) {
+    if (toMatch[keys[i]] && toMatch[keys[i]].includes(props[keys[i]])) {
+      return true;
+    }
+  }
+  return false;
+};
+var prioritizer = (elementsList, propsToMatch) => {
+  if (Array.isArray(elementsList)) {
+    return elementsList.reduce(
+      (acc, elementAttrs) => {
+        if (checkIfPropsMatch(elementAttrs, propsToMatch)) {
+          acc.priority.push(elementAttrs);
+        } else {
+          acc.default.push(elementAttrs);
+        }
+        return acc;
+      },
+      { priority: [], default: [] }
+    );
+  }
+  return { default: elementsList, priority: [] };
+};
+var without = (obj, key) => {
+  return {
+    ...obj,
+    [key]: void 0
+  };
+};
+var SELF_CLOSING_TAGS = [
+  "noscript",
+  "script",
+  "style"
+  /* STYLE */
+];
+var encodeSpecialCharacters = (str, encode = true) => {
+  if (encode === false) {
+    return String(str);
+  }
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+};
+var generateElementAttributesAsString = (attributes) => Object.keys(attributes).reduce((str, key) => {
+  const attr = typeof attributes[key] !== "undefined" ? `${key}="${attributes[key]}"` : `${key}`;
+  return str ? `${str} ${attr}` : attr;
+}, "");
+var generateTitleAsString = (type, title, attributes, encode) => {
+  const attributeString = generateElementAttributesAsString(attributes);
+  const flattenedTitle = flattenArray(title);
+  return attributeString ? `<${type} ${HELMET_ATTRIBUTE}="true" ${attributeString}>${encodeSpecialCharacters(
+    flattenedTitle,
+    encode
+  )}</${type}>` : `<${type} ${HELMET_ATTRIBUTE}="true">${encodeSpecialCharacters(
+    flattenedTitle,
+    encode
+  )}</${type}>`;
+};
+var generateTagsAsString = (type, tags, encode = true) => tags.reduce((str, t) => {
+  const tag = t;
+  const attributeHtml = Object.keys(tag).filter(
+    (attribute) => !(attribute === "innerHTML" || attribute === "cssText")
+  ).reduce((string, attribute) => {
+    const attr = typeof tag[attribute] === "undefined" ? attribute : `${attribute}="${encodeSpecialCharacters(tag[attribute], encode)}"`;
+    return string ? `${string} ${attr}` : attr;
+  }, "");
+  const tagContent = tag.innerHTML || tag.cssText || "";
+  const isSelfClosing = SELF_CLOSING_TAGS.indexOf(type) === -1;
+  return `${str}<${type} ${HELMET_ATTRIBUTE}="true" ${attributeHtml}${isSelfClosing ? `/>` : `>${tagContent}</${type}>`}`;
+}, "");
+var convertElementAttributesToReactProps = (attributes, initProps = {}) => Object.keys(attributes).reduce((obj, key) => {
+  const mapped = REACT_TAG_MAP[key];
+  obj[mapped || key] = attributes[key];
+  return obj;
+}, initProps);
+var generateTitleAsReactComponent = (_type, title, attributes) => {
+  const initProps = {
+    key: title,
+    [HELMET_ATTRIBUTE]: true
+  };
+  const props = convertElementAttributesToReactProps(attributes, initProps);
+  return [React4.createElement("title", props, title)];
+};
+var generateTagsAsReactComponent = (type, tags) => tags.map((tag, i) => {
+  const mappedTag = {
+    key: i,
+    [HELMET_ATTRIBUTE]: true
+  };
+  Object.keys(tag).forEach((attribute) => {
+    const mapped = REACT_TAG_MAP[attribute];
+    const mappedAttribute = mapped || attribute;
+    if (mappedAttribute === "innerHTML" || mappedAttribute === "cssText") {
+      const content = tag.innerHTML || tag.cssText;
+      mappedTag.dangerouslySetInnerHTML = { __html: content };
+    } else {
+      mappedTag[mappedAttribute] = tag[attribute];
+    }
+  });
+  return React4.createElement(type, mappedTag);
+});
+var getMethodsForTag = (type, tags, encode = true) => {
+  switch (type) {
+    case "title":
+      return {
+        toComponent: () => generateTitleAsReactComponent(type, tags.title, tags.titleAttributes),
+        toString: () => generateTitleAsString(type, tags.title, tags.titleAttributes, encode)
+      };
+    case "bodyAttributes":
+    case "htmlAttributes":
+      return {
+        toComponent: () => convertElementAttributesToReactProps(tags),
+        toString: () => generateElementAttributesAsString(tags)
+      };
+    default:
+      return {
+        toComponent: () => generateTagsAsReactComponent(type, tags),
+        toString: () => generateTagsAsString(type, tags, encode)
+      };
+  }
+};
+var getPriorityMethods = ({ metaTags, linkTags, scriptTags, encode }) => {
+  const meta = prioritizer(metaTags, SEO_PRIORITY_TAGS.meta);
+  const link = prioritizer(linkTags, SEO_PRIORITY_TAGS.link);
+  const script = prioritizer(scriptTags, SEO_PRIORITY_TAGS.script);
+  const priorityMethods = {
+    toComponent: () => [
+      ...generateTagsAsReactComponent("meta", meta.priority),
+      ...generateTagsAsReactComponent("link", link.priority),
+      ...generateTagsAsReactComponent("script", script.priority)
+    ],
+    toString: () => (
+      // generate all the tags as strings and concatenate them
+      `${getMethodsForTag("meta", meta.priority, encode)} ${getMethodsForTag(
+        "link",
+        link.priority,
+        encode
+      )} ${getMethodsForTag("script", script.priority, encode)}`
+    )
+  };
+  return {
+    priorityMethods,
+    metaTags: meta.default,
+    linkTags: link.default,
+    scriptTags: script.default
+  };
+};
+var mapStateOnServer = (props) => {
+  const {
+    baseTag,
+    bodyAttributes,
+    encode = true,
+    htmlAttributes,
+    noscriptTags,
+    styleTags,
+    title = "",
+    titleAttributes,
+    prioritizeSeoTags
+  } = props;
+  let { linkTags, metaTags, scriptTags } = props;
+  let priorityMethods = {
+    toComponent: () => [],
+    toString: () => ""
+  };
+  if (prioritizeSeoTags) {
+    ({ priorityMethods, linkTags, metaTags, scriptTags } = getPriorityMethods(props));
+  }
+  return {
+    priority: priorityMethods,
+    base: getMethodsForTag("base", baseTag, encode),
+    bodyAttributes: getMethodsForTag("bodyAttributes", bodyAttributes, encode),
+    htmlAttributes: getMethodsForTag("htmlAttributes", htmlAttributes, encode),
+    link: getMethodsForTag("link", linkTags, encode),
+    meta: getMethodsForTag("meta", metaTags, encode),
+    noscript: getMethodsForTag("noscript", noscriptTags, encode),
+    script: getMethodsForTag("script", scriptTags, encode),
+    style: getMethodsForTag("style", styleTags, encode),
+    title: getMethodsForTag("title", { title, titleAttributes }, encode)
+  };
+};
+var server_default = mapStateOnServer;
+var instances = [];
+var isDocument = !!(typeof window !== "undefined" && window.document && window.document.createElement);
+var HelmetData = class {
+  instances = [];
+  canUseDOM = isDocument;
+  context;
+  value = {
+    setHelmet: (serverState) => {
+      this.context.helmet = serverState;
+    },
+    helmetInstances: {
+      get: () => this.canUseDOM ? instances : this.instances,
+      add: (instance) => {
+        (this.canUseDOM ? instances : this.instances).push(instance);
+      },
+      remove: (instance) => {
+        const index = (this.canUseDOM ? instances : this.instances).indexOf(instance);
+        (this.canUseDOM ? instances : this.instances).splice(index, 1);
+      }
+    }
+  };
+  constructor(context, canUseDOM) {
+    this.context = context;
+    this.canUseDOM = canUseDOM || false;
+    if (!canUseDOM) {
+      context.helmet = server_default({
+        baseTag: [],
+        bodyAttributes: {},
+        htmlAttributes: {},
+        linkTags: [],
+        metaTags: [],
+        noscriptTags: [],
+        scriptTags: [],
+        styleTags: [],
+        title: "",
+        titleAttributes: {}
+      });
+    }
+  }
+};
+var major = parseInt(React4.version.split(".")[0], 10);
+var isReact19 = major >= 19;
+var defaultValue = {};
+var Context = React4.createContext(defaultValue);
+var HelmetProvider = class _HelmetProvider extends Component {
+  static canUseDOM = isDocument;
+  helmetData;
+  constructor(props) {
+    super(props);
+    if (isReact19) {
+      this.helmetData = null;
+    } else {
+      this.helmetData = new HelmetData(this.props.context || {}, _HelmetProvider.canUseDOM);
+    }
+  }
+  render() {
+    if (isReact19) {
+      return /* @__PURE__ */ React4.createElement(React4.Fragment, null, this.props.children);
+    }
+    return /* @__PURE__ */ React4.createElement(Context.Provider, { value: this.helmetData.value }, this.props.children);
+  }
+};
+var updateTags = (type, tags) => {
+  const headElement = document.head || document.querySelector(
+    "head"
+    /* HEAD */
+  );
+  const tagNodes = headElement.querySelectorAll(`${type}[${HELMET_ATTRIBUTE}]`);
+  const oldTags = [].slice.call(tagNodes);
+  const newTags = [];
+  let indexToDelete;
+  if (tags && tags.length) {
+    tags.forEach((tag) => {
+      const newElement = document.createElement(type);
+      for (const attribute in tag) {
+        if (Object.prototype.hasOwnProperty.call(tag, attribute)) {
+          if (attribute === "innerHTML") {
+            newElement.innerHTML = tag.innerHTML;
+          } else if (attribute === "cssText") {
+            const cssText = tag.cssText;
+            newElement.appendChild(document.createTextNode(cssText));
+          } else {
+            const attr = attribute;
+            const value = typeof tag[attr] === "undefined" ? "" : tag[attr];
+            newElement.setAttribute(attribute, value);
+          }
+        }
+      }
+      newElement.setAttribute(HELMET_ATTRIBUTE, "true");
+      if (oldTags.some((existingTag, index) => {
+        indexToDelete = index;
+        return newElement.isEqualNode(existingTag);
+      })) {
+        oldTags.splice(indexToDelete, 1);
+      } else {
+        newTags.push(newElement);
+      }
+    });
+  }
+  oldTags.forEach((tag) => tag.parentNode?.removeChild(tag));
+  newTags.forEach((tag) => headElement.appendChild(tag));
+  return {
+    oldTags,
+    newTags
+  };
+};
+var updateAttributes = (tagName, attributes) => {
+  const elementTag = document.getElementsByTagName(tagName)[0];
+  if (!elementTag) {
+    return;
+  }
+  const helmetAttributeString = elementTag.getAttribute(HELMET_ATTRIBUTE);
+  const helmetAttributes = helmetAttributeString ? helmetAttributeString.split(",") : [];
+  const attributesToRemove = [...helmetAttributes];
+  const attributeKeys = Object.keys(attributes);
+  for (const attribute of attributeKeys) {
+    const value = attributes[attribute] || "";
+    if (elementTag.getAttribute(attribute) !== value) {
+      elementTag.setAttribute(attribute, value);
+    }
+    if (helmetAttributes.indexOf(attribute) === -1) {
+      helmetAttributes.push(attribute);
+    }
+    const indexToSave = attributesToRemove.indexOf(attribute);
+    if (indexToSave !== -1) {
+      attributesToRemove.splice(indexToSave, 1);
+    }
+  }
+  for (let i = attributesToRemove.length - 1; i >= 0; i -= 1) {
+    elementTag.removeAttribute(attributesToRemove[i]);
+  }
+  if (helmetAttributes.length === attributesToRemove.length) {
+    elementTag.removeAttribute(HELMET_ATTRIBUTE);
+  } else if (elementTag.getAttribute(HELMET_ATTRIBUTE) !== attributeKeys.join(",")) {
+    elementTag.setAttribute(HELMET_ATTRIBUTE, attributeKeys.join(","));
+  }
+};
+var updateTitle = (title, attributes) => {
+  if (typeof title !== "undefined" && document.title !== title) {
+    document.title = flattenArray(title);
+  }
+  updateAttributes("title", attributes);
+};
+var commitTagChanges = (newState, cb) => {
+  const {
+    baseTag,
+    bodyAttributes,
+    htmlAttributes,
+    linkTags,
+    metaTags,
+    noscriptTags,
+    onChangeClientState,
+    scriptTags,
+    styleTags,
+    title,
+    titleAttributes
+  } = newState;
+  updateAttributes("body", bodyAttributes);
+  updateAttributes("html", htmlAttributes);
+  updateTitle(title, titleAttributes);
+  const tagUpdates = {
+    baseTag: updateTags("base", baseTag),
+    linkTags: updateTags("link", linkTags),
+    metaTags: updateTags("meta", metaTags),
+    noscriptTags: updateTags("noscript", noscriptTags),
+    scriptTags: updateTags("script", scriptTags),
+    styleTags: updateTags("style", styleTags)
+  };
+  const addedTags = {};
+  const removedTags = {};
+  Object.keys(tagUpdates).forEach((tagType) => {
+    const { newTags, oldTags } = tagUpdates[tagType];
+    if (newTags.length) {
+      addedTags[tagType] = newTags;
+    }
+    if (oldTags.length) {
+      removedTags[tagType] = tagUpdates[tagType].oldTags;
+    }
+  });
+  if (cb) {
+    cb();
+  }
+  onChangeClientState(newState, addedTags, removedTags);
+};
+var _helmetCallback = null;
+var handleStateChangeOnClient = (newState) => {
+  if (_helmetCallback) {
+    cancelAnimationFrame(_helmetCallback);
+  }
+  if (newState.defer) {
+    _helmetCallback = requestAnimationFrame(() => {
+      commitTagChanges(newState, () => {
+        _helmetCallback = null;
+      });
+    });
+  } else {
+    commitTagChanges(newState);
+    _helmetCallback = null;
+  }
+};
+var client_default = handleStateChangeOnClient;
+var HelmetDispatcher = class extends Component {
+  rendered = false;
+  shouldComponentUpdate(nextProps) {
+    return !shallowEqual(nextProps, this.props);
+  }
+  componentDidUpdate() {
+    this.emitChange();
+  }
+  componentWillUnmount() {
+    const { helmetInstances } = this.props.context;
+    helmetInstances.remove(this);
+    this.emitChange();
+  }
+  emitChange() {
+    const { helmetInstances, setHelmet } = this.props.context;
+    let serverState = null;
+    const state = reducePropsToState(
+      helmetInstances.get().map((instance) => {
+        const { context: _context, ...props } = instance.props;
+        return props;
+      })
+    );
+    if (HelmetProvider.canUseDOM) {
+      client_default(state);
+    } else if (server_default) {
+      serverState = server_default(state);
+    }
+    setHelmet(serverState);
+  }
+  // componentWillMount will be deprecated
+  // for SSR, initialize on first render
+  // constructor is also unsafe in StrictMode
+  init() {
+    if (this.rendered) {
+      return;
+    }
+    this.rendered = true;
+    const { helmetInstances } = this.props.context;
+    helmetInstances.add(this);
+    this.emitChange();
+  }
+  render() {
+    this.init();
+    return null;
+  }
+};
+var react19Instances = [];
+var toHtmlAttributes = (props) => {
+  const result = {};
+  for (const key of Object.keys(props)) {
+    result[HTML_TAG_MAP[key] || key] = props[key];
+  }
+  return result;
+};
+var toReactProps = (attrs) => {
+  const result = {};
+  for (const key of Object.keys(attrs)) {
+    const mapped = REACT_TAG_MAP[key];
+    result[mapped || key] = attrs[key];
+  }
+  return result;
+};
+var applyAttributes = (tagName, attributes) => {
+  if (!isDocument)
+    return;
+  const el = document.getElementsByTagName(tagName)[0];
+  if (!el)
+    return;
+  const managedAttr = "data-rh-managed";
+  const prev = el.getAttribute(managedAttr);
+  const prevKeys = prev ? prev.split(",") : [];
+  const nextKeys = Object.keys(attributes);
+  for (const key of prevKeys) {
+    if (!nextKeys.includes(key)) {
+      el.removeAttribute(key);
+    }
+  }
+  for (const key of nextKeys) {
+    const value = attributes[key];
+    if (value === void 0 || value === null || value === false) {
+      el.removeAttribute(key);
+    } else if (value === true) {
+      el.setAttribute(key, "");
+    } else {
+      el.setAttribute(key, String(value));
+    }
+  }
+  if (nextKeys.length > 0) {
+    el.setAttribute(managedAttr, nextKeys.join(","));
+  } else {
+    el.removeAttribute(managedAttr);
+  }
+};
+var syncAllAttributes = () => {
+  const htmlAttrs = {};
+  const bodyAttrs = {};
+  for (const instance of react19Instances) {
+    const { htmlAttributes, bodyAttributes } = instance.props;
+    if (htmlAttributes) {
+      Object.assign(htmlAttrs, toHtmlAttributes(htmlAttributes));
+    }
+    if (bodyAttributes) {
+      Object.assign(bodyAttrs, toHtmlAttributes(bodyAttributes));
+    }
+  }
+  applyAttributes("html", htmlAttrs);
+  applyAttributes("body", bodyAttrs);
+};
+var React19Dispatcher = class extends Component {
+  componentDidMount() {
+    react19Instances.push(this);
+    syncAllAttributes();
+  }
+  componentDidUpdate() {
+    syncAllAttributes();
+  }
+  componentWillUnmount() {
+    const index = react19Instances.indexOf(this);
+    if (index !== -1) {
+      react19Instances.splice(index, 1);
+    }
+    syncAllAttributes();
+  }
+  resolveTitle() {
+    const { title, titleTemplate, defaultTitle } = this.props;
+    if (title && titleTemplate) {
+      return titleTemplate.replace(/%s/g, () => Array.isArray(title) ? title.join("") : title);
+    }
+    return title || defaultTitle || void 0;
+  }
+  renderTitle() {
+    const title = this.resolveTitle();
+    if (title === void 0)
+      return null;
+    const titleAttributes = this.props.titleAttributes || {};
+    return React4.createElement("title", toReactProps(titleAttributes), title);
+  }
+  renderBase() {
+    const { base } = this.props;
+    if (!base)
+      return null;
+    return React4.createElement("base", toReactProps(base));
+  }
+  renderMeta() {
+    const { meta } = this.props;
+    if (!meta || !Array.isArray(meta))
+      return null;
+    return meta.map(
+      (attrs, i) => React4.createElement("meta", {
+        key: i,
+        ...toReactProps(attrs)
+      })
+    );
+  }
+  renderLink() {
+    const { link } = this.props;
+    if (!link || !Array.isArray(link))
+      return null;
+    return link.map(
+      (attrs, i) => React4.createElement("link", {
+        key: i,
+        ...toReactProps(attrs)
+      })
+    );
+  }
+  renderScript() {
+    const { script } = this.props;
+    if (!script || !Array.isArray(script))
+      return null;
+    return script.map((attrs, i) => {
+      const { innerHTML, ...rest } = attrs;
+      const props = toReactProps(rest);
+      if (innerHTML) {
+        props.dangerouslySetInnerHTML = { __html: innerHTML };
+      }
+      return React4.createElement("script", { key: i, ...props });
+    });
+  }
+  renderStyle() {
+    const { style } = this.props;
+    if (!style || !Array.isArray(style))
+      return null;
+    return style.map((attrs, i) => {
+      const { cssText, ...rest } = attrs;
+      const props = toReactProps(rest);
+      if (cssText) {
+        props.dangerouslySetInnerHTML = { __html: cssText };
+      }
+      return React4.createElement("style", { key: i, ...props });
+    });
+  }
+  renderNoscript() {
+    const { noscript } = this.props;
+    if (!noscript || !Array.isArray(noscript))
+      return null;
+    return noscript.map((attrs, i) => {
+      const { innerHTML, ...rest } = attrs;
+      const props = toReactProps(rest);
+      if (innerHTML) {
+        props.dangerouslySetInnerHTML = { __html: innerHTML };
+      }
+      return React4.createElement("noscript", { key: i, ...props });
+    });
+  }
+  render() {
+    return React4.createElement(
+      React4.Fragment,
+      null,
+      this.renderTitle(),
+      this.renderBase(),
+      this.renderMeta(),
+      this.renderLink(),
+      this.renderScript(),
+      this.renderStyle(),
+      this.renderNoscript()
+    );
+  }
+};
+var Helmet = class extends Component {
+  static defaultProps = {
+    defer: true,
+    encodeSpecialCharacters: true,
+    prioritizeSeoTags: false
+  };
+  shouldComponentUpdate(nextProps) {
+    return !fastCompare(without(this.props, "helmetData"), without(nextProps, "helmetData"));
+  }
+  mapNestedChildrenToProps(child, nestedChildren) {
+    if (!nestedChildren) {
+      return null;
+    }
+    switch (child.type) {
+      case "script":
+      case "noscript":
+        return {
+          innerHTML: nestedChildren
+        };
+      case "style":
+        return {
+          cssText: nestedChildren
+        };
+      default:
+        throw new Error(
+          `<${child.type} /> elements are self-closing and can not contain children. Refer to our API for more information.`
+        );
+    }
+  }
+  flattenArrayTypeChildren(child, arrayTypeChildren, newChildProps, nestedChildren) {
+    return {
+      ...arrayTypeChildren,
+      [child.type]: [
+        ...arrayTypeChildren[child.type] || [],
+        {
+          ...newChildProps,
+          ...this.mapNestedChildrenToProps(child, nestedChildren)
+        }
+      ]
+    };
+  }
+  mapObjectTypeChildren(child, newProps, newChildProps, nestedChildren) {
+    switch (child.type) {
+      case "title":
+        return {
+          ...newProps,
+          [child.type]: nestedChildren,
+          titleAttributes: { ...newChildProps }
+        };
+      case "body":
+        return {
+          ...newProps,
+          bodyAttributes: { ...newChildProps }
+        };
+      case "html":
+        return {
+          ...newProps,
+          htmlAttributes: { ...newChildProps }
+        };
+      default:
+        return {
+          ...newProps,
+          [child.type]: { ...newChildProps }
+        };
+    }
+  }
+  mapArrayTypeChildrenToProps(arrayTypeChildren, newProps) {
+    let newFlattenedProps = { ...newProps };
+    Object.keys(arrayTypeChildren).forEach((arrayChildName) => {
+      newFlattenedProps = {
+        ...newFlattenedProps,
+        [arrayChildName]: arrayTypeChildren[arrayChildName]
+      };
+    });
+    return newFlattenedProps;
+  }
+  warnOnInvalidChildren(child, nestedChildren) {
+    invariant(
+      VALID_TAG_NAMES.some((name) => child.type === name),
+      typeof child.type === "function" ? `You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.` : `Only elements types ${VALID_TAG_NAMES.join(
+        ", "
+      )} are allowed. Helmet does not support rendering <${child.type}> elements. Refer to our API for more information.`
+    );
+    invariant(
+      !nestedChildren || typeof nestedChildren === "string" || Array.isArray(nestedChildren) && !nestedChildren.some((nestedChild) => typeof nestedChild !== "string"),
+      `Helmet expects a string as a child of <${child.type}>. Did you forget to wrap your children in braces? ( <${child.type}>{\`\`}</${child.type}> ) Refer to our API for more information.`
+    );
+    return true;
+  }
+  mapChildrenToProps(children, newProps) {
+    let arrayTypeChildren = {};
+    React4.Children.forEach(children, (child) => {
+      if (!child || !child.props) {
+        return;
+      }
+      const { children: nestedChildren, ...childProps } = child.props;
+      const newChildProps = Object.keys(childProps).reduce((obj, key) => {
+        obj[HTML_TAG_MAP[key] || key] = childProps[key];
+        return obj;
+      }, {});
+      let { type } = child;
+      if (typeof type === "symbol") {
+        type = type.toString();
+      } else {
+        this.warnOnInvalidChildren(child, nestedChildren);
+      }
+      switch (type) {
+        case "Symbol(react.fragment)":
+          newProps = this.mapChildrenToProps(nestedChildren, newProps);
+          break;
+        case "link":
+        case "meta":
+        case "noscript":
+        case "script":
+        case "style":
+          arrayTypeChildren = this.flattenArrayTypeChildren(
+            child,
+            arrayTypeChildren,
+            newChildProps,
+            nestedChildren
+          );
+          break;
+        default:
+          newProps = this.mapObjectTypeChildren(child, newProps, newChildProps, nestedChildren);
+          break;
+      }
+    });
+    return this.mapArrayTypeChildrenToProps(arrayTypeChildren, newProps);
+  }
+  render() {
+    const { children, ...props } = this.props;
+    let newProps = { ...props };
+    let { helmetData } = props;
+    if (children) {
+      newProps = this.mapChildrenToProps(children, newProps);
+    }
+    if (helmetData && !(helmetData instanceof HelmetData)) {
+      const data = helmetData;
+      helmetData = new HelmetData(data.context, true);
+      delete newProps.helmetData;
+    }
+    if (isReact19) {
+      return /* @__PURE__ */ React4.createElement(React19Dispatcher, { ...newProps });
+    }
+    return helmetData ? /* @__PURE__ */ React4.createElement(HelmetDispatcher, { ...newProps, context: helmetData.value }) : /* @__PURE__ */ React4.createElement(Context.Consumer, null, (context) => /* @__PURE__ */ React4.createElement(HelmetDispatcher, { ...newProps, context }));
+  }
+};
 const supabaseUrl = "https://ktunjttwbqyipypebaae.supabase.co";
 const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0dW5qdHR3YnF5aXB5cGViYWFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTgxNDYsImV4cCI6MjA4NTc3NDE0Nn0.DmKji0hhYXCSAndlH8Jv6fEwoVaphot8mM7PwtjBOo8";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -3711,6 +4690,79 @@ const route7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: ProtectedLayout
 }, Symbol.toStringTag, { value: "Module" }));
+const TopBar = ({
+  type = "standard",
+  // 'standard' or 'main' (for Feed)
+  title,
+  icon: Icon2,
+  leftAction,
+  // custom action instead of default back arrow
+  rightAction,
+  // custom components on the right (like "Create" buttons)
+  titleColor = "#F2F1EE",
+  critical = false
+  // specific prop for CrisisAlerts red styling
+}) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  if (type === "main") {
+    const isMenuOpen = rightAction?.isMenuOpen;
+    const setIsMenuOpen = rightAction?.setIsMenuOpen;
+    return /* @__PURE__ */ jsx("div", { className: `top-bar-container ${critical ? "is-critical" : ""}`, children: /* @__PURE__ */ jsxs("div", { className: "top-bar-main-flex", children: [
+      /* @__PURE__ */ jsxs("div", { className: "top-bar-logo-group", children: [
+        /* @__PURE__ */ jsx("div", { className: "top-bar-logo" }),
+        /* @__PURE__ */ jsx("h1", { className: "top-bar-logo-text", children: "Ala" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "top-bar-nav-links", children: [
+        /* @__PURE__ */ jsxs(Link, { to: "/feed", className: "top-bar-nav-btn", style: { color: location.pathname === "/feed" ? "#4ADE80" : "#F2F1EE" }, children: [
+          /* @__PURE__ */ jsx(Home, { size: 22, strokeWidth: location.pathname === "/feed" ? 2.5 : 2 }),
+          /* @__PURE__ */ jsx("span", { className: "top-bar-nav-label", style: { fontWeight: location.pathname === "/feed" ? 600 : 400 }, children: "Home" })
+        ] }),
+        /* @__PURE__ */ jsxs(Link, { to: "/groups", className: "top-bar-nav-btn", style: { color: location.pathname.startsWith("/groups") ? "#4ADE80" : "#F2F1EE" }, children: [
+          /* @__PURE__ */ jsx(Users, { size: 22 }),
+          /* @__PURE__ */ jsx("span", { className: "top-bar-nav-label", children: "Groups" })
+        ] }),
+        /* @__PURE__ */ jsxs(Link, { to: "/new-post", className: "top-bar-nav-btn", style: { color: "#F2F1EE" }, children: [
+          /* @__PURE__ */ jsx(PlusSquare, { size: 22 }),
+          /* @__PURE__ */ jsx("span", { className: "top-bar-nav-label", children: "Post" })
+        ] }),
+        /* @__PURE__ */ jsxs(Link, { to: "/messages", className: "top-bar-nav-btn", style: { color: location.pathname.startsWith("/messages") ? "#4ADE80" : "#F2F1EE" }, children: [
+          /* @__PURE__ */ jsx(MessageCircle, { size: 22 }),
+          /* @__PURE__ */ jsx("span", { className: "top-bar-nav-label", children: "Chat" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => setIsMenuOpen && setIsMenuOpen(!isMenuOpen),
+            className: "top-bar-nav-btn",
+            style: { color: "#F2F1EE" },
+            children: [
+              isMenuOpen ? /* @__PURE__ */ jsx(X, { size: 22 }) : /* @__PURE__ */ jsx(Menu, { size: 22 }),
+              /* @__PURE__ */ jsx("span", { className: "top-bar-nav-label", children: "More" })
+            ]
+          }
+        )
+      ] })
+    ] }) });
+  }
+  return /* @__PURE__ */ jsx("div", { className: `top-bar-container ${critical ? "is-critical" : ""}`, children: /* @__PURE__ */ jsxs("div", { className: "top-bar-standard-flex", children: [
+    /* @__PURE__ */ jsxs("div", { className: "top-bar-left-group", children: [
+      leftAction !== null && /* @__PURE__ */ jsx(
+        "button",
+        {
+          onClick: () => leftAction ? leftAction() : navigate(-1),
+          className: "top-bar-back-btn",
+          children: /* @__PURE__ */ jsx(ArrowLeft, { size: 24 })
+        }
+      ),
+      (title || Icon2) && /* @__PURE__ */ jsxs("h1", { className: "top-bar-title", style: { color: titleColor }, children: [
+        Icon2 && /* @__PURE__ */ jsx("span", { className: "top-bar-title-icon", children: Icon2 }),
+        /* @__PURE__ */ jsx("span", { children: title })
+      ] })
+    ] }),
+    rightAction && /* @__PURE__ */ jsx("div", { className: "top-bar-right-group", children: rightAction })
+  ] }) });
+};
 const Feed = () => {
   const {
     t
@@ -3868,147 +4920,15 @@ const Feed = () => {
       noindex: true
     }), /* @__PURE__ */ jsxs("div", {
       style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "10px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+        position: "relative",
+        zIndex: 50
       },
-      children: [/* @__PURE__ */ jsxs("div", {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 12
-        },
-        children: [/* @__PURE__ */ jsx("div", {
-          style: {
-            width: 32,
-            height: 32,
-            background: "#EAE7E2",
-            mask: "url(/icons/ala.svg) no-repeat center / contain",
-            WebkitMask: "url(/icons/ala.svg) no-repeat center / contain"
-          }
-        }), /* @__PURE__ */ jsx("h1", {
-          style: {
-            fontSize: 20,
-            fontWeight: "bold",
-            color: "#F2F1EE",
-            margin: 0,
-            display: "none",
-            sm: "block"
-          },
-          children: "Ala"
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 24
-        },
-        children: [/* @__PURE__ */ jsxs(Link, {
-          to: "/feed",
-          style: {
-            color: "#4ADE80",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 4,
-            textDecoration: "none"
-          },
-          children: [/* @__PURE__ */ jsx(Home, {
-            size: 24,
-            strokeWidth: 2.5
-          }), /* @__PURE__ */ jsx("span", {
-            style: {
-              fontSize: 10,
-              fontWeight: 600
-            },
-            children: "Home"
-          })]
-        }), /* @__PURE__ */ jsxs(Link, {
-          to: "/groups",
-          style: {
-            color: "#F2F1EE",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 4,
-            textDecoration: "none"
-          },
-          children: [/* @__PURE__ */ jsx(Users, {
-            size: 24
-          }), /* @__PURE__ */ jsx("span", {
-            style: {
-              fontSize: 10
-            },
-            children: "Groups"
-          })]
-        }), /* @__PURE__ */ jsxs(Link, {
-          to: "/new-post",
-          style: {
-            color: "#4ADE80",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 4,
-            textDecoration: "none"
-          },
-          children: [/* @__PURE__ */ jsx(PlusSquare, {
-            size: 24
-          }), /* @__PURE__ */ jsx("span", {
-            style: {
-              fontSize: 10
-            },
-            children: "Post"
-          })]
-        }), /* @__PURE__ */ jsxs(Link, {
-          to: "/messages",
-          style: {
-            color: "#F2F1EE",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 4,
-            textDecoration: "none"
-          },
-          children: [/* @__PURE__ */ jsx(MessageCircle, {
-            size: 24
-          }), /* @__PURE__ */ jsx("span", {
-            style: {
-              fontSize: 10
-            },
-            children: "Chat"
-          })]
-        }), /* @__PURE__ */ jsxs("button", {
-          onClick: () => setIsMenuOpen(!isMenuOpen),
-          style: {
-            background: "transparent",
-            border: "none",
-            color: "#F2F1EE",
-            cursor: "pointer",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 4,
-            padding: 0
-          },
-          children: [isMenuOpen ? /* @__PURE__ */ jsx(X, {
-            size: 24
-          }) : /* @__PURE__ */ jsx(Menu, {
-            size: 24
-          }), /* @__PURE__ */ jsx("span", {
-            style: {
-              fontSize: 10
-            },
-            children: "More"
-          })]
-        })]
+      children: [/* @__PURE__ */ jsx(TopBar, {
+        type: "main",
+        rightAction: {
+          isMenuOpen,
+          setIsMenuOpen
+        }
       }), isMenuOpen && /* @__PURE__ */ jsxs("div", {
         style: {
           position: "absolute",
@@ -5709,7 +6629,6 @@ const PostDetails = () => {
   const {
     toast
   } = useToast();
-  const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -5862,37 +6781,8 @@ const PostDetails = () => {
       background: "#0B3D2E",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "10px 16px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate(-1),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#F2F1EE",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {})
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 18,
-          fontWeight: "bold",
-          color: "#F2F1EE",
-          margin: 0
-        },
-        children: "Discussion"
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Discussion"
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 640,
@@ -6321,7 +7211,6 @@ const GroupPostDetails = () => {
   const {
     toast
   } = useToast();
-  const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -6485,37 +7374,8 @@ const GroupPostDetails = () => {
       background: "#0B3D2E",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "10px 16px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate(-1),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#F2F1EE",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {})
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 18,
-          fontWeight: "bold",
-          color: "#F2F1EE",
-          margin: 0
-        },
-        children: "Group Discussion"
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Group Discussion"
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 640,
@@ -6804,34 +7664,13 @@ const Groups = () => {
       paddingBottom: 80,
       color: "#F2F1EE"
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: 10
-      },
-      children: [/* @__PURE__ */ jsxs("h1", {
-        style: {
-          fontSize: 24,
-          fontWeight: "bold",
-          margin: 0,
-          display: "flex",
-          alignItems: "center",
-          gap: 10
-        },
-        children: [/* @__PURE__ */ jsx(Users, {
-          color: "#4ADE80"
-        }), " ", t("auth.groups.title") || "Groups"]
-      }), user && /* @__PURE__ */ jsxs(Link, {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: t("auth.groups.title") || "Groups",
+      icon: /* @__PURE__ */ jsx(Users, {
+        color: "#4ADE80"
+      }),
+      leftAction: null,
+      rightAction: user && /* @__PURE__ */ jsxs(Link, {
         to: "/create-group",
         style: {
           background: "#4ADE80",
@@ -6849,7 +7688,7 @@ const Groups = () => {
         children: [/* @__PURE__ */ jsx(PlusSquare, {
           size: 18
         }), " ", t("auth.groups.create") || "Create Group"]
-      })]
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -7098,28 +7937,18 @@ const CreateGroup = () => {
       paddingBottom: 80,
       color: "#F2F1EE"
     },
-    children: [/* @__PURE__ */ jsxs("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: t("auth.groups.create_title") || "Create a New Group",
+      icon: /* @__PURE__ */ jsx(Users, {
+        size: 18
+      })
+    }), /* @__PURE__ */ jsx("div", {
       style: {
         maxWidth: 600,
         margin: "0 auto",
         padding: "20px"
       },
-      children: [/* @__PURE__ */ jsxs("button", {
-        onClick: () => navigate(-1),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          marginBottom: 20
-        },
-        children: [/* @__PURE__ */ jsx(ArrowLeft, {
-          size: 18
-        }), " Back"]
-      }), /* @__PURE__ */ jsxs(motion.div, {
+      children: /* @__PURE__ */ jsxs(motion.div, {
         initial: {
           opacity: 0,
           y: 20
@@ -7269,7 +8098,7 @@ const CreateGroup = () => {
             }) : /* @__PURE__ */ jsx(CheckCircle, {}), t("auth.groups.submit_create") || "Create Group"]
           })]
         })]
-      })]
+      })
     }), /* @__PURE__ */ jsx("style", {
       children: `
         .animate-spin { animation: spin 1s linear infinite; }
@@ -7533,35 +8362,22 @@ const GroupDetails = () => {
     },
     children: "Group not found"
   });
-  return /* @__PURE__ */ jsx("div", {
+  return /* @__PURE__ */ jsxs("div", {
     style: {
       minHeight: "100vh",
       background: "#0B3D2E",
       paddingBottom: 80,
       color: "#F2F1EE"
     },
-    children: /* @__PURE__ */ jsxs("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: group.name
+    }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
         margin: "0 auto",
         padding: "20px"
       },
-      children: [/* @__PURE__ */ jsxs("button", {
-        onClick: () => navigate("/groups"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          marginBottom: 20
-        },
-        children: [/* @__PURE__ */ jsx(ArrowLeft, {
-          size: 18
-        }), " Back to Groups"]
-      }), isAdmin && members.some((m) => m.status === "pending") && /* @__PURE__ */ jsxs("div", {
+      children: [isAdmin && members.some((m) => m.status === "pending") && /* @__PURE__ */ jsxs("div", {
         style: {
           background: "rgba(251, 191, 36, 0.1)",
           border: "1px solid #FBBF24",
@@ -7940,7 +8756,7 @@ const GroupDetails = () => {
           })]
         }, post.id))
       })]
-    })
+    })]
   });
 };
 const GroupDetails$1 = UNSAFE_withComponentProps(GroupDetails);
@@ -7987,54 +8803,9 @@ const Marketplace = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "12px 16px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 8
-      },
-      children: [/* @__PURE__ */ jsxs("div", {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          flexShrink: 0
-        },
-        children: [/* @__PURE__ */ jsx("button", {
-          onClick: () => navigate("/feed"),
-          style: {
-            background: "transparent",
-            border: "none",
-            color: "#A7C7BC",
-            cursor: "pointer",
-            padding: 4
-          },
-          children: /* @__PURE__ */ jsx(ArrowLeft, {
-            size: 22
-          })
-        }), /* @__PURE__ */ jsx("h1", {
-          style: {
-            fontSize: 18,
-            fontWeight: "bold",
-            margin: 0,
-            whiteSpace: "nowrap"
-          },
-          children: "Marketplace"
-        })]
-      }), user && /* @__PURE__ */ jsxs("div", {
-        style: {
-          display: "flex",
-          gap: 6,
-          flexShrink: 0
-        },
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Marketplace",
+      rightAction: user && /* @__PURE__ */ jsxs(Fragment, {
         children: [/* @__PURE__ */ jsxs("button", {
           onClick: () => navigate("/my-orders"),
           style: {
@@ -8076,7 +8847,7 @@ const Marketplace = () => {
             children: "Sell"
           })]
         })]
-      })]
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -8417,38 +9188,8 @@ const CreateListing = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/marketplace"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 24
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 20,
-          fontWeight: "bold",
-          margin: 0
-        },
-        children: "Create Listing"
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Create Listing"
     }), /* @__PURE__ */ jsx("div", {
       style: {
         maxWidth: 600,
@@ -8953,7 +9694,6 @@ const ListingDetails = () => {
   const {
     toast
   } = useToast();
-  const navigate = useNavigate();
   const [listing, setListing] = useState(null);
   const [bids, setBids] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -9211,41 +9951,9 @@ const ListingDetails = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "12px 16px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 10
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/marketplace"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer",
-          padding: 4
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 22
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 18,
-          fontWeight: "bold",
-          margin: 0,
-          flex: 1,
-          whiteSpace: "nowrap"
-        },
-        children: "Item Details"
-      }), isOwner && /* @__PURE__ */ jsxs("button", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Item Details",
+      rightAction: isOwner && /* @__PURE__ */ jsxs("button", {
         onClick: () => setShowOrders(!showOrders),
         style: {
           background: showOrders ? "#4ADE80" : "rgba(255,255,255,0.1)",
@@ -9264,7 +9972,7 @@ const ListingDetails = () => {
         children: [/* @__PURE__ */ jsx(Package, {
           size: 15
         }), " Orders ", transactions.filter((t) => t.status === "pending").length > 0 && `(${transactions.filter((t) => t.status === "pending").length})`]
-      })]
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -10222,38 +10930,8 @@ const MyOrders = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/marketplace"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 24
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 20,
-          fontWeight: "bold",
-          margin: 0
-        },
-        children: "My Orders"
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "My Orders"
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 700,
@@ -10680,73 +11358,41 @@ const Resources = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67"
-      },
-      children: [/* @__PURE__ */ jsxs("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Resources",
+      icon: /* @__PURE__ */ jsx(BookOpen, {
+        size: 20
+      }),
+      rightAction: user && /* @__PURE__ */ jsxs("button", {
+        onClick: () => navigate("/upload-resource"),
         style: {
+          background: "#4ADE80",
+          color: "#0B3D2E",
+          border: "none",
+          borderRadius: 20,
+          padding: "8px 16px",
+          fontWeight: "bold",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 12
+          gap: 6,
+          cursor: "pointer",
+          whiteSpace: "nowrap"
         },
-        children: [/* @__PURE__ */ jsxs("div", {
-          style: {
-            display: "flex",
-            alignItems: "center",
-            gap: 12
-          },
-          children: [/* @__PURE__ */ jsx("button", {
-            onClick: () => navigate("/feed"),
-            style: {
-              background: "transparent",
-              border: "none",
-              color: "#A7C7BC",
-              cursor: "pointer"
-            },
-            children: /* @__PURE__ */ jsx(ArrowLeft, {
-              size: 24
-            })
-          }), /* @__PURE__ */ jsxs("h1", {
-            style: {
-              fontSize: 20,
-              fontWeight: "bold",
-              margin: 0
-            },
-            children: [/* @__PURE__ */ jsx(BookOpen, {
-              size: 20,
-              style: {
-                verticalAlign: "middle",
-                marginRight: 8
-              }
-            }), "Resources"]
-          })]
-        }), user && /* @__PURE__ */ jsxs("button", {
-          onClick: () => navigate("/upload-resource"),
-          style: {
-            background: "#4ADE80",
-            color: "#0B3D2E",
-            border: "none",
-            borderRadius: 20,
-            padding: "8px 16px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            cursor: "pointer"
-          },
-          children: [/* @__PURE__ */ jsx(Plus, {
-            size: 18
-          }), " Upload"]
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
+        children: [/* @__PURE__ */ jsx(Plus, {
+          size: 18
+        }), " Upload"]
+      })
+    }), /* @__PURE__ */ jsx("div", {
+      style: {
+        position: "sticky",
+        top: 60,
+        zIndex: 9,
+        background: "rgba(11, 61, 46, 0.95)",
+        backdropFilter: "blur(10px)",
+        padding: "10px 20px",
+        borderBottom: "1px solid #2E7D67"
+      },
+      children: /* @__PURE__ */ jsxs("div", {
         style: {
           display: "flex",
           gap: 8
@@ -10776,7 +11422,8 @@ const Resources = () => {
               border: "1px solid #2E7D67",
               background: "rgba(0,0,0,0.2)",
               color: "white",
-              fontSize: 14
+              fontSize: 14,
+              boxSizing: "border-box"
             }
           }), searchQuery && /* @__PURE__ */ jsx("button", {
             onClick: () => setSearchQuery(""),
@@ -10798,23 +11445,38 @@ const Resources = () => {
           onClick: () => setShowFilters(!showFilters),
           style: {
             background: activeFilterCount > 0 ? "#4ADE80" : "rgba(255,255,255,0.1)",
-            color: activeFilterCount > 0 ? "#0B3D2E" : "#A7C7BC",
+            color: activeFilterCount > 0 ? "#0B3D2E" : "#F2F1EE",
             border: "none",
             borderRadius: 12,
-            padding: "10px 14px",
-            cursor: "pointer",
+            padding: "0 12px",
             display: "flex",
             alignItems: "center",
             gap: 6,
-            fontWeight: "bold"
+            cursor: "pointer",
+            position: "relative"
           },
           children: [/* @__PURE__ */ jsx(Filter, {
             size: 18
           }), activeFilterCount > 0 && /* @__PURE__ */ jsx("span", {
+            style: {
+              position: "absolute",
+              top: -4,
+              right: -4,
+              background: "#F97316",
+              color: "white",
+              fontSize: 10,
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold"
+            },
             children: activeFilterCount
           })]
         })]
-      })]
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -11088,7 +11750,7 @@ const Resources = () => {
                 color: typeColors$1[resource.type] || "#4ADE80",
                 opacity: 0.6
               },
-              children: typeIcons$1[resource.type] ? React.cloneElement(typeIcons$1[resource.type], {
+              children: typeIcons$1[resource.type] ? React4.cloneElement(typeIcons$1[resource.type], {
                 size: 36
               }) : /* @__PURE__ */ jsx(BookOpen, {
                 size: 36
@@ -11324,42 +11986,8 @@ const ResourceDetails = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/resources"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 24
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 20,
-          fontWeight: "bold",
-          margin: 0,
-          flex: 1,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        },
-        children: resource.title
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: resource.title
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -11411,7 +12039,7 @@ const ResourceDetails = () => {
           justifyContent: "center",
           border: "1px solid #2E7D67"
         },
-        children: typeIcons[resource.type] ? React.cloneElement(typeIcons[resource.type], {
+        children: typeIcons[resource.type] ? React4.cloneElement(typeIcons[resource.type], {
           size: 64,
           color,
           style: {
@@ -11816,38 +12444,8 @@ const UploadResource = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/resources"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 24
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 20,
-          fontWeight: "bold",
-          margin: 0
-        },
-        children: "Upload Resource"
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Upload Resource"
     }), /* @__PURE__ */ jsx("div", {
       style: {
         maxWidth: 600,
@@ -12379,83 +12977,43 @@ const Grievances = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67"
-      },
-      children: [/* @__PURE__ */ jsxs("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Conflict Resolution",
+      icon: /* @__PURE__ */ jsx(Scale, {
+        color: "#F97316"
+      }),
+      rightAction: user && /* @__PURE__ */ jsxs("button", {
+        onClick: () => navigate("/file-grievance"),
         style: {
+          background: "#F97316",
+          color: "white",
+          border: "none",
+          borderRadius: 20,
+          padding: "7px 12px",
+          fontWeight: "bold",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 12,
-          gap: 8
+          gap: 4,
+          cursor: "pointer",
+          fontSize: 12,
+          flexShrink: 0,
+          whiteSpace: "nowrap"
         },
-        children: [/* @__PURE__ */ jsxs("div", {
-          style: {
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            minWidth: 0
-          },
-          children: [/* @__PURE__ */ jsx("button", {
-            onClick: () => navigate("/feed"),
-            style: {
-              background: "transparent",
-              border: "none",
-              color: "#A7C7BC",
-              cursor: "pointer",
-              padding: 4,
-              flexShrink: 0
-            },
-            children: /* @__PURE__ */ jsx(ArrowLeft, {
-              size: 22
-            })
-          }), /* @__PURE__ */ jsxs("h1", {
-            style: {
-              fontSize: 17,
-              fontWeight: "bold",
-              margin: 0,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis"
-            },
-            children: [/* @__PURE__ */ jsx(Scale, {
-              size: 18,
-              style: {
-                verticalAlign: "middle",
-                marginRight: 6
-              }
-            }), "Conflict Resolution"]
-          })]
-        }), user && /* @__PURE__ */ jsxs("button", {
-          onClick: () => navigate("/file-grievance"),
-          style: {
-            background: "#F97316",
-            color: "white",
-            border: "none",
-            borderRadius: 20,
-            padding: "7px 12px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-            cursor: "pointer",
-            fontSize: 12,
-            flexShrink: 0,
-            whiteSpace: "nowrap"
-          },
-          children: [/* @__PURE__ */ jsx(Plus, {
-            size: 16
-          }), " File Issue"]
-        })]
-      }), /* @__PURE__ */ jsx("div", {
+        children: [/* @__PURE__ */ jsx(Plus, {
+          size: 16
+        }), " File Issue"]
+      })
+    }), /* @__PURE__ */ jsxs("div", {
+      style: {
+        position: "sticky",
+        top: 60,
+        zIndex: 9,
+        background: "rgba(11, 61, 46, 0.95)",
+        backdropFilter: "blur(10px)",
+        padding: "12px 20px",
+        borderBottom: "1px solid #2E7D67"
+      },
+      children: [/* @__PURE__ */ jsx("div", {
         style: {
           display: "flex",
           gap: 6,
@@ -12984,39 +13542,8 @@ const FileGrievance = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "12px 16px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 12
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/grievances"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer",
-          padding: 4
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 22
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 18,
-          fontWeight: "bold",
-          margin: 0
-        },
-        children: "File a Grievance"
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "File a Grievance"
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 600,
@@ -13867,43 +14394,9 @@ const GrievanceDetails = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "12px 16px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 10
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/grievances"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer",
-          padding: 4
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 22
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 18,
-          fontWeight: "bold",
-          margin: 0,
-          flex: 1,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        },
-        children: "Case Details"
-      }), isInvolved && /* @__PURE__ */ jsx("span", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Case Details",
+      rightAction: isInvolved && /* @__PURE__ */ jsx("span", {
         style: {
           background: `${cfg.color}22`,
           color: cfg.color,
@@ -13918,7 +14411,7 @@ const GrievanceDetails = () => {
           flexShrink: 0
         },
         children: isReporter ? "Reporter" : isRespondent ? "Respondent" : "Mediator"
-      })]
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -15175,64 +15668,46 @@ const CrisisAlerts = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Emergency Alerts",
+      icon: /* @__PURE__ */ jsx(Radio, {
+        style: {
+          color: criticalCount > 0 ? "#EF4444" : "#F97316"
+        }
+      }),
+      critical: criticalCount > 0,
+      rightAction: /* @__PURE__ */ jsxs("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 12
+        },
+        children: [activeCount > 0 && /* @__PURE__ */ jsxs("span", {
+          className: "active-badge",
+          children: [activeCount, " ACTIVE"]
+        }), /* @__PURE__ */ jsxs("button", {
+          onClick: () => navigate("/create-alert"),
+          className: "create-alert-btn",
+          children: [/* @__PURE__ */ jsx(Plus, {
+            size: 18
+          }), " ", /* @__PURE__ */ jsx("span", {
+            className: "btn-label",
+            children: "Alert"
+          })]
+        })]
+      })
+    }), /* @__PURE__ */ jsxs("div", {
       style: {
         position: "sticky",
-        top: 0,
-        zIndex: 1e3,
+        top: 60,
+        zIndex: 999,
         background: criticalCount > 0 ? "rgba(127, 29, 29, 0.95)" : "rgba(11, 61, 46, 0.95)",
         backdropFilter: "blur(10px)",
-        padding: "16px 20px",
+        padding: "10px 20px",
         borderBottom: `1px solid ${criticalCount > 0 ? "#EF4444" : "#2E7D67"}`,
         transition: "background 0.3s"
       },
       children: [/* @__PURE__ */ jsxs("div", {
-        className: "header-top-row",
-        children: [/* @__PURE__ */ jsxs("div", {
-          className: "header-left-group",
-          children: [/* @__PURE__ */ jsx("button", {
-            onClick: () => navigate("/feed"),
-            style: {
-              background: "transparent",
-              border: "none",
-              color: "#A7C7BC",
-              cursor: "pointer",
-              padding: 0
-            },
-            children: /* @__PURE__ */ jsx(ArrowLeft, {
-              size: 24
-            })
-          }), /* @__PURE__ */ jsxs("h1", {
-            className: "header-title",
-            children: [/* @__PURE__ */ jsx(Radio, {
-              size: 20,
-              style: {
-                color: criticalCount > 0 ? "#EF4444" : "#F97316"
-              }
-            }), /* @__PURE__ */ jsx("span", {
-              children: "Emergency Alerts"
-            })]
-          }), activeCount > 0 && /* @__PURE__ */ jsxs("span", {
-            className: "active-badge",
-            children: [activeCount, " ACTIVE"]
-          })]
-        }), /* @__PURE__ */ jsx("div", {
-          style: {
-            display: "flex",
-            gap: 8
-          },
-          children: /* @__PURE__ */ jsxs("button", {
-            onClick: () => navigate("/create-alert"),
-            className: "create-alert-btn",
-            children: [/* @__PURE__ */ jsx(Plus, {
-              size: 18
-            }), " ", /* @__PURE__ */ jsx("span", {
-              className: "btn-label",
-              children: "Alert"
-            })]
-          })
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
         style: {
           display: "flex",
           gap: 8,
@@ -15392,7 +15867,7 @@ const CrisisAlerts = () => {
             }), filteredAlerts.filter((a) => a.latitude && a.longitude).map((alert) => {
               const ct = crisisTypes$2[alert.crisis_type] || crisisTypes$2.other;
               const sColor = severityColors$1[alert.severity_level || 3] || "#FBBF24";
-              return /* @__PURE__ */ jsxs(React.Fragment, {
+              return /* @__PURE__ */ jsxs(React4.Fragment, {
                 children: [alert.affected_radius_km && /* @__PURE__ */ jsx(RL.Circle, {
                   center: [alert.latitude, alert.longitude],
                   radius: alert.affected_radius_km * 1e3,
@@ -15650,7 +16125,7 @@ const MapUpdater = ({
   center
 }) => {
   const map = RL.useMap();
-  React.useEffect(() => {
+  React4.useEffect(() => {
     if (center) map.setView(center, 10);
   }, [center, map]);
   return null;
@@ -15726,7 +16201,7 @@ const CreateAlert = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [RL, setRL] = useState(null);
-  React.useEffect(() => {
+  React4.useEffect(() => {
     import("react-leaflet").then((m) => setRL(m));
     Promise.resolve().then(() => leaflet);
     import("leaflet").then((LModule) => {
@@ -15754,7 +16229,7 @@ const CreateAlert = () => {
     image_url: ""
   });
   const [mapMounted, setMapMounted] = useState(false);
-  React.useEffect(() => setMapMounted(true), []);
+  React4.useEffect(() => setMapMounted(true), []);
   const handleInputChange = (e) => {
     const {
       name,
@@ -15861,46 +16336,12 @@ const CreateAlert = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 1e3,
-        background: "rgba(127, 29, 29, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #EF4444",
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/crisis"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#FCA5A5",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 24
-        })
-      }), /* @__PURE__ */ jsxs("h1", {
-        style: {
-          fontSize: 20,
-          fontWeight: "bold",
-          margin: 0,
-          display: "flex",
-          alignItems: "center",
-          gap: 8
-        },
-        children: [/* @__PURE__ */ jsx(Radio, {
-          size: 20,
-          style: {
-            color: "#EF4444"
-          }
-        }), "Create Emergency Alert"]
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Create Emergency Alert",
+      icon: /* @__PURE__ */ jsx(Radio, {
+        size: 20
+      }),
+      critical: true
     }), /* @__PURE__ */ jsx("div", {
       style: {
         maxWidth: 600,
@@ -16599,42 +17040,10 @@ const CrisisDetails = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 1e3,
-        background: isActive ? "rgba(127, 29, 29, 0.95)" : "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: `1px solid ${isActive ? "#EF4444" : "#2E7D67"}`,
-        display: "flex",
-        alignItems: "center",
-        gap: 16
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate("/crisis"),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#FCA5A5",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 24
-        })
-      }), /* @__PURE__ */ jsx("h1", {
-        style: {
-          fontSize: 18,
-          fontWeight: "bold",
-          margin: 0,
-          flex: 1,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        },
-        children: alert.title
-      }), isActive && /* @__PURE__ */ jsx("span", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: alert.title,
+      critical: isActive,
+      rightAction: isActive && /* @__PURE__ */ jsx("span", {
         style: {
           background: "#EF4444",
           color: "white",
@@ -16645,7 +17054,7 @@ const CrisisDetails = () => {
           fontWeight: "bold"
         },
         children: "ACTIVE"
-      })]
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -16668,7 +17077,7 @@ const CrisisDetails = () => {
             fontSize: 48,
             lineHeight: 1
           },
-          children: ct.icon ? React.cloneElement(ct.icon, {
+          children: ct.icon ? React4.cloneElement(ct.icon, {
             size: 40,
             color: ct.color
           }) : null
@@ -17281,7 +17690,6 @@ const Compliance = () => {
   const {
     toast
   } = useToast();
-  const navigate = useNavigate();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
@@ -17488,29 +17896,12 @@ const Compliance = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      className: "compliance-header",
-      children: [/* @__PURE__ */ jsxs("div", {
-        className: "header-left-group",
-        children: [/* @__PURE__ */ jsx("button", {
-          onClick: () => navigate("/feed"),
-          className: "back-btn",
-          children: /* @__PURE__ */ jsx(ArrowLeft, {
-            size: 24
-          })
-        }), /* @__PURE__ */ jsxs("h1", {
-          className: "header-title",
-          children: [/* @__PURE__ */ jsx(ClipboardList, {
-            size: 20,
-            style: {
-              color: "#4ADE80",
-              flexShrink: 0
-            }
-          }), /* @__PURE__ */ jsx("span", {
-            children: t.title
-          })]
-        })]
-      }), /* @__PURE__ */ jsx("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: t.title,
+      icon: /* @__PURE__ */ jsx(ClipboardList, {
+        size: 20
+      }),
+      rightAction: /* @__PURE__ */ jsx("div", {
         className: "lang-toggle",
         children: Object.entries(languages).map(([key, {
           flag
@@ -17520,7 +17911,7 @@ const Compliance = () => {
           title: translations[key].title,
           children: flag
         }, key))
-      })]
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -18097,33 +18488,9 @@ const Messages = () => {
     children: [/* @__PURE__ */ jsxs("div", {
       className: `sidebar-container ${userId ? "hidden-mobile" : ""}`,
       style: listStyle,
-      children: [/* @__PURE__ */ jsxs("div", {
-        style: {
-          padding: 16,
-          borderBottom: "1px solid #2E7D67",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between"
-        },
-        children: [/* @__PURE__ */ jsx("h1", {
-          style: {
-            fontSize: 20,
-            fontWeight: "bold",
-            margin: 0
-          },
-          children: "Messages"
-        }), /* @__PURE__ */ jsx("button", {
-          onClick: () => navigate("/feed"),
-          style: {
-            background: "none",
-            border: "none",
-            color: "#A7C7BC",
-            cursor: "pointer"
-          },
-          children: /* @__PURE__ */ jsx(ArrowLeft, {
-            size: 20
-          })
-        })]
+      children: [/* @__PURE__ */ jsx(TopBar, {
+        title: "Messages",
+        leftAction: () => navigate("/feed")
       }), /* @__PURE__ */ jsx("div", {
         style: {
           padding: 12
@@ -18261,42 +18628,26 @@ const Messages = () => {
         background: "#0B3D2E"
       },
       children: userId ? /* @__PURE__ */ jsxs(Fragment, {
-        children: [/* @__PURE__ */ jsxs("div", {
-          style: {
-            padding: "10px 16px",
-            borderBottom: "1px solid #2E7D67",
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            background: "rgba(11, 61, 46, 0.95)"
-          },
-          children: [/* @__PURE__ */ jsx("button", {
-            onClick: () => navigate("/messages"),
-            className: "mobile-only",
+        children: [/* @__PURE__ */ jsx(TopBar, {
+          leftAction: () => navigate("/messages"),
+          title: activeUser ? /* @__PURE__ */ jsxs("div", {
             style: {
-              background: "none",
-              border: "none",
-              color: "#A7C7BC",
-              cursor: "pointer",
-              marginRight: 4,
-              display: "flex"
+              display: "flex",
+              alignItems: "center",
+              gap: 12
             },
-            children: /* @__PURE__ */ jsx(ArrowLeft, {
-              size: 20
-            })
-          }), activeUser && /* @__PURE__ */ jsxs(Fragment, {
             children: [activeUser.avatar_url ? /* @__PURE__ */ jsx("img", {
               src: activeUser.avatar_url,
               style: {
-                width: 36,
-                height: 36,
+                width: 32,
+                height: 32,
                 borderRadius: "50%",
                 objectFit: "cover"
               }
             }) : /* @__PURE__ */ jsx("div", {
               style: {
-                width: 36,
-                height: 36,
+                width: 32,
+                height: 32,
                 borderRadius: "50%",
                 background: "#2E7D67",
                 display: "flex",
@@ -18304,18 +18655,16 @@ const Messages = () => {
                 justifyContent: "center"
               },
               children: /* @__PURE__ */ jsx(User, {
-                size: 18,
+                size: 16,
                 color: "#A7C7BC"
               })
-            }), /* @__PURE__ */ jsx("div", {
-              children: /* @__PURE__ */ jsx("div", {
-                style: {
-                  fontWeight: "bold"
-                },
-                children: activeUser.name
-              })
+            }), /* @__PURE__ */ jsx("span", {
+              style: {
+                fontSize: 16
+              },
+              children: activeUser.name
             })]
-          })]
+          }) : ""
         }), /* @__PURE__ */ jsx("div", {
           style: {
             flex: 1,
@@ -18493,7 +18842,6 @@ const Events = () => {
   const {
     toast
   } = useToast();
-  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -18588,53 +18936,12 @@ const Events = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 1e3,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between"
-      },
-      children: [/* @__PURE__ */ jsxs("div", {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 12
-        },
-        children: [/* @__PURE__ */ jsx("button", {
-          onClick: () => navigate("/feed"),
-          style: {
-            background: "transparent",
-            border: "none",
-            color: "#A7C7BC",
-            cursor: "pointer"
-          },
-          children: /* @__PURE__ */ jsx(ArrowLeft, {
-            size: 24
-          })
-        }), /* @__PURE__ */ jsxs("h1", {
-          style: {
-            fontSize: 20,
-            fontWeight: "bold",
-            margin: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: 8
-          },
-          children: [/* @__PURE__ */ jsx(Calendar, {
-            size: 20,
-            style: {
-              color: "#FBBF24"
-            }
-          }), " Events"]
-        })]
-      }), /* @__PURE__ */ jsxs("button", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Events",
+      icon: /* @__PURE__ */ jsx(Calendar, {
+        color: "#FBBF24"
+      }),
+      rightAction: /* @__PURE__ */ jsxs("button", {
         onClick: () => setShowCreate(true),
         style: {
           background: "#4ADE80",
@@ -18651,7 +18958,7 @@ const Events = () => {
         children: [/* @__PURE__ */ jsx(Plus, {
           size: 18
         }), " Create"]
-      })]
+      })
     }), /* @__PURE__ */ jsx("div", {
       style: {
         maxWidth: 800,
@@ -19101,7 +19408,6 @@ const Analytics = () => {
   const {
     user
   } = useAuth();
-  const navigate = useNavigate();
   const [stats, setStats] = useState({
     personal: {
       salesVolume: 0,
@@ -19255,46 +19561,11 @@ const Analytics = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 1e3,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        gap: 12
-      },
-      children: [/* @__PURE__ */ jsx("button", {
-        onClick: () => navigate(-1),
-        style: {
-          background: "transparent",
-          border: "none",
-          color: "#A7C7BC",
-          cursor: "pointer"
-        },
-        children: /* @__PURE__ */ jsx(ArrowLeft, {
-          size: 24
-        })
-      }), /* @__PURE__ */ jsxs("h1", {
-        style: {
-          fontSize: 20,
-          fontWeight: "bold",
-          margin: 0,
-          display: "flex",
-          alignItems: "center",
-          gap: 8
-        },
-        children: [/* @__PURE__ */ jsx(TrendingUp, {
-          size: 20,
-          style: {
-            color: "#4ADE80"
-          }
-        }), "Analytics Dashboard"]
-      })]
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Analytics Dashboard",
+      icon: /* @__PURE__ */ jsx(TrendingUp, {
+        size: 20
+      })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
         maxWidth: 800,
@@ -19670,7 +19941,9 @@ const NewPost = () => {
       justifyContent: "center",
       padding: "20px"
     },
-    children: [/* @__PURE__ */ jsxs(motion.div, {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: t("auth.posts.create_title")
+    }), /* @__PURE__ */ jsxs(motion.div, {
       initial: {
         opacity: 0,
         y: 20
@@ -19681,33 +19954,10 @@ const NewPost = () => {
       },
       style: {
         width: "100%",
-        maxWidth: "600px"
+        maxWidth: "600px",
+        marginTop: "20px"
       },
-      children: [/* @__PURE__ */ jsxs("div", {
-        style: {
-          marginBottom: 20,
-          display: "flex",
-          alignItems: "center",
-          gap: 10
-        },
-        children: [/* @__PURE__ */ jsx("button", {
-          onClick: () => navigate(-1),
-          style: {
-            background: "transparent",
-            border: "none",
-            color: "#A7C7BC",
-            cursor: "pointer"
-          },
-          children: /* @__PURE__ */ jsx(ArrowLeft, {})
-        }), /* @__PURE__ */ jsx("h1", {
-          style: {
-            fontSize: 20,
-            fontWeight: "bold",
-            color: "#F2F1EE"
-          },
-          children: t("auth.posts.create_title")
-        })]
-      }), groupId && /* @__PURE__ */ jsxs("div", {
+      children: [groupId && /* @__PURE__ */ jsxs("div", {
         style: {
           background: "rgba(74, 222, 128, 0.1)",
           border: "1px solid #4ADE80",
@@ -20089,54 +20339,15 @@ const AdminGrievances = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsxs("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between"
-      },
-      children: [/* @__PURE__ */ jsxs("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "Admin Grievance Panel",
+      icon: /* @__PURE__ */ jsx(Shield, {
+        size: 18,
         style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 10
-        },
-        children: [/* @__PURE__ */ jsx("button", {
-          onClick: () => navigate("/feed"),
-          style: {
-            background: "transparent",
-            border: "none",
-            color: "#A7C7BC",
-            cursor: "pointer",
-            padding: 4
-          },
-          children: /* @__PURE__ */ jsx(ArrowLeft, {
-            size: 22
-          })
-        }), /* @__PURE__ */ jsxs("h1", {
-          style: {
-            fontSize: 18,
-            fontWeight: "bold",
-            margin: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: 8
-          },
-          children: [/* @__PURE__ */ jsx(Shield, {
-            size: 18,
-            style: {
-              color: "#F97316"
-            }
-          }), " Admin Grievance Panel"]
-        })]
-      }), /* @__PURE__ */ jsxs("button", {
+          color: "#F97316"
+        }
+      }),
+      rightAction: /* @__PURE__ */ jsxs("button", {
         onClick: () => navigate("/admin/users"),
         style: {
           background: "rgba(255,255,255,0.05)",
@@ -20156,7 +20367,7 @@ const AdminGrievances = () => {
             color: "#FBBF24"
           }
         }), " Manage Badges"]
-      })]
+      })
     }), /* @__PURE__ */ jsx("div", {
       style: {
         maxWidth: 1e3,
@@ -20587,53 +20798,13 @@ const AdminUsers = () => {
       color: "#F2F1EE",
       paddingBottom: 80
     },
-    children: [/* @__PURE__ */ jsx("div", {
-      style: {
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "rgba(11, 61, 46, 0.95)",
-        backdropFilter: "blur(10px)",
-        padding: "16px 20px",
-        borderBottom: "1px solid #2E7D67",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between"
-      },
-      children: /* @__PURE__ */ jsxs("div", {
+    children: [/* @__PURE__ */ jsx(TopBar, {
+      title: "User Badges",
+      icon: /* @__PURE__ */ jsx(Award, {
+        size: 18,
         style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 10
-        },
-        children: [/* @__PURE__ */ jsx("button", {
-          onClick: () => navigate("/admin/grievances"),
-          style: {
-            background: "transparent",
-            border: "none",
-            color: "#A7C7BC",
-            cursor: "pointer",
-            padding: 4
-          },
-          children: /* @__PURE__ */ jsx(ArrowLeft, {
-            size: 22
-          })
-        }), /* @__PURE__ */ jsxs("h1", {
-          style: {
-            fontSize: 18,
-            fontWeight: "bold",
-            margin: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: 8
-          },
-          children: [/* @__PURE__ */ jsx(Award, {
-            size: 18,
-            style: {
-              color: "#FBBF24"
-            }
-          }), " User Badges"]
-        })]
+          color: "#FBBF24"
+        }
       })
     }), /* @__PURE__ */ jsxs("div", {
       style: {
@@ -20779,7 +20950,7 @@ const route36 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: AdminUsers$1
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-C2uLy9Wa.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/index-bSs3seuc.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/root-Dc8mcFr4.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/index-bSs3seuc.js", "/assets/i18nInstance-CHFDjdcJ.js", "/assets/index.esm-S5nkEEnB.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/x-CmgEGQsR.js"], "css": ["/assets/root-Dp74hFXg.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/PublicLayout": { "id": "layouts/PublicLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/PublicLayout--649gkno.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Landing": { "id": "pages/Landing", "parentId": "layouts/PublicLayout", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Landing-zRgdRNDV.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/preload-helper-BXl3LOEh.js", "/assets/proxy-M-F2Cna3.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/i18nInstance-CHFDjdcJ.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index.esm-S5nkEEnB.js"], "css": ["/assets/leaflet-CIGW-MKW.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Login": { "id": "pages/Login", "parentId": "layouts/PublicLayout", "path": "login", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Login-IZUAus8L.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/mail-BehtABoB.js", "/assets/lock-CPGUI5XG.js", "/assets/arrow-right-KJNOnwvj.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index-BfH8LDn_.js", "/assets/x-CmgEGQsR.js", "/assets/index.esm-S5nkEEnB.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Signup": { "id": "pages/Signup", "parentId": "layouts/PublicLayout", "path": "signup", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Signup-CGixoebp.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/arrow-right-KJNOnwvj.js", "/assets/mail-BehtABoB.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/lock-CPGUI5XG.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index-BfH8LDn_.js", "/assets/x-CmgEGQsR.js", "/assets/index.esm-S5nkEEnB.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/OnboardingLayout": { "id": "layouts/OnboardingLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/OnboardingLayout-CoZRAraY.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Onboarding": { "id": "pages/Onboarding", "parentId": "layouts/OnboardingLayout", "path": "onboarding", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Onboarding-w6Bv7gJE.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/LocationPicker-fMlAcTkE.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/index-BfH8LDn_.js", "/assets/user-CWrWcOAj.js", "/assets/hash-D5DC09XA.js", "/assets/phone-CpUV1hSv.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/file-text-DJp7R9g4.js", "/assets/check-DkBDPIIC.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/arrow-right-KJNOnwvj.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/x-CmgEGQsR.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/ProtectedLayout": { "id": "layouts/ProtectedLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/ProtectedLayout-BIHhJSI-.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Feed": { "id": "pages/Feed", "parentId": "layouts/ProtectedLayout", "path": "feed", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Feed-B5GY8-7F.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/users-CMaxyTTn.js", "/assets/square-plus-D3h0WSxr.js", "/assets/message-circle-Y59WQwRe.js", "/assets/x-CmgEGQsR.js", "/assets/user-CWrWcOAj.js", "/assets/book-open-BC5jklgs.js", "/assets/calendar-CD48hIkk.js", "/assets/scale-CSAc66-m.js", "/assets/radio-Dfax0GBx.js", "/assets/clipboard-list-B9lYijSo.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/proxy-M-F2Cna3.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/heart-BkjR_Qam.js", "/assets/share-2-DvZl06Fy.js", "/assets/index.esm-S5nkEEnB.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Profile": { "id": "pages/Profile", "parentId": "layouts/ProtectedLayout", "path": "profile/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Profile-BbS3QljB.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/LocationPicker-fMlAcTkE.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/camera-C5MBtEUJ.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/x-CmgEGQsR.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/mail-BehtABoB.js", "/assets/user-CWrWcOAj.js", "/assets/phone-CpUV1hSv.js", "/assets/calendar-CD48hIkk.js", "/assets/award-tEnQAxKW.js", "/assets/plus-CO5Itgur.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/leaflet-CIGW-MKW.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/PostDetails": { "id": "pages/PostDetails", "parentId": "layouts/ProtectedLayout", "path": "post/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/PostDetails-CG9gpuUN.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/user-CWrWcOAj.js", "/assets/heart-BkjR_Qam.js", "/assets/message-circle-Y59WQwRe.js", "/assets/share-2-DvZl06Fy.js", "/assets/send-horizontal-Y0qJHYk9.js", "/assets/flag-Dper0dPT.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/x-CmgEGQsR.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/GroupPostDetails": { "id": "pages/GroupPostDetails", "parentId": "layouts/ProtectedLayout", "path": "group-post/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/GroupPostDetails-Cdxllvhd.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/user-CWrWcOAj.js", "/assets/thumbs-up-Bcofn5R1.js", "/assets/message-circle-Y59WQwRe.js", "/assets/send-horizontal-Y0qJHYk9.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/flag-Dper0dPT.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/x-CmgEGQsR.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Groups": { "id": "pages/Groups", "parentId": "layouts/ProtectedLayout", "path": "groups", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Groups-C-XsJoI5.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/users-CMaxyTTn.js", "/assets/square-plus-D3h0WSxr.js", "/assets/search-D-bhSeWo.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/proxy-M-F2Cna3.js", "/assets/i18nInstance-CHFDjdcJ.js", "/assets/createLucideIcon-dAkXvH6m.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CreateGroup": { "id": "pages/CreateGroup", "parentId": "layouts/ProtectedLayout", "path": "create-group", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CreateGroup-RgNYDpyT.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/proxy-M-F2Cna3.js", "/assets/users-CMaxyTTn.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/index-BfH8LDn_.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/x-CmgEGQsR.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/GroupDetails": { "id": "pages/GroupDetails", "parentId": "layouts/ProtectedLayout", "path": "group/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/GroupDetails-C401XK5T.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/users-CMaxyTTn.js", "/assets/check-DkBDPIIC.js", "/assets/x-CmgEGQsR.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/square-plus-D3h0WSxr.js", "/assets/thumbs-up-Bcofn5R1.js", "/assets/message-circle-Y59WQwRe.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/marketplace/Marketplace": { "id": "pages/marketplace/Marketplace", "parentId": "layouts/ProtectedLayout", "path": "marketplace", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Marketplace-B15dFw9S.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/package-CBtR6oVz.js", "/assets/plus-CO5Itgur.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/shopping-bag-Bnqi3TWB.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CreateListing": { "id": "pages/CreateListing", "parentId": "layouts/ProtectedLayout", "path": "create-listing", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CreateListing-fmUOFZKO.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/x-CmgEGQsR.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/upload-DEAA3UOs.js", "/assets/shopping-bag-Bnqi3TWB.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/ListingDetails": { "id": "pages/ListingDetails", "parentId": "layouts/ProtectedLayout", "path": "listing/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/ListingDetails-BLAhg8la.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/package-CBtR6oVz.js", "/assets/user-CWrWcOAj.js", "/assets/check-DkBDPIIC.js", "/assets/x-CmgEGQsR.js", "/assets/shopping-bag-Bnqi3TWB.js", "/assets/send-horizontal-Y0qJHYk9.js", "/assets/clock-BHcq9Wct.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/MyOrders": { "id": "pages/MyOrders", "parentId": "layouts/ProtectedLayout", "path": "my-orders", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/MyOrders-insbhdUe.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/shopping-bag-Bnqi3TWB.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/package-CBtR6oVz.js", "/assets/user-CWrWcOAj.js", "/assets/chevron-right-CjuFVe40.js", "/assets/check-DkBDPIIC.js", "/assets/x-CmgEGQsR.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Resources": { "id": "pages/Resources", "parentId": "layouts/ProtectedLayout", "path": "resources", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Resources-DQzmrvDE.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/book-open-BC5jklgs.js", "/assets/plus-CO5Itgur.js", "/assets/search-D-bhSeWo.js", "/assets/x-CmgEGQsR.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/clock-BHcq9Wct.js", "/assets/eye-Bazze3V1.js", "/assets/video-CTWyB662.js", "/assets/file-text-DJp7R9g4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/ResourceDetails": { "id": "pages/ResourceDetails", "parentId": "layouts/ProtectedLayout", "path": "resource/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/ResourceDetails-DToNEcZO.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/book-open-BC5jklgs.js", "/assets/video-CTWyB662.js", "/assets/clock-BHcq9Wct.js", "/assets/eye-Bazze3V1.js", "/assets/user-CWrWcOAj.js", "/assets/calendar-CD48hIkk.js", "/assets/tag-DFYHlkCT.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/file-text-DJp7R9g4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/UploadResource": { "id": "pages/UploadResource", "parentId": "layouts/ProtectedLayout", "path": "upload-resource", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/UploadResource-BO7GxNQ4.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/x-CmgEGQsR.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/upload-DEAA3UOs.js", "/assets/video-CTWyB662.js", "/assets/plus-CO5Itgur.js", "/assets/file-text-DJp7R9g4.js", "/assets/book-open-BC5jklgs.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Grievances": { "id": "pages/Grievances", "parentId": "layouts/ProtectedLayout", "path": "grievances", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Grievances-lMbb_FZz.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/scale-CSAc66-m.js", "/assets/plus-CO5Itgur.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/proxy-M-F2Cna3.js", "/assets/chevron-right-CjuFVe40.js", "/assets/circle-x-CenecJRM.js", "/assets/circle-check-DES_2gTj.js", "/assets/clock-BHcq9Wct.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/createLucideIcon-dAkXvH6m.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/FileGrievance": { "id": "pages/FileGrievance", "parentId": "layouts/ProtectedLayout", "path": "file-grievance", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/FileGrievance-DeHUttnG.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/user-CWrWcOAj.js", "/assets/users-CMaxyTTn.js", "/assets/x-CmgEGQsR.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/camera-C5MBtEUJ.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/upload-DEAA3UOs.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/GrievanceDetails": { "id": "pages/GrievanceDetails", "parentId": "layouts/ProtectedLayout", "path": "grievance/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/GrievanceDetails-VnRBldJ4.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/user-CWrWcOAj.js", "/assets/users-CMaxyTTn.js", "/assets/shield--aQD5NZn.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/calendar-CD48hIkk.js", "/assets/circle-check-DES_2gTj.js", "/assets/thumbs-up-Bcofn5R1.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/message-square-Ct9cqEcT.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-CmgEGQsR.js", "/assets/camera-C5MBtEUJ.js", "/assets/send-BYjrdRjg.js", "/assets/circle-x-CenecJRM.js", "/assets/scale-CSAc66-m.js", "/assets/clock-BHcq9Wct.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/file-text-DJp7R9g4.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CrisisAlerts": { "id": "pages/CrisisAlerts", "parentId": "layouts/ProtectedLayout", "path": "crisis", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CrisisAlerts-CiiZcdkb.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/radio-Dfax0GBx.js", "/assets/plus-CO5Itgur.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/proxy-M-F2Cna3.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/shield-alert-C9_NAdDn.js"], "css": ["/assets/leaflet-CIGW-MKW.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CreateAlert": { "id": "pages/CreateAlert", "parentId": "layouts/ProtectedLayout", "path": "create-alert", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CreateAlert-BXEUitTk.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/LocationPicker-fMlAcTkE.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/radio-Dfax0GBx.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/x-CmgEGQsR.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/upload-DEAA3UOs.js", "/assets/shield-alert-C9_NAdDn.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CrisisDetails": { "id": "pages/CrisisDetails", "parentId": "layouts/ProtectedLayout", "path": "crisis/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CrisisDetails-DvQbTSKN.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/heart-BkjR_Qam.js", "/assets/users-CMaxyTTn.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/calendar-CD48hIkk.js", "/assets/shield--aQD5NZn.js", "/assets/send-BYjrdRjg.js", "/assets/proxy-M-F2Cna3.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/shield-alert-C9_NAdDn.js", "/assets/radio-Dfax0GBx.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/x-CmgEGQsR.js"], "css": ["/assets/leaflet-CIGW-MKW.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Compliance": { "id": "pages/Compliance", "parentId": "layouts/ProtectedLayout", "path": "compliance", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Compliance-CAE4PMXU.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/clipboard-list-B9lYijSo.js", "/assets/file-text-DJp7R9g4.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-DES_2gTj.js", "/assets/flag-Dper0dPT.js", "/assets/calendar-CD48hIkk.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/x-CmgEGQsR.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Messages": { "id": "pages/Messages", "parentId": "layouts/ProtectedLayout", "path": "messages", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Messages-BNw4a1Sr.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/search-D-bhSeWo.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/message-square-Ct9cqEcT.js", "/assets/user-CWrWcOAj.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/check-DkBDPIIC.js", "/assets/send-BYjrdRjg.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "messages-userId": { "id": "messages-userId", "parentId": "layouts/ProtectedLayout", "path": "messages/:userId", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Messages-BNw4a1Sr.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/search-D-bhSeWo.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/message-square-Ct9cqEcT.js", "/assets/user-CWrWcOAj.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/check-DkBDPIIC.js", "/assets/send-BYjrdRjg.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Events": { "id": "pages/Events", "parentId": "layouts/ProtectedLayout", "path": "events", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Events-DNUvP9Yf.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/calendar-CD48hIkk.js", "/assets/plus-CO5Itgur.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/clock-BHcq9Wct.js", "/assets/map-pin-CtZ_l0Ac.js", "/assets/circle-check-DES_2gTj.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/x-CmgEGQsR.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Analytics": { "id": "pages/Analytics", "parentId": "layouts/ProtectedLayout", "path": "analytics", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Analytics-DHmZyVqe.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/file-text-DJp7R9g4.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/users-CMaxyTTn.js", "/assets/triangle-alert-Dhq0mmyu.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/NewPost": { "id": "pages/NewPost", "parentId": "layouts/ProtectedLayout", "path": "new-post", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/NewPost-7sIuDUfb.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/users-CMaxyTTn.js", "/assets/tag-DFYHlkCT.js", "/assets/hash-D5DC09XA.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/send-BYjrdRjg.js", "/assets/x-CmgEGQsR.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/AdminLayout": { "id": "layouts/AdminLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/AdminLayout-CweDZssP.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/AdminGrievances": { "id": "pages/AdminGrievances", "parentId": "layouts/AdminLayout", "path": "admin/grievances", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/AdminGrievances-CIzOiUpT.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/shield--aQD5NZn.js", "/assets/award-tEnQAxKW.js", "/assets/proxy-M-F2Cna3.js", "/assets/user-CWrWcOAj.js", "/assets/users-CMaxyTTn.js", "/assets/x-CmgEGQsR.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/triangle-alert-Dhq0mmyu.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CngUb5_d.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/AdminUsers": { "id": "pages/AdminUsers", "parentId": "layouts/AdminLayout", "path": "admin/users", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/AdminUsers-ISki5_mb.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-gleAVtgz.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/loader-circle-3CKXh_uz.js", "/assets/arrow-left-KcxvKs1X.js", "/assets/award-tEnQAxKW.js", "/assets/search-D-bhSeWo.js", "/assets/proxy-M-F2Cna3.js", "/assets/user-CWrWcOAj.js", "/assets/circle-check-DES_2gTj.js", "/assets/index-BfH8LDn_.js", "/assets/createLucideIcon-dAkXvH6m.js", "/assets/circle-check-big-CngUb5_d.js", "/assets/x-CmgEGQsR.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-2c270862.js", "version": "2c270862", "sri": void 0 };
+const serverManifest = { "entry": { "module": "/assets/entry.client-C2uLy9Wa.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/index-bSs3seuc.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/root-BCNafv7Z.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/index-bSs3seuc.js", "/assets/i18nInstance-CHFDjdcJ.js", "/assets/index.esm-S5nkEEnB.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/circle-check-big-CDB4vRMv.js"], "css": ["/assets/root-Cg6ZAwOw.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/PublicLayout": { "id": "layouts/PublicLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/PublicLayout--649gkno.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Landing": { "id": "pages/Landing", "parentId": "layouts/PublicLayout", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Landing-zRgdRNDV.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/preload-helper-BXl3LOEh.js", "/assets/proxy-M-F2Cna3.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/i18nInstance-CHFDjdcJ.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index.esm-S5nkEEnB.js"], "css": ["/assets/leaflet-CIGW-MKW.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Login": { "id": "pages/Login", "parentId": "layouts/PublicLayout", "path": "login", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Login-Ri5OMBRg.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/loader-circle-B04qapzM.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/mail-BFNi10iO.js", "/assets/lock-jz-drZHL.js", "/assets/arrow-right-CenQftHN.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index-BfH8LDn_.js", "/assets/index.esm-S5nkEEnB.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Signup": { "id": "pages/Signup", "parentId": "layouts/PublicLayout", "path": "signup", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Signup-BpDVBobN.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/arrow-right-CenQftHN.js", "/assets/mail-BFNi10iO.js", "/assets/loader-circle-B04qapzM.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/lock-jz-drZHL.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/index-BfH8LDn_.js", "/assets/index.esm-S5nkEEnB.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/OnboardingLayout": { "id": "layouts/OnboardingLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/OnboardingLayout-CoZRAraY.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Onboarding": { "id": "pages/Onboarding", "parentId": "layouts/OnboardingLayout", "path": "onboarding", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Onboarding-BUsM_ZCp.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/LocationPicker-DF3YeTQR.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/index-BfH8LDn_.js", "/assets/user-DklXjnZA.js", "/assets/hash-B89dSVNL.js", "/assets/phone-B8Pt9XJ1.js", "/assets/map-pin-CMgm4OPt.js", "/assets/file-text-BGCeQUH6.js", "/assets/check-Bi1oF7IJ.js", "/assets/arrow-left-CFhq2T2Z.js", "/assets/arrow-right-CenQftHN.js", "/assets/loader-circle-B04qapzM.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/ProtectedLayout": { "id": "layouts/ProtectedLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/ProtectedLayout-BIHhJSI-.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Feed": { "id": "pages/Feed", "parentId": "layouts/ProtectedLayout", "path": "feed", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Feed-A9nUpwrD.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/SEOHead-C7Ob81AZ.js", "/assets/TopBar-CmMdFKxR.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/user-DklXjnZA.js", "/assets/x-8qqd1VOc.js", "/assets/book-open-CsRyOsyJ.js", "/assets/calendar-DRgqdwgf.js", "/assets/scale-BqLWqv5M.js", "/assets/radio-BHujIzdj.js", "/assets/clipboard-list-Q1W8FCZz.js", "/assets/loader-circle-B04qapzM.js", "/assets/proxy-M-F2Cna3.js", "/assets/map-pin-CMgm4OPt.js", "/assets/heart-Cti5nES8.js", "/assets/share-2-C0TeXKkX.js", "/assets/index.esm-S5nkEEnB.js", "/assets/arrow-left-CFhq2T2Z.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Profile": { "id": "pages/Profile", "parentId": "layouts/ProtectedLayout", "path": "profile/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Profile-Dn8z0ZlZ.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/LocationPicker-DF3YeTQR.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/loader-circle-B04qapzM.js", "/assets/camera-R2dHk2hO.js", "/assets/map-pin-CMgm4OPt.js", "/assets/x-8qqd1VOc.js", "/assets/mail-BFNi10iO.js", "/assets/user-DklXjnZA.js", "/assets/phone-B8Pt9XJ1.js", "/assets/calendar-DRgqdwgf.js", "/assets/award-C_NFaLTz.js", "/assets/plus-IY3dOctw.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/leaflet-CIGW-MKW.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/PostDetails": { "id": "pages/PostDetails", "parentId": "layouts/ProtectedLayout", "path": "post/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/PostDetails-CxLmFpjA.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/loader-circle-B04qapzM.js", "/assets/user-DklXjnZA.js", "/assets/heart-Cti5nES8.js", "/assets/share-2-C0TeXKkX.js", "/assets/send-horizontal-B1hHoFZ0.js", "/assets/flag-C7KTm6yx.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/GroupPostDetails": { "id": "pages/GroupPostDetails", "parentId": "layouts/ProtectedLayout", "path": "group-post/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/GroupPostDetails-DXe6MrZ7.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/user-DklXjnZA.js", "/assets/thumbs-up-BdO5Lm7D.js", "/assets/send-horizontal-B1hHoFZ0.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/flag-C7KTm6yx.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Groups": { "id": "pages/Groups", "parentId": "layouts/ProtectedLayout", "path": "groups", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Groups-BL7IK5ou.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/search-B9Ds4HEC.js", "/assets/loader-circle-B04qapzM.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/arrow-left-CFhq2T2Z.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CreateGroup": { "id": "pages/CreateGroup", "parentId": "layouts/ProtectedLayout", "path": "create-group", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CreateGroup-hPkNsold.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/loader-circle-B04qapzM.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/index-BfH8LDn_.js", "/assets/x-8qqd1VOc.js", "/assets/arrow-left-CFhq2T2Z.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/GroupDetails": { "id": "pages/GroupDetails", "parentId": "layouts/ProtectedLayout", "path": "group/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/GroupDetails-Da0spRaE.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/check-Bi1oF7IJ.js", "/assets/x-8qqd1VOc.js", "/assets/thumbs-up-BdO5Lm7D.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/marketplace/Marketplace": { "id": "pages/marketplace/Marketplace", "parentId": "layouts/ProtectedLayout", "path": "marketplace", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Marketplace-QRW8CTuF.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/package-bxYYzIAb.js", "/assets/plus-IY3dOctw.js", "/assets/loader-circle-B04qapzM.js", "/assets/shopping-bag-De7ZncmI.js", "/assets/proxy-M-F2Cna3.js", "/assets/x-8qqd1VOc.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CreateListing": { "id": "pages/CreateListing", "parentId": "layouts/ProtectedLayout", "path": "create-listing", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CreateListing-MvWEkv6B.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/x-8qqd1VOc.js", "/assets/loader-circle-B04qapzM.js", "/assets/upload-D6ub_YCL.js", "/assets/shopping-bag-De7ZncmI.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/ListingDetails": { "id": "pages/ListingDetails", "parentId": "layouts/ProtectedLayout", "path": "listing/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/ListingDetails-DVRCXuBY.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/package-bxYYzIAb.js", "/assets/user-DklXjnZA.js", "/assets/check-Bi1oF7IJ.js", "/assets/x-8qqd1VOc.js", "/assets/shopping-bag-De7ZncmI.js", "/assets/send-horizontal-B1hHoFZ0.js", "/assets/clock-BPqdwWVM.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/MyOrders": { "id": "pages/MyOrders", "parentId": "layouts/ProtectedLayout", "path": "my-orders", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/MyOrders-BxBCOxAs.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/shopping-bag-De7ZncmI.js", "/assets/x-8qqd1VOc.js", "/assets/loader-circle-B04qapzM.js", "/assets/package-bxYYzIAb.js", "/assets/user-DklXjnZA.js", "/assets/chevron-right-C0G1Bb0c.js", "/assets/check-Bi1oF7IJ.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Resources": { "id": "pages/Resources", "parentId": "layouts/ProtectedLayout", "path": "resources", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Resources-nVmef8A-.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/plus-IY3dOctw.js", "/assets/book-open-CsRyOsyJ.js", "/assets/search-B9Ds4HEC.js", "/assets/x-8qqd1VOc.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/loader-circle-B04qapzM.js", "/assets/clock-BPqdwWVM.js", "/assets/eye-DX68mz0b.js", "/assets/video-B-vvuRtC.js", "/assets/file-text-BGCeQUH6.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/ResourceDetails": { "id": "pages/ResourceDetails", "parentId": "layouts/ProtectedLayout", "path": "resource/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/ResourceDetails-CY7witag.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/book-open-CsRyOsyJ.js", "/assets/video-B-vvuRtC.js", "/assets/clock-BPqdwWVM.js", "/assets/eye-DX68mz0b.js", "/assets/user-DklXjnZA.js", "/assets/calendar-DRgqdwgf.js", "/assets/tag-sgPzjAZk.js", "/assets/x-8qqd1VOc.js", "/assets/file-text-BGCeQUH6.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/UploadResource": { "id": "pages/UploadResource", "parentId": "layouts/ProtectedLayout", "path": "upload-resource", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/UploadResource-DFpRbrVo.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/x-8qqd1VOc.js", "/assets/loader-circle-B04qapzM.js", "/assets/upload-D6ub_YCL.js", "/assets/video-B-vvuRtC.js", "/assets/plus-IY3dOctw.js", "/assets/file-text-BGCeQUH6.js", "/assets/book-open-CsRyOsyJ.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Grievances": { "id": "pages/Grievances", "parentId": "layouts/ProtectedLayout", "path": "grievances", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Grievances-CWLVuRRv.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/plus-IY3dOctw.js", "/assets/scale-BqLWqv5M.js", "/assets/loader-circle-B04qapzM.js", "/assets/proxy-M-F2Cna3.js", "/assets/chevron-right-C0G1Bb0c.js", "/assets/circle-x-CVQKDgV4.js", "/assets/circle-check-DnF4Fynw.js", "/assets/clock-BPqdwWVM.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/x-8qqd1VOc.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/FileGrievance": { "id": "pages/FileGrievance", "parentId": "layouts/ProtectedLayout", "path": "file-grievance", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/FileGrievance-CQ2E1aKC.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/user-DklXjnZA.js", "/assets/x-8qqd1VOc.js", "/assets/map-pin-CMgm4OPt.js", "/assets/camera-R2dHk2hO.js", "/assets/loader-circle-B04qapzM.js", "/assets/upload-D6ub_YCL.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/GrievanceDetails": { "id": "pages/GrievanceDetails", "parentId": "layouts/ProtectedLayout", "path": "grievance/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/GrievanceDetails-CEK-Ia5i.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/user-DklXjnZA.js", "/assets/shield-CYN6Ibz1.js", "/assets/map-pin-CMgm4OPt.js", "/assets/calendar-DRgqdwgf.js", "/assets/circle-check-DnF4Fynw.js", "/assets/thumbs-up-BdO5Lm7D.js", "/assets/x-8qqd1VOc.js", "/assets/message-square-CLILAdGq.js", "/assets/proxy-M-F2Cna3.js", "/assets/camera-R2dHk2hO.js", "/assets/send-DtRHVw67.js", "/assets/circle-x-CVQKDgV4.js", "/assets/scale-BqLWqv5M.js", "/assets/clock-BPqdwWVM.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/file-text-BGCeQUH6.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CrisisAlerts": { "id": "pages/CrisisAlerts", "parentId": "layouts/ProtectedLayout", "path": "crisis", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CrisisAlerts-BOGxNG3G.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/plus-IY3dOctw.js", "/assets/radio-BHujIzdj.js", "/assets/x-8qqd1VOc.js", "/assets/loader-circle-B04qapzM.js", "/assets/proxy-M-F2Cna3.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/shield-alert-BXQfYjfP.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/leaflet-CIGW-MKW.css", "/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CreateAlert": { "id": "pages/CreateAlert", "parentId": "layouts/ProtectedLayout", "path": "create-alert", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CreateAlert-BacwXSXe.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/LocationPicker-DF3YeTQR.js", "/assets/radio-BHujIzdj.js", "/assets/map-pin-CMgm4OPt.js", "/assets/x-8qqd1VOc.js", "/assets/loader-circle-B04qapzM.js", "/assets/upload-D6ub_YCL.js", "/assets/shield-alert-BXQfYjfP.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/CrisisDetails": { "id": "pages/CrisisDetails", "parentId": "layouts/ProtectedLayout", "path": "crisis/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/CrisisDetails-DYwVO2NW.js", "imports": ["/assets/preload-helper-BXl3LOEh.js", "/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/x-8qqd1VOc.js", "/assets/heart-Cti5nES8.js", "/assets/map-pin-CMgm4OPt.js", "/assets/calendar-DRgqdwgf.js", "/assets/shield-CYN6Ibz1.js", "/assets/send-DtRHVw67.js", "/assets/proxy-M-F2Cna3.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/shield-alert-BXQfYjfP.js", "/assets/radio-BHujIzdj.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/leaflet-CIGW-MKW.css", "/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Compliance": { "id": "pages/Compliance", "parentId": "layouts/ProtectedLayout", "path": "compliance", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Compliance-WSITTjB7.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/clipboard-list-Q1W8FCZz.js", "/assets/file-text-BGCeQUH6.js", "/assets/map-pin-CMgm4OPt.js", "/assets/x-8qqd1VOc.js", "/assets/circle-check-DnF4Fynw.js", "/assets/flag-C7KTm6yx.js", "/assets/calendar-DRgqdwgf.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Messages": { "id": "pages/Messages", "parentId": "layouts/ProtectedLayout", "path": "messages", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Messages-D7ptx-BV.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/search-B9Ds4HEC.js", "/assets/loader-circle-B04qapzM.js", "/assets/message-square-CLILAdGq.js", "/assets/user-DklXjnZA.js", "/assets/x-8qqd1VOc.js", "/assets/check-Bi1oF7IJ.js", "/assets/send-DtRHVw67.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "messages-userId": { "id": "messages-userId", "parentId": "layouts/ProtectedLayout", "path": "messages/:userId", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Messages-D7ptx-BV.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/search-B9Ds4HEC.js", "/assets/loader-circle-B04qapzM.js", "/assets/message-square-CLILAdGq.js", "/assets/user-DklXjnZA.js", "/assets/x-8qqd1VOc.js", "/assets/check-Bi1oF7IJ.js", "/assets/send-DtRHVw67.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Events": { "id": "pages/Events", "parentId": "layouts/ProtectedLayout", "path": "events", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Events-BIBTjuMH.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/plus-IY3dOctw.js", "/assets/calendar-DRgqdwgf.js", "/assets/loader-circle-B04qapzM.js", "/assets/clock-BPqdwWVM.js", "/assets/map-pin-CMgm4OPt.js", "/assets/circle-check-DnF4Fynw.js", "/assets/x-8qqd1VOc.js", "/assets/index-BfH8LDn_.js", "/assets/proxy-M-F2Cna3.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/Analytics": { "id": "pages/Analytics", "parentId": "layouts/ProtectedLayout", "path": "analytics", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/Analytics-CucRJ6YM.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/x-8qqd1VOc.js", "/assets/file-text-BGCeQUH6.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/NewPost": { "id": "pages/NewPost", "parentId": "layouts/ProtectedLayout", "path": "new-post", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/NewPost-BIWMY0rs.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/useTranslation-CkUI7wDB.js", "/assets/proxy-M-F2Cna3.js", "/assets/tag-sgPzjAZk.js", "/assets/hash-B89dSVNL.js", "/assets/x-8qqd1VOc.js", "/assets/loader-circle-B04qapzM.js", "/assets/send-DtRHVw67.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js", "/assets/i18nInstance-CHFDjdcJ.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "layouts/AdminLayout": { "id": "layouts/AdminLayout", "parentId": "root", "path": void 0, "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/AdminLayout-CweDZssP.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/supabase-Cc_Lwtd_.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/AdminGrievances": { "id": "pages/AdminGrievances", "parentId": "layouts/AdminLayout", "path": "admin/grievances", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/AdminGrievances-BWuv0u-X.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/award-C_NFaLTz.js", "/assets/shield-CYN6Ibz1.js", "/assets/proxy-M-F2Cna3.js", "/assets/user-DklXjnZA.js", "/assets/x-8qqd1VOc.js", "/assets/triangle-alert-8UQL0nSD.js", "/assets/index-BfH8LDn_.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "pages/AdminUsers": { "id": "pages/AdminUsers", "parentId": "layouts/AdminLayout", "path": "admin/users", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/AdminUsers-22Pattn2.js", "imports": ["/assets/chunk-LFPYN7LY-CisNrVsk.js", "/assets/AuthContext-Cp18ztuo.js", "/assets/ToastContext-D5jLEOug.js", "/assets/supabase-Cc_Lwtd_.js", "/assets/TopBar-CmMdFKxR.js", "/assets/loader-circle-B04qapzM.js", "/assets/award-C_NFaLTz.js", "/assets/search-B9Ds4HEC.js", "/assets/proxy-M-F2Cna3.js", "/assets/user-DklXjnZA.js", "/assets/circle-check-DnF4Fynw.js", "/assets/index-BfH8LDn_.js", "/assets/x-8qqd1VOc.js", "/assets/circle-check-big-CDB4vRMv.js", "/assets/arrow-left-CFhq2T2Z.js"], "css": ["/assets/TopBar-ySA9yDfb.css"], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-0d32498c.js", "version": "0d32498c", "sri": void 0 };
 const assetsBuildDirectory = "build/client";
 const basename = "/";
 const future = { "unstable_optimizeDeps": false, "unstable_subResourceIntegrity": false, "unstable_trailingSlashAwareDataRequests": false, "unstable_previewServerPrerendering": false, "v8_middleware": false, "v8_splitRouteModules": false, "v8_viteEnvironmentApi": false };

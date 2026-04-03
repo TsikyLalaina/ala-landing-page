@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { 
     ArrowLeft, TrendingUp, DollarSign, Users, FileText, 
     AlertTriangle, CheckCircle, BarChart3, PieChart
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const Analytics = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
     const [stats, setStats] = useState({
         personal: {
             salesVolume: 0,
@@ -131,23 +130,8 @@ const Analytics = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 1000, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 12
-            }}>
-                <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                    <ArrowLeft size={24} />
-                </button>
-                <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <TrendingUp size={20} style={{ color: '#4ADE80' }} />
-                    Analytics Dashboard
-                </h1>
-            </div>
+            {/* Main Header */}
+            <TopBar title="Analytics Dashboard" icon={<TrendingUp size={20} />} />
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
                 {/* Tabs */}

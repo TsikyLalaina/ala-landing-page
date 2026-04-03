@@ -7,6 +7,7 @@ import {
     CheckCircle2, XCircle, Filter, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TopBar } from '../components/TopBar';
 
 const statusConfig = {
     open: { label: 'Open', color: '#FBBF24', icon: <AlertTriangle size={14} /> },
@@ -76,33 +77,30 @@ const Grievances = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                        <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4, flexShrink: 0 }}>
-                            <ArrowLeft size={22} />
-                        </button>
-                        <h1 style={{ fontSize: 17, fontWeight: 'bold', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            <Scale size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} />
-                            Conflict Resolution
-                        </h1>
-                    </div>
-                    {user && (
+            {/* Main Header */}
+            <TopBar 
+                title="Conflict Resolution"
+                icon={<Scale color="#F97316" />}
+                rightAction={
+                    user && (
                         <button 
                             onClick={() => navigate('/file-grievance')}
                             style={{ background: '#F97316', color: 'white', border: 'none', borderRadius: 20, padding: '7px 12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12, flexShrink: 0, whiteSpace: 'nowrap' }}
                         >
                             <Plus size={16} /> File Issue
                         </button>
-                    )}
-                </div>
+                    )
+                }
+            />
+
+            {/* Sub-header (Filters) which also needs some sticky behavior but fits cleanly under TopBar natively if we just apply the sticky logic here or we can let it scroll. Let's make it sticky under the TopBar. */}
+            <div style={{ 
+                position: 'sticky', top: 60, zIndex: 9, 
+                background: 'rgba(11, 61, 46, 0.95)', 
+                backdropFilter: 'blur(10px)',
+                padding: '12px 20px',
+                borderBottom: '1px solid #2E7D67',
+            }}>
 
                 {/* View Mode Tabs */}
                 <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>

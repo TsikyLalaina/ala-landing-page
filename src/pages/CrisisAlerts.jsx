@@ -8,6 +8,7 @@ import {
     Filter, Map as MapIcon, List, Bell
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TopBar } from '../components/TopBar';
 
 const crisisTypes = {
     cyclone: { label: 'Cyclone', icon: <CloudLightning size={16} />, color: '#A78BFA' },
@@ -82,31 +83,18 @@ const CrisisAlerts = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 1000, 
-                background: criticalCount > 0 ? 'rgba(127, 29, 29, 0.95)' : 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: `1px solid ${criticalCount > 0 ? '#EF4444' : '#2E7D67'}`,
-                transition: 'background 0.3s'
-            }}>
-                <div className="header-top-row">
-                    <div className="header-left-group">
-                        <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 0 }}>
-                            <ArrowLeft size={24} />
-                        </button>
-                        <h1 className="header-title">
-                            <Radio size={20} style={{ color: criticalCount > 0 ? '#EF4444' : '#F97316' }} />
-                            <span>Emergency Alerts</span>
-                        </h1>
+            {/* Main Header */}
+            <TopBar 
+                title="Emergency Alerts"
+                icon={<Radio style={{ color: criticalCount > 0 ? '#EF4444' : '#F97316' }} />}
+                critical={criticalCount > 0}
+                rightAction={
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         {activeCount > 0 && (
                             <span className="active-badge">
                                 {activeCount} ACTIVE
                             </span>
                         )}
-                    </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
                         <button 
                             onClick={() => navigate('/create-alert')}
                             className="create-alert-btn"
@@ -114,7 +102,18 @@ const CrisisAlerts = () => {
                             <Plus size={18} /> <span className="btn-label">Alert</span>
                         </button>
                     </div>
-                </div>
+                }
+            />
+
+            {/* Sub-header Filters */}
+            <div style={{ 
+                position: 'sticky', top: 60, zIndex: 999, 
+                background: criticalCount > 0 ? 'rgba(127, 29, 29, 0.95)' : 'rgba(11, 61, 46, 0.95)', 
+                backdropFilter: 'blur(10px)',
+                padding: '10px 20px',
+                borderBottom: `1px solid ${criticalCount > 0 ? '#EF4444' : '#2E7D67'}`,
+                transition: 'background 0.3s'
+            }}>
 
                 {/* View Toggle & Filters */}
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>

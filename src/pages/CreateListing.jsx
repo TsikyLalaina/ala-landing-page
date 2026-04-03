@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, Loader2, Upload, ShoppingBag, X } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const CreateListing = () => {
     const { user } = useAuth();
@@ -123,19 +124,7 @@ const CreateListing = () => {
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
             {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 16
-            }}>
-                <button onClick={() => navigate('/marketplace')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                    <ArrowLeft size={24} />
-                </button>
-                <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>Create Listing</h1>
-            </div>
+            <TopBar title="Create Listing" />
 
             <div style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

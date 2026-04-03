@@ -7,6 +7,7 @@ import {
     ArrowLeft, Loader2, Upload, BookOpen, Video, FileText, 
     HelpCircle, X, Plus, Globe 
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const types = [
     { value: 'article', label: 'Article', icon: <FileText size={20} />, color: '#60A5FA' },
@@ -142,19 +143,7 @@ const UploadResource = () => {
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
             {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 16
-            }}>
-                <button onClick={() => navigate('/resources')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                    <ArrowLeft size={24} />
-                </button>
-                <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>Upload Resource</h1>
-            </div>
+            <TopBar title="Upload Resource" />
 
             <div style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

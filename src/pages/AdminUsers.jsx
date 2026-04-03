@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { 
     ArrowLeft, Loader2, Shield, User, Search, Award, CheckCircle2, AlertCircle
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 import { motion } from 'framer-motion';
 
 const AdminUsers = () => {
@@ -128,22 +129,11 @@ const AdminUsers = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', backdropFilter: 'blur(10px)',
-                padding: '16px 20px', borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <button onClick={() => navigate('/admin/grievances')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
-                        <ArrowLeft size={22} />
-                    </button>
-                    <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Award size={18} style={{ color: '#FBBF24' }} /> User Badges
-                    </h1>
-                </div>
-            </div>
+            {/* Main Header */}
+            <TopBar 
+                title="User Badges"
+                icon={<Award size={18} style={{ color: '#FBBF24' }} />}
+            />
 
             <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20 }}>
                 {/* Search */}

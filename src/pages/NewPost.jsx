@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { 
   Image as ImageIcon, X, Send, Loader2, Hash, Tag, ArrowLeft, Users 
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 
 const MediaPreview = ({ file, url, onRemove }) => {
@@ -206,20 +207,12 @@ const NewPost = () => {
       justifyContent: 'center',
       padding: '20px'
     }}>
+      <TopBar title={t('auth.posts.create_title')} />
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ width: '100%', maxWidth: '600px' }}
+        style={{ width: '100%', maxWidth: '600px', marginTop: '20px' }}
       >
-        <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button 
-            onClick={() => navigate(-1)}
-            style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}
-          >
-            <ArrowLeft />
-          </button>
-          <h1 style={{ fontSize: 20, fontWeight: 'bold', color: '#F2F1EE' }}>{t('auth.posts.create_title')}</h1>
-        </div>
 
         {groupId && (
           <div style={{ 

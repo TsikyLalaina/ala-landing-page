@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { 
     ArrowLeft, Loader2, Shield, User, Search, X, CheckCircle2, AlertTriangle, Users, Award, ChevronDown
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 import { motion } from 'framer-motion';
 
 const AdminGrievances = () => {
@@ -134,25 +135,16 @@ const AdminGrievances = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', backdropFilter: 'blur(10px)',
-                padding: '16px 20px', borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
-                        <ArrowLeft size={22} />
+            {/* Main Header */}
+            <TopBar 
+                title="Admin Grievance Panel"
+                icon={<Shield size={18} style={{ color: '#F97316' }} />}
+                rightAction={
+                    <button onClick={() => navigate('/admin/users')} style={{ background: 'rgba(255,255,255,0.05)', color: '#A7C7BC', border: '1px solid #2E7D67', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Award size={14} style={{ color: '#FBBF24' }} /> Manage Badges
                     </button>
-                    <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Shield size={18} style={{ color: '#F97316' }} /> Admin Grievance Panel
-                    </h1>
-                </div>
-                <button onClick={() => navigate('/admin/users')} style={{ background: 'rgba(255,255,255,0.05)', color: '#A7C7BC', border: '1px solid #2E7D67', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Award size={14} style={{ color: '#FBBF24' }} /> Manage Badges
-                </button>
-            </div>
+                }
+            />
 
             <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20 }}>
                 {grievances.length === 0 ? (

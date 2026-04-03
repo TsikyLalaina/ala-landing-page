@@ -7,6 +7,7 @@ import {
     HelpCircle, Eye, Clock, Globe, Filter, X 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TopBar } from '../components/TopBar';
 
 const typeIcons = {
     article: <FileText size={18} />,
@@ -90,35 +91,29 @@ const Resources = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                            <ArrowLeft size={24} />
-                        </button>
-                        <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>
-                            <BookOpen size={20} style={{ verticalAlign: 'middle', marginRight: 8 }} />
-                            Resources
-                        </h1>
-                    </div>
-                    {user && (
+            {/* Main Header */}
+            <TopBar 
+                title="Resources"
+                icon={<BookOpen size={20} />}
+                rightAction={
+                    user && (
                         <button 
                             onClick={() => navigate('/upload-resource')}
-                            style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+                            style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', whiteSpace: 'nowrap' }}
                         >
                             <Plus size={18} /> Upload
                         </button>
-                    )}
-                </div>
+                    )
+                }
+            />
 
-                {/* Search Bar */}
+            {/* Sub-header (Search & Filters) */}
+            <div style={{ 
+                background: 'rgba(11, 61, 46, 0.95)', 
+                backdropFilter: 'blur(10px)',
+                padding: '10px 20px',
+                borderBottom: '1px solid #2E7D67',
+            }}>
                 <div style={{ display: 'flex', gap: 8 }}>
                     <div style={{ flex: 1, position: 'relative' }}>
                         <Search size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#A7C7BC' }} />
@@ -129,7 +124,7 @@ const Resources = () => {
                             style={{ 
                                 width: '100%', padding: '10px 12px 10px 40px', borderRadius: 12, 
                                 border: '1px solid #2E7D67', background: 'rgba(0,0,0,0.2)', 
-                                color: 'white', fontSize: 14 
+                                color: 'white', fontSize: 14, boxSizing: 'border-box'
                             }}
                         />
                         {searchQuery && (
@@ -142,13 +137,14 @@ const Resources = () => {
                         onClick={() => setShowFilters(!showFilters)}
                         style={{ 
                             background: activeFilterCount > 0 ? '#4ADE80' : 'rgba(255,255,255,0.1)', 
-                            color: activeFilterCount > 0 ? '#0B3D2E' : '#A7C7BC',
-                            border: 'none', borderRadius: 12, padding: '10px 14px', 
-                            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 'bold'
+                            color: activeFilterCount > 0 ? '#0B3D2E' : '#F2F1EE', 
+                            border: 'none', borderRadius: 12, 
+                            padding: '0 12px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+                            position: 'relative'
                         }}
                     >
                         <Filter size={18} />
-                        {activeFilterCount > 0 && <span>{activeFilterCount}</span>}
+                        {activeFilterCount > 0 && <span style={{ position: 'absolute', top: -4, right: -4, background: '#F97316', color: 'white', fontSize: 10, width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{activeFilterCount}</span>}
                     </button>
                 </div>
             </div>

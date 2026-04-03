@@ -7,6 +7,7 @@ import {
     ArrowLeft, Loader2, Package, ShoppingBag, Store, 
     Check, X, Clock, User, ChevronRight
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const STATUS_COLORS = {
     pending: { bg: 'rgba(251, 191, 36, 0.15)', color: '#FBBF24', label: 'Pending' },
@@ -116,20 +117,8 @@ const MyOrders = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 16
-            }}>
-                <button onClick={() => navigate('/marketplace')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                    <ArrowLeft size={24} />
-                </button>
-                <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0 }}>My Orders</h1>
-            </div>
+            {/* Main Header */}
+            <TopBar title="My Orders" />
 
             <div style={{ maxWidth: 700, margin: '0 auto', padding: 20 }}>
                 {/* Tabs */}

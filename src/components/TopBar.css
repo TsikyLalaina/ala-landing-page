@@ -1,0 +1,195 @@
+/* Base container representing the sticky top bar */
+.top-bar-container {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(11, 61, 46, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px 20px;
+    border-bottom: 1px solid #2E7D67;
+    transition: background-color 0.3s, padding 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar-container.is-critical {
+    background: rgba(127, 29, 29, 0.95);
+    border-bottom: 1px solid #EF4444;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * Standard Variant Layout
+ * ───────────────────────────────────────────────────────── */
+.top-bar-standard-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.top-bar-left-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1; /* Allow left side to take remaining space, pushing right side to end */
+}
+
+.top-bar-back-btn {
+    background: transparent;
+    border: none;
+    color: #A7C7BC;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.top-bar-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    /* Truncation protection */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.top-bar-title-icon {
+    display: flex;
+    align-items: center;
+}
+
+.top-bar-right-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0; /* Protect buttons from shrinking */
+}
+
+
+/* ────────────────────────────────────────────────────────────
+ * Main Variant (Feed) Layout
+ * ───────────────────────────────────────────────────────── */
+.top-bar-main-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.top-bar-logo-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-bar-logo {
+    width: 28px;
+    height: 28px;
+    background: #EAE7E2;
+    mask: url(/icons/ala.svg) no-repeat center / contain;
+    -webkit-mask: url(/icons/ala.svg) no-repeat center / contain;
+    transform: scale(2.4);
+    transform-origin: center;
+    flex-shrink: 0;
+}
+
+.top-bar-logo-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #F2F1EE;
+    margin: 0;
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .top-bar-logo-text {
+        display: block;
+    }
+}
+
+.top-bar-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.top-bar-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.top-bar-nav-label {
+    font-size: 10px;
+}
+
+
+/* ────────────────────────────────────────────────────────────
+ * Mobile Responsive Rules (Resolves "crowded" feedback)
+ * ───────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    /* 1. Global Bar adjustments */
+    .top-bar-container {
+        padding: 10px 12px; /* Reduce horizontal padding to reclaim space */
+    }
+
+    /* 2. Standard Pattern adjustments */
+    .top-bar-standard-flex {
+        gap: 8px; /* Tighter gap between components */
+    }
+    
+    .top-bar-left-group {
+        gap: 8px; /* Tighter gap between back button and title */
+    }
+    
+    .top-bar-title {
+        font-size: 17px; /* Shrink title */
+        gap: 6px;
+    }
+
+    /* Target any nested buttons in right-action area to avoid crowding */
+    .top-bar-right-group button {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+    }
+    .top-bar-right-group button svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* 3. Main/Feed Pattern adjustments */
+    .top-bar-nav-links {
+        gap: 14px; /* Reduce gap between nav icons */
+    }
+    
+    .top-bar-nav-label {
+        display: none; /* Hide text labels on smallest screens to focus squarely on the logo and clean UI */
+    }
+}
+
+@media (max-width: 360px) {
+    /* Extra tight layout for very narrow phones (e.g., old iPhone SE) */
+    .top-bar-container {
+        padding: 8px 10px;
+    }
+    
+    .top-bar-nav-links {
+        gap: 8px; 
+    }
+    
+    .top-bar-title {
+        font-size: 15px; 
+    }
+}

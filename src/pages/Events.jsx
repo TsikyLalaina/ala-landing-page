@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
@@ -7,11 +6,11 @@ import {
     Calendar, MapPin, Clock, Users, Plus, X, Loader2, 
     ArrowLeft, Share2, CheckCircle2, Ticket
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const Events = () => {
     const { user } = useAuth();
     const { toast } = useToast();
-    const navigate = useNavigate();
 
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -97,29 +96,18 @@ const Events = () => {
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
             {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 1000, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer' }}>
-                        <ArrowLeft size={24} />
+            <TopBar 
+                title="Events"
+                icon={<Calendar color="#FBBF24" />}
+                rightAction={
+                    <button 
+                        onClick={() => setShowCreate(true)}
+                        style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+                    >
+                        <Plus size={18} /> Create
                     </button>
-                    <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Calendar size={20} style={{ color: '#FBBF24' }} /> Events
-                    </h1>
-                </div>
-                <button 
-                    onClick={() => setShowCreate(true)}
-                    style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '8px 16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
-                >
-                    <Plus size={18} /> Create
-                </button>
-            </div>
+                }
+            />
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
                 {loading ? (

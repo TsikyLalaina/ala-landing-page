@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -9,6 +9,7 @@ import {
   ArrowLeft, Heart, MessageCircle, Share2, MapPin, 
   Loader2, User, SendHorizontal, CornerDownRight, Flag, ThumbsUp, ThumbsDown
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const CommentItem = ({ comment, allComments, onReply, onFlag, depth = 0 }) => {
   const { t } = useTranslation();
@@ -97,7 +98,6 @@ const GroupPostDetails = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
@@ -262,20 +262,8 @@ const GroupPostDetails = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0B3D2E', paddingBottom: 80 }}>
-      {/* Header */}
-      <div style={{ 
-        position: 'sticky', top: 0, zIndex: 10, 
-        background: 'rgba(11, 61, 46, 0.95)', 
-        backdropFilter: 'blur(10px)',
-        padding: '10px 16px',
-        borderBottom: '1px solid #2E7D67',
-        display: 'flex', alignItems: 'center', gap: 16
-      }}>
-        <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#F2F1EE', cursor: 'pointer' }}>
-          <ArrowLeft />
-        </button>
-        <h1 style={{ fontSize: 18, fontWeight: 'bold', color: '#F2F1EE', margin: 0 }}>Group Discussion</h1>
-      </div>
+      {/* Main Header */}
+      <TopBar title="Group Discussion" />
 
       <div style={{ maxWidth: 640, margin: '0 auto', padding: '20px 16px' }}>
         {/* Main Post */}

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { 
   Users, UserPlus, UserMinus, PlusSquare, ArrowLeft, Loader2, ThumbsUp, ThumbsDown, Check, X, MessageCircle
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const GroupDetails = () => {
     const { id } = useParams();
@@ -264,11 +265,8 @@ const GroupDetails = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', paddingBottom: 80, color: '#F2F1EE' }}>
+            <TopBar title={group.name} />
             <div style={{ maxWidth: 800, margin: '0 auto', padding: '20px' }}>
-                {/* Header */}
-                <button onClick={() => navigate('/groups')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
-                    <ArrowLeft size={18} /> Back to Groups
-                </button>
 
                 {/* Admin: Pending Requests */}
                 {isAdmin && members.some(m => m.status === 'pending') && (

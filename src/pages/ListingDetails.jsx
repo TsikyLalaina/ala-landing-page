@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
@@ -7,6 +7,7 @@ import {
     ArrowLeft, Loader2, ShoppingBag, Gavel, User, Clock, 
     SendHorizontal, Check, X, Ban, Package, AlertTriangle 
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const STATUS_COLORS = {
     pending: { bg: 'rgba(251, 191, 36, 0.15)', color: '#FBBF24', label: 'Pending' },
@@ -23,7 +24,6 @@ const ListingDetails = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const { toast } = useToast();
-    const navigate = useNavigate();
 
     const [listing, setListing] = useState(null);
     const [bids, setBids] = useState([]);
@@ -271,34 +271,26 @@ const ListingDetails = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '12px 16px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 10
-            }}>
-                <button onClick={() => navigate('/marketplace')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
-                    <ArrowLeft size={22} />
-                </button>
-                <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, flex: 1, whiteSpace: 'nowrap' }}>Item Details</h1>
-                {isOwner && (
-                    <button 
-                        onClick={() => setShowOrders(!showOrders)}
-                        style={{ 
-                            background: showOrders ? '#4ADE80' : 'rgba(255,255,255,0.1)', 
-                            color: showOrders ? '#0B3D2E' : '#A7C7BC', 
-                            border: 'none', borderRadius: 20, padding: '7px 10px', 
-                            fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer',
-                            fontSize: 12, flexShrink: 0
-                        }}
-                    >
-                        <Package size={15} /> Orders {transactions.filter(t => t.status === 'pending').length > 0 && `(${transactions.filter(t => t.status === 'pending').length})`}
-                    </button>
-                )}
-            </div>
+            {/* Main Header */}
+            <TopBar 
+                title="Item Details" 
+                rightAction={
+                    isOwner && (
+                        <button 
+                            onClick={() => setShowOrders(!showOrders)}
+                            style={{ 
+                                background: showOrders ? '#4ADE80' : 'rgba(255,255,255,0.1)', 
+                                color: showOrders ? '#0B3D2E' : '#A7C7BC', 
+                                border: 'none', borderRadius: 20, padding: '7px 10px', 
+                                fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer',
+                                fontSize: 12, flexShrink: 0
+                            }}
+                        >
+                            <Package size={15} /> Orders {transactions.filter(t => t.status === 'pending').length > 0 && `(${transactions.filter(t => t.status === 'pending').length})`}
+                        </button>
+                    )
+                }
+            />
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: '16px' }}>
 

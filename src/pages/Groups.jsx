@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { 
   Users, PlusSquare, Search, Loader2, User, ArrowRight
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const Groups = () => {
   const { t } = useTranslation();
@@ -49,34 +50,28 @@ const Groups = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#0B3D2E', paddingBottom: 80, color: '#F2F1EE' }}>
       {/* Header */}
-      <div style={{ 
-        position: 'sticky', top: 0, zIndex: 10, 
-        background: 'rgba(11, 61, 46, 0.95)', 
-        backdropFilter: 'blur(10px)',
-        padding: '16px 20px',
-        borderBottom: '1px solid #2E7D67',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        flexWrap: 'wrap', gap: 10
-      }}>
-        <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Users color="#4ADE80" /> {t('auth.groups.title') || 'Groups'}
-        </h1>
-        {user && (
-          <Link 
-            to="/create-group"
-            style={{ 
-              background: '#4ADE80', color: '#0B3D2E', 
-              padding: '8px 16px', borderRadius: 20, 
-              textDecoration: 'none', fontWeight: 'bold',
-              display: 'flex', alignItems: 'center', gap: 6,
-              fontSize: 14,
-              whiteSpace: 'nowrap'
-            }}
-          >
-            <PlusSquare size={18} /> {t('auth.groups.create') || 'Create Group'}
-          </Link>
-        )}
-      </div>
+      <TopBar 
+        title={t('auth.groups.title') || 'Groups'}
+        icon={<Users color="#4ADE80" />}
+        leftAction={null} // Groups usually doesn't have a back button at the very top level unless navigated from somewhere specific, but let's hide back button to match original behavior
+        rightAction={
+          user && (
+            <Link 
+              to="/create-group"
+              style={{ 
+                background: '#4ADE80', color: '#0B3D2E', 
+                padding: '8px 16px', borderRadius: 20, 
+                textDecoration: 'none', fontWeight: 'bold',
+                display: 'flex', alignItems: 'center', gap: 6,
+                fontSize: 14,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <PlusSquare size={18} /> {t('auth.groups.create') || 'Create Group'}
+            </Link>
+          )
+        }
+      />
 
       <div style={{ maxWidth: 800, margin: '20px auto', padding: '0 20px' }}>
         {/* Search */}

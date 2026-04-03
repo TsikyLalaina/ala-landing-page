@@ -9,6 +9,7 @@ import {
   Home, PlusSquare, User, LogOut, Users, ShoppingCart, BookOpen, Scale, Radio, ClipboardList, Calendar, Menu, X
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
+import { TopBar } from '../components/TopBar';
 
 const Feed = () => {
   const { t } = useTranslation();
@@ -167,63 +168,9 @@ const Feed = () => {
         path="/feed"
         noindex={true}
       />
-      {/* Top Navigation Bar */}
-      <div style={{ 
-        position: 'sticky', top: 0, zIndex: 50, 
-        background: 'rgba(11, 61, 46, 0.95)', 
-        backdropFilter: 'blur(10px)',
-        padding: '10px 20px',
-        borderBottom: '1px solid #2E7D67',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-      }}>
-        {/* Logo/Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 32, height: 32,
-            background: '#EAE7E2',
-            mask: 'url(/icons/ala.svg) no-repeat center / contain',
-            WebkitMask: 'url(/icons/ala.svg) no-repeat center / contain',
-          }} />
-          <h1 style={{ fontSize: 20, fontWeight: 'bold', color: '#F2F1EE', margin: 0, display: 'none', sm: 'block' }}>Ala</h1>
-        </div>
-
-        {/* Primary Navigation (Visible) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Link to="/feed" style={{ color: '#4ADE80', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
-            <Home size={24} strokeWidth={2.5} />
-            <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
-          </Link>
-
-          <Link to="/groups" style={{ color: '#F2F1EE', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
-            <Users size={24} />
-            <span style={{ fontSize: 10 }}>Groups</span>
-          </Link>
-          
-          <Link to="/new-post" style={{ color: '#4ADE80', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
-            <PlusSquare size={24} />
-            <span style={{ fontSize: 10 }}>Post</span>
-          </Link>
-
-          <Link to="/messages" style={{ color: '#F2F1EE', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
-            <MessageCircle size={24} />
-            <span style={{ fontSize: 10 }}>Chat</span>
-          </Link>
-
-
-
-          <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            style={{ 
-              background: 'transparent', border: 'none', 
-              color: '#F2F1EE', cursor: 'pointer',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: 0
-            }}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            <span style={{ fontSize: 10 }}>More</span>
-          </button>
-        </div>
+      {/* Top Navigation Bar & Menu */}
+      <div style={{ position: 'relative', zIndex: 50 }}>
+        <TopBar type="main" rightAction={{ isMenuOpen, setIsMenuOpen }} />
 
         {/* Secondary Navigation (Dropdown Menu) */}
         {isMenuOpen && (

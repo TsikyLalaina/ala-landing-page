@@ -9,6 +9,7 @@ import {
     Shield, FileText, MessageSquare, Upload, X, Camera, AlertCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { TopBar } from '../components/TopBar';
 
 const statusConfig = {
     open: { label: 'Open', color: '#FBBF24', icon: <AlertTriangle size={16} />, desc: 'Awaiting review and response' },
@@ -272,25 +273,17 @@ const GrievanceDetails = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', backdropFilter: 'blur(10px)',
-                padding: '12px 16px', borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 10
-            }}>
-                <button onClick={() => navigate('/grievances')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
-                    <ArrowLeft size={22} />
-                </button>
-                <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    Case Details
-                </h1>
-                {isInvolved && (
-                    <span style={{ background: `${cfg.color}22`, color: cfg.color, fontSize: 11, fontWeight: 'bold', padding: '4px 10px', borderRadius: 10, border: `1px solid ${cfg.color}44`, display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                        {isReporter ? 'Reporter' : isRespondent ? 'Respondent' : 'Mediator'}
-                    </span>
-                )}
-            </div>
+            {/* Main Header */}
+            <TopBar 
+                title="Case Details"
+                rightAction={
+                    isInvolved && (
+                        <span style={{ background: `${cfg.color}22`, color: cfg.color, fontSize: 11, fontWeight: 'bold', padding: '4px 10px', borderRadius: 10, border: `1px solid ${cfg.color}44`, display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                            {isReporter ? 'Reporter' : isRespondent ? 'Respondent' : 'Mediator'}
+                        </span>
+                    )
+                }
+            />
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: '16px' }}>
                 

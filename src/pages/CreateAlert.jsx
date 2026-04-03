@@ -8,6 +8,7 @@ import {
     ArrowLeft, Loader2, Upload, X, AlertTriangle, MapPin, 
     CloudLightning, Droplets, Flame, Bug, ShieldAlert, Radio
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 import LocationPickerInput from '../components/LocationPicker';
 
 const MapUpdater = ({ RL, center }) => {
@@ -158,23 +159,12 @@ const CreateAlert = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 1000, 
-                background: 'rgba(127, 29, 29, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '16px 20px',
-                borderBottom: '1px solid #EF4444',
-                display: 'flex', alignItems: 'center', gap: 16
-            }}>
-                <button onClick={() => navigate('/crisis')} style={{ background: 'transparent', border: 'none', color: '#FCA5A5', cursor: 'pointer' }}>
-                    <ArrowLeft size={24} />
-                </button>
-                <h1 style={{ fontSize: 20, fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Radio size={20} style={{ color: '#EF4444' }} />
-                    Create Emergency Alert
-                </h1>
-            </div>
+            {/* Main Header */}
+            <TopBar 
+                title="Create Emergency Alert" 
+                icon={<Radio size={20} />}
+                critical={true} 
+            />
 
             <div style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

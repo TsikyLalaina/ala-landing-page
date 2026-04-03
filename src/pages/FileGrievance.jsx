@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, Loader2, Upload, X, AlertTriangle, MapPin, Camera, Users, User } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const categories = [
     { value: 'land_encroachment', label: '🏗️ Land Encroachment' },
@@ -162,18 +163,8 @@ const FileGrievance = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', backdropFilter: 'blur(10px)',
-                padding: '12px 16px', borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', gap: 12
-            }}>
-                <button onClick={() => navigate('/grievances')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
-                    <ArrowLeft size={22} />
-                </button>
-                <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0 }}>File a Grievance</h1>
-            </div>
+            {/* Main Header */}
+            <TopBar title="File a Grievance" />
 
             <div style={{ maxWidth: 600, margin: '0 auto', padding: '16px' }}>
                 {/* Workflow Info */}

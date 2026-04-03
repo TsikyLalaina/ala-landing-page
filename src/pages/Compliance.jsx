@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
@@ -8,6 +7,7 @@ import {
     Calendar, Languages, AlertTriangle, Play, Pause, Square,
     ClipboardList, MapPin
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const languages = {
@@ -27,7 +27,6 @@ const activityTypes = [
 const Compliance = () => {
     const { user } = useAuth();
     const { toast } = useToast();
-    const navigate = useNavigate();
 
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -251,33 +250,25 @@ const Compliance = () => {
 
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
-            {/* Header */}
-            {/* Header */}
-            <div className="compliance-header">
-                <div className="header-left-group">
-                    <button onClick={() => navigate('/feed')} className="back-btn">
-                        <ArrowLeft size={24} />
-                    </button>
-                    <h1 className="header-title">
-                        <ClipboardList size={20} style={{ color: '#4ADE80', flexShrink: 0 }} />
-                        <span>{t.title}</span>
-                    </h1>
-                </div>
-
-                {/* Language Toggle */}
-                <div className="lang-toggle">
-                    {Object.entries(languages).map(([key, { flag }]) => (
-                        <button 
-                            key={key}
-                            onClick={() => setUiLang(key)}
-                            className={`lang-btn ${uiLang === key ? 'active' : ''}`}
-                            title={translations[key].title}
-                        >
-                            {flag}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            {/* Main Header */}
+            <TopBar 
+                title={t.title}
+                icon={<ClipboardList size={20} />}
+                rightAction={
+                    <div className="lang-toggle">
+                        {Object.entries(languages).map(([key, { flag }]) => (
+                            <button 
+                                key={key}
+                                onClick={() => setUiLang(key)}
+                                className={`lang-btn ${uiLang === key ? 'active' : ''}`}
+                                title={translations[key].title}
+                            >
+                                {flag}
+                            </button>
+                        ))}
+                    </div>
+                }
+            />
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
                 {/* Intro */}

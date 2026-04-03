@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { Loader2, Plus, ArrowLeft, MoreHorizontal, ShoppingBag, Package } from 'lucide-react';
+import { Loader2, Plus, MoreHorizontal, ShoppingBag, Package } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { TopBar } from '../../components/TopBar';
 
 const Marketplace = () => {
     const { user } = useAuth();
@@ -43,38 +44,27 @@ const Marketplace = () => {
     return (
         <div style={{ minHeight: '100vh', background: '#0B3D2E', color: '#F2F1EE', paddingBottom: 80 }}>
             {/* Header */}
-             <div style={{ 
-                position: 'sticky', top: 0, zIndex: 10, 
-                background: 'rgba(11, 61, 46, 0.95)', 
-                backdropFilter: 'blur(10px)',
-                padding: '12px 16px',
-                borderBottom: '1px solid #2E7D67',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                gap: 8
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <button onClick={() => navigate('/feed')} style={{ background: 'transparent', border: 'none', color: '#A7C7BC', cursor: 'pointer', padding: 4 }}>
-                        <ArrowLeft size={22} />
-                    </button>
-                    <h1 style={{ fontSize: 18, fontWeight: 'bold', margin: 0, whiteSpace: 'nowrap' }}>Marketplace</h1>
-                </div>
-                {user && (
-                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                        <button 
-                            onClick={() => navigate('/my-orders')}
-                            style={{ background: 'rgba(255,255,255,0.1)', color: '#A7C7BC', border: 'none', borderRadius: 20, padding: '7px 10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12 }}
-                        >
-                            <Package size={15} /> <span>Orders</span>
-                        </button>
-                        <button 
-                            onClick={() => navigate('/create-listing')}
-                            style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '7px 10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12 }}
-                        >
-                            <Plus size={16} /> <span>Sell</span>
-                        </button>
-                    </div>
-                )}
-            </div>
+            <TopBar 
+                title="Marketplace"
+                rightAction={
+                    user && (
+                        <>
+                            <button 
+                                onClick={() => navigate('/my-orders')}
+                                style={{ background: 'rgba(255,255,255,0.1)', color: '#A7C7BC', border: 'none', borderRadius: 20, padding: '7px 10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12 }}
+                            >
+                                <Package size={15} /> <span>Orders</span>
+                            </button>
+                            <button 
+                                onClick={() => navigate('/create-listing')}
+                                style={{ background: '#4ADE80', color: '#0B3D2E', border: 'none', borderRadius: 20, padding: '7px 10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: 12 }}
+                            >
+                                <Plus size={16} /> <span>Sell</span>
+                            </button>
+                        </>
+                    )
+                }
+            />
 
             <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
                 {/* Categories */}

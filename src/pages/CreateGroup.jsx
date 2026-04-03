@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { 
   Users, User, FileText, CheckCircle, ArrowLeft, Loader2
 } from 'lucide-react';
+import { TopBar } from '../components/TopBar';
 
 const CreateGroup = () => {
   const { t } = useTranslation();
@@ -69,17 +70,8 @@ const CreateGroup = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0B3D2E', paddingBottom: 80, color: '#F2F1EE' }}>
+      <TopBar title={t('auth.groups.create_title') || 'Create a New Group'} icon={<Users size={18} />} />
       <div style={{ maxWidth: 600, margin: '0 auto', padding: '20px' }}>
-        <button 
-          onClick={() => navigate(-1)}
-          style={{ 
-            background: 'transparent', border: 'none', color: '#A7C7BC', 
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-            marginBottom: 20
-          }}
-        >
-          <ArrowLeft size={18} /> Back
-        </button>
 
         <motion.div
            initial={{ opacity: 0, y: 20 }}
