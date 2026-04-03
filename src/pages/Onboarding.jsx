@@ -244,29 +244,45 @@ const Onboarding = () => {
     setLoading(true);
 
     try {
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert({
-          id: user.id,
-          email: user.email,
-          name: formData.name,
-          username: formData.username || null,
-          phone: formData.phone || null,
-          location: formData.location?.name || null,
-          location_lat: formData.location?.lat || null,
-          location_lng: formData.location?.lng || null,
-          sector: formData.sector,
-          bio: formData.bio || null,
-          interests: formData.interests.length > 0 ? formData.interests : null,
-        });
+      if (!user?.id) {
+        throw new Error('User session not found. Please log in again.');
+      }
 
-      if (insertError) throw insertError;
-      
-      await refreshProfile(); // Crucial: Update AuthContext state
+      const insertPayload = {
+        id: user.id,
+        email: user.email,
+        name: formData.name,
+        username: formData.username || null,
+        phone: formData.phone || null,
+        location: formData.location?.name || null,
+        location_lat: formData.location?.lat || null,
+        location_lng: formData.location?.lng || null,
+        sector: formData.sector,
+        bio: formData.bio || null,
+        interests: formData.interests.length > 0 ? formData.interests : null,
+      };
+
+      // Use .upsert() instead of insert() in case a database trigger already created a blank profile
+      const { data: insertedData, error: insertError } = await supabase
+        .from('users')
+        .upsert(insertPayload, { onConflict: 'id' })
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('[Onboarding] Insert error:', insertError);
+        throw insertError;
+      }
+
+      if (!insertedData) {
+        throw new Error('Profile could not be saved. Please try again or contact support.');
+      }
+
+      await refreshProfile();
       toast.success(t('auth.onboarding.success'));
-      navigate('/'); // Redirect to landing page
+      navigate('/feed');
     } catch (err) {
-      console.error(err);
+      console.error('[Onboarding] Submission failed:', err);
       toast.error(err.message || "Something went wrong saving your profile");
       setLoading(false);
     }
