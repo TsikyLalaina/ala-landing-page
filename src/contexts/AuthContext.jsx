@@ -40,37 +40,23 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (session?.user) {
-        setSession(session);
-        setUser(session.user);
-        const [userProfile, adminStatus] = await Promise.all([
-          fetchProfile(session.user.id),
-          checkAdmin(session.user.id)
-        ]);
-        setProfile(userProfile);
-        setIsAdmin(adminStatus);
-      }
-      
-      setLoading(false);
-    };
-
-    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       
-      if (session?.user) {
-        const [userProfile, adminStatus] = await Promise.all([
-          fetchProfile(session.user.id),
-          checkAdmin(session.user.id)
-        ]);
-        setProfile(userProfile);
-        setIsAdmin(adminStatus);
-      } else {
+      if (!session?.user) {
+        setLoading(false);
+      }
+    };
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (!session?.user) {
         setProfile(null);
         setIsAdmin(false);
+        setLoading(false);
       }
-      
-      setLoading(false);
     });
 
     initAuth();
@@ -79,6 +65,37 @@ export const AuthProvider = ({ children }) => {
       listener?.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    
+    if (user?.id) {
+      const loadProfile = async () => {
+        try {
+          const [userProfile, adminStatus] = await Promise.all([
+            fetchProfile(user.id),
+            checkAdmin(user.id)
+          ]);
+          if (isMounted) {
+            setProfile(userProfile);
+            setIsAdmin(adminStatus);
+          }
+        } catch (error) {
+          console.error("Error loading user profile:", error);
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+        }
+      };
+      
+      loadProfile();
+    }
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id]);
 
   const signUp = async (data) => {
     return supabase.auth.signUp(data);
