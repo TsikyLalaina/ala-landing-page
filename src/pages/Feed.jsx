@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 import { TopBar } from '../components/TopBar';
+import { ExpandableText } from '../components/ExpandableText';
 
 const Feed = () => {
   const { t } = useTranslation();
@@ -302,10 +303,9 @@ const Feed = () => {
                 </div>
               </div>
 
-              {/* Content */}
               <div style={{ marginBottom: 12 }}>
                 <Link to={`/post/${post.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-                  <p style={{ color: '#F2F1EE', fontSize: 15, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{post.content}</p>
+                  <ExpandableText content={post.content} style={{ color: '#F2F1EE', fontSize: 15, lineHeight: 1.5, whiteSpace: 'pre-wrap' }} />
                 </Link>
                  {/* Hashtags */}
                 {post.hashtags && post.hashtags.length > 0 && (

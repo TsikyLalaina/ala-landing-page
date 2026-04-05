@@ -10,6 +10,7 @@ import {
   Loader2, User, SendHorizontal, CornerDownRight, Flag
 } from 'lucide-react';
 import { TopBar } from '../components/TopBar';
+import { ExpandableText } from '../components/ExpandableText';
 
 const CommentItem = ({ comment, allComments, onReply, onFlag, depth = 0 }) => {
   const { t } = useTranslation();
@@ -280,7 +281,7 @@ const PostDetails = () => {
               </div>
            </div>
 
-           <p style={{ color: '#F2F1EE', fontSize: 16, lineHeight: 1.6, marginBottom: 16, whiteSpace: 'pre-wrap' }}>{post.content}</p>
+           <ExpandableText content={post.content} style={{ color: '#F2F1EE', fontSize: 16, lineHeight: 1.6, marginBottom: 16, whiteSpace: 'pre-wrap' }} />
 
            {post.media_urls && post.media_urls.length > 0 && (
               <div style={{ marginBottom: 16, borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 4 }} className="media-container">

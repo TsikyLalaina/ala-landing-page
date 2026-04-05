@@ -3,11 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
-import { motion } from 'framer-motion';
 import { 
   Users, UserPlus, UserMinus, PlusSquare, ArrowLeft, Loader2, ThumbsUp, ThumbsDown, Check, X, MessageCircle
 } from 'lucide-react';
 import { TopBar } from '../components/TopBar';
+import { ExpandableText } from '../components/ExpandableText';
 
 const GroupDetails = () => {
     const { id } = useParams();
@@ -406,7 +406,7 @@ const GroupDetails = () => {
                                         <span style={{ fontSize: 12, color: '#A7C7BC' }}>{new Date(post.created_at).toLocaleDateString()}</span>
                                     </div>
                                 </div>
-                                <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16 }}>{post.content}</p>
+                                <ExpandableText content={post.content} style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16, whiteSpace: 'pre-wrap' }} />
                                 
                                 {/* Voting and Comment Actions */}
                                 <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
